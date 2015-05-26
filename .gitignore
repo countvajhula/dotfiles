@@ -1,0 +1,8 @@
+# python compile output
+*pyc
+# vim noise
+*~
+*.sw?
+# vim backup buffers, logs
+vimbackups
+sessions

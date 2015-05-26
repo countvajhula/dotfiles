@@ -1,0 +1,6 @@
+let g:netrw_dirhistmax  =10
+let g:netrw_dirhist_cnt =4
+let g:netrw_dirhist_1='/Users/siddhartha/work/research/identity'
+let g:netrw_dirhist_2='/Users/siddhartha'
+let g:netrw_dirhist_3='/Users/siddhartha/work'
+let g:netrw_dirhist_4='/Users/siddhartha/work/python'
