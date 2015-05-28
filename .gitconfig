@@ -1,6 +1,6 @@
 [user]
 	name = Siddhartha
-	email = sid@countvajhula.com
+	email = sid@chegg.com
 
 [color]
 	diff = auto
@@ -40,3 +40,5 @@
 
 [difftool]
 	prompt = false
+[push]
+	default = simple

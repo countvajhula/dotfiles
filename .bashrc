@@ -1,34 +1,19 @@
 export CLICOLOR='true'
 export LSCOLORS="gxfxcxdxbxegedabagacad"
+export PATH=$HOME/bin::$PATH
+export PYTHONPATH=$HOME/work/mypypi:$PYTHONPATH
+
+#export JAVA_HOME=/Library/Java/Home
+# for python mysql
+#export DYLD_LIBRARY_PATH=/usr/local/mysql/lib/
 #PROMPT_COMMAND='CurDir=`pwd|sed -e "s!$HOME!~!"|sed -re "s!([^/])[^/]+/!\1/!g"`'
 #PS1="[\$CurDir] \$ "
 #PS1="[\h \t \#] \u > "
-export PYTHONPATH=/opt/gtk/lib/python2.7/site-packages:$HOME/work/mypypi:$HOME/work/gaia:$HOME/work/python/networkx-0.33:$HOME/work/worldspeak/conceptnet/ConceptNet-sqlite:$PYTHONPATH
-# remove this (below) to run python in the default 64-bit mode. This is for in for matplotlib compatibility
-export VERSIONER_PYTHON_PREFER_32_BIT='yes'
-#export JAVA_HOME=/System/Library/Frameworks/JavaVM.framework/Versions/CurrentJDK/Home
-export JAVA_HOME=/Library/Java/Home
-# GRAILS_HOME isn't necessary for using grails from the CLI but is for eclipse and other stuff
-export GRAILS_HOME=$HOME/sw/grails-1.2.5
-# GROOVY
-export GROOVY_HOME=$HOME/sw/groovy-1.7.10
-# Add grails biin and mysql bin to path, and groovy bin
-export EC2_HOME=/Users/siddhartha/work/aws/ec2/ec2-api-tools-1.3-62308
-export EC2_PRIVATE_KEY=/Users/siddhartha/work/aws/ec2/auth/pk-awscert.pem
-export EC2_CERT=/Users/siddhartha/work/aws/ec2/auth/cert-awscert.pem
-export PATH=$HOME/bin:/usr/local/bin:/usr/local/mysql/bin:/opt/local/bin:/opt/local/sbin:$GRAILS_HOME/bin:$GROOVY_HOME/bin:$EC2_HOME/bin:~/bin:~/work/tahoe/allmydata-tahoe-1.8.0/bin:~/work/android/android-ndk-r4b:~/work/android/android-sdk-mac_x86:/Users/siddhartha/work/android/android-sdk-mac_x86/tools:/usr/local/sbin:$PATH
-# for python mysql
-export DYLD_LIBRARY_PATH=/usr/local/mysql/lib/
-
-# truecrypt command-line access
-alias truecrypt='/Applications/TrueCrypt.app/Contents/MacOS/Truecrypt --text'
 
 alias l="ls"
 alias ll="ls -al"
 alias py="ipython"
 alias pyserve="python -m SimpleHTTPServer"
-alias hstart="/usr/local/Cellar/hadoop/2.6.0/sbin/start-dfs.sh;/usr/local/Cellar/hadoop/2.6.0/sbin/start-yarn.sh"
-alias hstop="/usr/local/Cellar/hadoop/2.6.0/sbin/stop-yarn.sh;/usr/local/Cellar/hadoop/2.6.0/sbin/stop-dfs.sh"
 
 # VI mode!!!
 set -o vi
