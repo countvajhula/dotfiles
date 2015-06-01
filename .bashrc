@@ -50,7 +50,7 @@ function fastprompt()
 {
     unset PROMPT_COMMAND
     case $TERM in
-        *term* | rxvt )
+        *term* | rxvt | screen )
             PS1="\[\033[1;33m\][\h \t \#]\[\033[0m\] \[\033[1;34m\]\W\[\033[0m\] $ " ;;
         linux )
             PS1="${HILIT}[\h]$NC \W > " ;;
