@@ -17,7 +17,7 @@ alias pyserve="python -m SimpleHTTPServer"
 # make ack page by default while retaining formatting (from http://shuttlethread.com/blog/useful-ack-defaults)
 alias ack='ACK_PAGER_COLOR="less -x4SRFX" /usr/local/bin/ack'
 # colorize last python traceback
-alias pytb="!! | pygmentize -l pytb"
+alias pytb="fc -s | pygmentize -l pytb"
 
 # VI mode!!!
 set -o vi
