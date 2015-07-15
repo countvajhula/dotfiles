@@ -97,6 +97,8 @@
   "(note conflict with vimwiki)
   nnoremap <space> 10jzz
   nnoremap <backspace> 10kzz
+  " alternative to backspace
+  nnoremap <C-space> 10kzz
   "CR remap below conflicts with TeXbox
   "nnoremap <CR> G
 
