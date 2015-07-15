@@ -14,6 +14,8 @@ alias l="ls"
 alias ll="ls -al"
 alias py="ipython"
 alias pyserve="python -m SimpleHTTPServer"
+# make ack page by default while retaining formatting (from http://shuttlethread.com/blog/useful-ack-defaults)
+alias ack='ACK_PAGER_COLOR="less -x4SRFX" /usr/local/bin/ack'
 
 # VI mode!!!
 set -o vi
