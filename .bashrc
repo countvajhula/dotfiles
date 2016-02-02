@@ -19,6 +19,9 @@ alias ack='ACK_PAGER_COLOR="less -x4SRFX" /usr/local/bin/ack'
 # colorize last python traceback
 alias pytb="fc -s 2>&1 | pygmentize -l pytb"
 
+# Workflow-specific
+alias djsh="./manage.py shell_plus"
+
 # VI mode!!!
 set -o vi
 
