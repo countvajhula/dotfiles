@@ -34,11 +34,13 @@
 [alias]
 	co = checkout
 	d = difftool
+	logg = "!git log `git rev-parse --abbrev-ref HEAD` ^stage"
 
 [diff]
 	tool = vimdiff
 
 [difftool]
 	prompt = false
+
 [push]
 	default = simple
