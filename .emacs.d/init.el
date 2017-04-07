@@ -53,7 +53,7 @@
 ;;
 
 ;; line numbers on by default
-(linum-mode 1)
+(global-linum-mode 1)
 ;; show (line #, column #) in mode line
 (setq column-number-mode t)
 
