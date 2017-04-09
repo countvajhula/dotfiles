@@ -15,6 +15,9 @@
 ;; initialize all "installed" packages
 (package-initialize)
 
+;; other packages
+(require 'sublimity-scroll)
+
 ;; remove the toolbar at the top of the window
 (tool-bar-mode -1)
 
@@ -26,6 +29,7 @@
 
 (load-theme 'tango-dark t)
 (add-to-list 'custom-theme-load-path "~/.emacs.d/themes")
+(set-frame-font "Menlo 12" nil t)
 
 ;; refresh files from disk if there are changes
 (global-auto-revert-mode t)
@@ -47,6 +51,7 @@
 (setq ido-enable-flex-matching t)
 (setq ido-everywhere t)
 (ido-mode 1)
+(sublimity-mode 1)
 
 ;;
 ;; navigation optimizations
@@ -98,7 +103,7 @@
   (delete-other-windows))
 
 (global-set-key (kbd "C-c C-b") 'my-buf-info)
-(global-set-key (kbd "C-c C-t") 'scratch)
+(global-set-key (kbd "C-c C-t") 'sr-speedbar-toggle)
 (global-set-key (kbd "C-c C-n") 'my-new-buffer-window)
 
 (custom-set-variables
@@ -106,5 +111,7 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(python-check-command "/usr/local/bin/pyflakes")
- '(initial-frame-alist (quote ((fullscreen . maximized)))))
+ '(initial-frame-alist (quote ((fullscreen . maximized))))
+ '(mac-option-modifier (quote meta))
+ '(package-selected-packages (quote (sr-speedbar magit dictionary sublimity evil elpy)))
+ '(python-check-command "/usr/local/bin/pyflakes"))
