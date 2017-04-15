@@ -20,6 +20,11 @@ export PATH=$HOME/bin:/usr/local/bin:/usr/local/mysql/bin:/opt/local/bin:/opt/lo
 # for python mysql
 export DYLD_LIBRARY_PATH=/usr/local/mysql/lib/
 
+# for bash-completion
+if [ -f $(brew --prefix)/etc/bash_completion ]; then
+	. $(brew --prefix)/etc/bash_completion
+fi
+
 # truecrypt command-line access
 alias truecrypt='/Applications/TrueCrypt.app/Contents/MacOS/Truecrypt --text'
 
