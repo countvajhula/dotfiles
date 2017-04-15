@@ -47,11 +47,14 @@
 (evil-mode 1)
 ;; python IDE
 (elpy-enable)
+(setq elpy-modules
+      (remove 'elpy-module-highlight-indentation
+	      elpy-modules))
 ;; ido mode
 (setq ido-enable-flex-matching t)
 (setq ido-everywhere t)
 (ido-mode 1)
-(sublimity-mode 1)
+;(sublimity-mode 1)
 
 ;;
 ;; navigation optimizations
