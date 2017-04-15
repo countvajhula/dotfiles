@@ -50,6 +50,8 @@
 (setq elpy-modules
       (remove 'elpy-module-highlight-indentation
 	      elpy-modules))
+;; use jedi for completion with elpy instead of rope
+(setq elpy-rpc-backend "jedi")
 ;; ido mode
 (setq ido-enable-flex-matching t)
 (setq ido-everywhere t)
