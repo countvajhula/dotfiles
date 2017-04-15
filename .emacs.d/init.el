@@ -116,5 +116,7 @@
  ;; If there is more than one, they won't work right.
  '(initial-frame-alist (quote ((fullscreen . maximized))))
  '(mac-option-modifier (quote meta))
- '(package-selected-packages (quote (sr-speedbar magit dictionary sublimity evil elpy)))
+ '(package-selected-packages
+   (quote
+    (company-jedi company sr-speedbar magit dictionary sublimity evil elpy)))
  '(python-check-command "/usr/local/bin/pyflakes"))
