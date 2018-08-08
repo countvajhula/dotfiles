@@ -57,6 +57,8 @@
 (setq ido-everywhere t)
 (ido-mode 1)
 ;(sublimity-mode 1)
+;; enable company mode autocompletion in all buffers
+(add-hook 'after-init-hook 'global-company-mode)
 
 ;;
 ;; navigation optimizations
@@ -120,5 +122,11 @@
  '(mac-option-modifier (quote meta))
  '(package-selected-packages
    (quote
-    (company-jedi company sr-speedbar magit dictionary sublimity evil elpy)))
+    (ivy sicp company-jedi company sr-speedbar magit dictionary sublimity evil elpy)))
  '(python-check-command "/usr/local/bin/pyflakes"))
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ )
