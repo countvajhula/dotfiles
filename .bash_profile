@@ -10,6 +10,10 @@
 
 
 # startup virtualenv-burrito
-if [ -f $HOME/.venvburrito/startup.sh ]; then
-    . $HOME/.venvburrito/startup.sh
+#if [ -f $HOME/.venvburrito/startup.sh ]; then
+    #. $HOME/.venvburrito/startup.sh
+#fi
+
+if [ -f /usr/local/bin/virtualenvwrapper.sh ]; then
+    . /usr/local/bin/virtualenvwrapper.sh
 fi
