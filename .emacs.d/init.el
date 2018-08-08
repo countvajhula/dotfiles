@@ -14,6 +14,13 @@
 
 ;; initialize all "installed" packages
 (package-initialize)
+;; avoid extra call to (package-initialize) after loading init.el
+(setq package-enable-at-startup nil)
+
+;; bootstrap use-package
+(unless (package-installed-p 'use-package)
+    (package-refresh-contents)
+    (package-install 'use-package))
 
 ;; other packages
 (require 'sublimity-scroll)
@@ -46,19 +53,31 @@
 ;; Vim interface
 (evil-mode 1)
 ;; python IDE
-(elpy-enable)
-(setq elpy-modules
-      (remove 'elpy-module-highlight-indentation
-	      elpy-modules))
-;; use jedi for completion with elpy instead of rope
-(setq elpy-rpc-backend "jedi")
+(use-package elpy
+  :ensure t
+  :config
+  (elpy-enable)
+  (setq elpy-modules
+	(remove 'elpy-module-highlight-indentation
+		elpy-modules))
+  (setq elpy-rpc-python-command "python3")
+  ;; use jedi for completion with elpy instead of rope
+  (setq elpy-rpc-backend "jedi")
+  (elpy-use-cpython "python3")
+  (setq python-check-command "~/.local/bin/pyflakes")
+  (add-hook 'python-mode-hook (lambda () (show-paren-mode 1))))
+
 ;; ido mode
 (setq ido-enable-flex-matching t)
 (setq ido-everywhere t)
 (ido-mode 1)
+
 ;(sublimity-mode 1)
+
 ;; enable company mode autocompletion in all buffers
 (add-hook 'after-init-hook 'global-company-mode)
+
+(ivy-mode 1)
 
 ;;
 ;; navigation optimizations
@@ -88,6 +107,7 @@
       (evil-previous-line))
     (evil-scroll-line-to-center nil))
 
+  (define-key evil-insert-state-map (kbd "M-<tab>") 'elpy-company-backend)
   (define-key evil-motion-state-map (kbd "SPC") 'my-scroll-down)
   (define-key evil-motion-state-map (kbd "C-SPC") 'my-scroll-up)
   (define-key evil-motion-state-map (kbd "<backspace>") 'my-scroll-up))
@@ -122,7 +142,7 @@
  '(mac-option-modifier (quote meta))
  '(package-selected-packages
    (quote
-    (ivy sicp company-jedi company sr-speedbar magit dictionary sublimity evil elpy)))
+    (php-mode ivy sicp company-jedi company sr-speedbar magit dictionary sublimity evil elpy)))
  '(python-check-command "/usr/local/bin/pyflakes"))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
