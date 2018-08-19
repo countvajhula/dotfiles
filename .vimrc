@@ -22,8 +22,8 @@
   set scrolloff=2         " scroll with 2 line buffer for continuity
   set showcmd             " show in-progress command in status bar
   set number              " show line numbers
-  "set breakindent         " wrap lines taking indentation into account -- need to wait until macvim updates to include this patch
-  "set showbreak=..        " wrap lines taking indentation into account -- need to wait until macvim updates to include this patch
+  set breakindent         " wrap lines taking indentation into account
+  set showbreak=..        " wrap lines taking indentation into account
 
   call pathogen#infect() " pathogen plugin to load other plugins
 
@@ -96,6 +96,8 @@
   "(note conflict with vimwiki)
   nnoremap <space> 10jzz
   nnoremap <backspace> 10kzz
+  " alternative to backspace
+  nnoremap <C-space> 10kzz
   "CR remap below conflicts with TeXbox
   "nnoremap <CR> G
 
