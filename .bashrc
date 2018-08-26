@@ -1,6 +1,6 @@
 export CLICOLOR='true'
 export LSCOLORS="gxfxcxdxbxegedabagacad"
-export PATH=$HOME/bin::$PATH
+export PATH=$HOME/Library/Python/3.7/bin:$HOME/bin:$HOME/Library/Python/2.7/bin:$PATH
 export PYTHONPATH=$HOME/work/mypypi:$PYTHONPATH
 
 #export JAVA_HOME=/Library/Java/Home
