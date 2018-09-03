@@ -24,6 +24,7 @@
 
 ;; other packages
 (require 'sublimity-scroll)
+(require 'sr-speedbar)
 
 ;; remove the toolbar at the top of the window
 (tool-bar-mode -1)
@@ -79,6 +80,10 @@
 
 (ivy-mode 1)
 
+(projectile-mode +1)
+(define-key projectile-mode-map (kbd "s-p") 'projectile-command-map)
+(define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map)
+
 ;;
 ;; navigation optimizations
 ;;
@@ -112,6 +117,8 @@
   (define-key evil-motion-state-map (kbd "C-SPC") 'my-scroll-up)
   (define-key evil-motion-state-map (kbd "<backspace>") 'my-scroll-up))
 
+  ;(define-key evil-normal-state-map (kbd "M-x") 'execute-extended-command)
+
 ;;
 ;; Personal customizations
 ;;
@@ -129,9 +136,13 @@
   (scratch)
   (delete-other-windows))
 
-(global-set-key (kbd "C-c C-b") 'my-buf-info)
-(global-set-key (kbd "C-c C-t") 'sr-speedbar-toggle)
-(global-set-key (kbd "C-c C-n") 'my-new-buffer-window)
+(global-set-key (kbd "C-c b") 'my-buf-info)
+(global-set-key (kbd "C-c t") 'sr-speedbar-toggle)
+(global-set-key (kbd "C-c n") 'my-new-buffer-window)
+
+;; magit
+(global-set-key (kbd "C-x g") 'magit-status)
+(global-set-key (kbd "C-x M-g") 'magit-dispatch-popup)
 
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
@@ -142,7 +153,7 @@
  '(mac-option-modifier (quote meta))
  '(package-selected-packages
    (quote
-    (php-mode ivy sicp company-jedi company sr-speedbar magit dictionary sublimity evil elpy)))
+    (evil-magit projectile php-mode ivy sicp company-jedi company sr-speedbar magit dictionary sublimity evil elpy)))
  '(python-check-command "/usr/local/bin/pyflakes"))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
