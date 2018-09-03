@@ -18,6 +18,10 @@ alias pyserve="python -m SimpleHTTPServer"
 alias ack='ACK_PAGER_COLOR="less -x4SRFX" /usr/local/bin/ack'
 # colorize last python traceback
 alias pytb="fc -s 2>&1 | pygmentize -l pytb"
+# fancy ls (from Hunan)
+alias list='clear; ls -lGp'
+alias lst='clear; tree -LC 2'
+alias lstt='clear; tree -LC 4'
 
 # Workflow-specific
 alias djsh="./manage.py shell_plus"
@@ -106,3 +110,10 @@ fastprompt
 # complete -f -W "$(echo `git branch | sed -e s/[\ \*]//g | cut -f 1 -d ' ' | uniq`; \                                                                       
 #    echo `git remote | sed -e s/[\ \*]//g | cut -f 1 -d ' ' | uniq`; \                                                                                   
 #    echo `git | tail -23 | head -21 | cut -d ' ' -f 4`);" git
+
+# tabtab source for serverless package
+# uninstall by removing these lines or running `tabtab uninstall serverless`
+[ -f /usr/local/lib/node_modules/serverless/node_modules/tabtab/.completions/serverless.bash ] && . /usr/local/lib/node_modules/serverless/node_modules/tabtab/.completions/serverless.bash
+# tabtab source for sls package
+# uninstall by removing these lines or running `tabtab uninstall sls`
+[ -f /usr/local/lib/node_modules/serverless/node_modules/tabtab/.completions/sls.bash ] && . /usr/local/lib/node_modules/serverless/node_modules/tabtab/.completions/sls.bash
