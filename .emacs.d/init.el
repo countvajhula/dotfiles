@@ -23,8 +23,9 @@
     (package-install 'use-package))
 
 ;; other packages
-(require 'sublimity-scroll)
+;(require 'sublimity-scroll)
 (require 'sr-speedbar)
+(require 'projectile)
 
 ;; remove the toolbar at the top of the window
 (tool-bar-mode -1)
@@ -64,7 +65,6 @@
   (setq elpy-rpc-python-command "python3")
   ;; use jedi for completion with elpy instead of rope
   (setq elpy-rpc-backend "jedi")
-  (elpy-use-cpython "python3")
   (setq python-check-command "~/.local/bin/pyflakes")
   (add-hook 'python-mode-hook (lambda () (show-paren-mode 1))))
 
@@ -153,7 +153,7 @@
  '(mac-option-modifier (quote meta))
  '(package-selected-packages
    (quote
-    (evil-magit projectile php-mode ivy sicp company-jedi company sr-speedbar magit dictionary sublimity evil elpy)))
+    (projectile evil-magit php-mode ivy sicp company-jedi company sr-speedbar magit dictionary sublimity evil elpy)))
  '(python-check-command "/usr/local/bin/pyflakes"))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
