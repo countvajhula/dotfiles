@@ -99,25 +99,36 @@
   (setcdr evil-insert-state-map nil)
   ;; Esc goes to normal mode in "insert" (emacs) mode
   (define-key evil-insert-state-map [escape] 'evil-normal-state)
+  ;; use "symbols" instead of simple words in point searches
+  (defalias #'forward-evil-word #'forward-evil-symbol)
 
-  (defun my-scroll-down ()
+  (defun my-jump-down ()
     (interactive)
-    (dotimes (i 10)
+    (dotimes (i 9)
       (evil-next-line))
     (evil-scroll-line-to-center nil))
 
-  (defun my-scroll-up ()
+  (defun my-jump-up ()
     (interactive)
-    (dotimes (i 10)
+    (dotimes (i 9)
       (evil-previous-line))
     (evil-scroll-line-to-center nil))
 
-  (define-key evil-insert-state-map (kbd "M-<tab>") 'elpy-company-backend)
-  (define-key evil-motion-state-map (kbd "SPC") 'my-scroll-down)
-  (define-key evil-motion-state-map (kbd "C-SPC") 'my-scroll-up)
-  (define-key evil-motion-state-map (kbd "<backspace>") 'my-scroll-up))
+  (defun my-scroll-down ()
+    (interactive)
+    (evil-scroll-line-down 3))
 
-  ;(define-key evil-normal-state-map (kbd "M-x") 'execute-extended-command)
+  (defun my-scroll-up ()
+    (interactive)
+    (evil-scroll-line-up 3))
+
+  (define-key evil-insert-state-map (kbd "M-<tab>") 'elpy-company-backend)
+  (define-key evil-motion-state-map (kbd "SPC") 'my-jump-down)
+  (define-key evil-motion-state-map (kbd "C-SPC") 'my-jump-up)
+  (define-key evil-motion-state-map (kbd "<backspace>") 'my-jump-up))
+
+  (define-key evil-motion-state-map (kbd "C-S-e") 'my-scroll-down)
+  (define-key evil-motion-state-map (kbd "C-S-y") 'my-scroll-up)
 
 ;;
 ;; Personal customizations
