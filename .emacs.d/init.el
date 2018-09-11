@@ -127,7 +127,7 @@
 ;; TODO: improve
 (defun my-buf-info ()
   (interactive)
-  (setq bufinfo (buffer-file-name))
+  (setq bufinfo (list (buffer-file-name)))
   (add-to-list 'bufinfo (count-lines-page))
   (print bufinfo))
 
