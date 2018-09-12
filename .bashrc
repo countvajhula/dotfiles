@@ -43,6 +43,14 @@ alias py="ipython"
 alias pyserve="python -m http.server"  # python 3
 alias hstart="/usr/local/Cellar/hadoop/2.6.0/sbin/start-dfs.sh;/usr/local/Cellar/hadoop/2.6.0/sbin/start-yarn.sh"
 alias hstop="/usr/local/Cellar/hadoop/2.6.0/sbin/stop-yarn.sh;/usr/local/Cellar/hadoop/2.6.0/sbin/stop-dfs.sh"
+# make ack page by default while retaining formatting (from http://shuttlethread.com/blog/useful-ack-defaults)
+alias ack='ACK_PAGER_COLOR="less -x4SRFX" /usr/local/bin/ack'
+# colorize last python traceback
+alias pytb="fc -s 2>&1 | pygmentize -l pytb"
+# fancy ls (from Hunan)
+alias list='clear; ls -lGp'
+alias lst='clear; tree -LC 2'
+alias lstt='clear; tree -LC 4'
 
 # VI mode!!!
 set -o vi
