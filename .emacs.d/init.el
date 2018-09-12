@@ -142,14 +142,25 @@
   (add-to-list 'bufinfo (count-lines-page))
   (print bufinfo))
 
-(defun my-new-buffer-window ()
+(defun xah-new-empty-buffer ()
+  "Create a new empty buffer.
+   New buffer will be named “untitled” or “untitled<2>”, “untitled<3>”, etc.
+
+   It returns the buffer (for elisp programing).
+
+   URL `http://ergoemacs.org/emacs/emacs_new_empty_buffer.html'
+   Version 2017-11-01"
   (interactive)
-  (scratch)
-  (delete-other-windows))
+  (let (($buf (generate-new-buffer "untitled")))
+    (switch-to-buffer $buf)
+    (funcall initial-major-mode)
+    (setq buffer-offer-save t)
+    $buf
+    ))
 
 (global-set-key (kbd "C-c b") 'my-buf-info)
 (global-set-key (kbd "C-c t") 'sr-speedbar-toggle)
-(global-set-key (kbd "C-c n") 'my-new-buffer-window)
+(global-set-key (kbd "C-c n") 'xah-new-empty-buffer)
 (global-set-key (kbd "C-c s") 'eshell)
 
 ;; magit
