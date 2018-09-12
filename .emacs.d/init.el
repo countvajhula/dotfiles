@@ -150,6 +150,7 @@
 (global-set-key (kbd "C-c b") 'my-buf-info)
 (global-set-key (kbd "C-c t") 'sr-speedbar-toggle)
 (global-set-key (kbd "C-c n") 'my-new-buffer-window)
+(global-set-key (kbd "C-c s") 'eshell)
 
 ;; magit
 (global-set-key (kbd "C-x g") 'magit-status)
