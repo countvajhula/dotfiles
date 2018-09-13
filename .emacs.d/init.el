@@ -158,14 +158,37 @@
     $buf
     ))
 
-(global-set-key (kbd "C-c b") 'my-buf-info)
-(global-set-key (kbd "C-c t") 'sr-speedbar-toggle)
-(global-set-key (kbd "C-c n") 'xah-new-empty-buffer)
-(global-set-key (kbd "C-c s") 'eshell)
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;; CUSTOM KEYBINDINGS ;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+; Note: "define-key (current-global-map)" is the same as global-set-key
+
+(define-key (current-global-map)
+            (kbd "C-c b")
+            'my-buffer-info)
+(define-key (current-global-map)
+            (kbd "C-c t")
+            'sr-speedbar-toggle)
+(define-key (current-global-map)
+            (kbd "C-c n")
+            'xah-new-empty-buffer)
+(define-key (current-global-map)
+            (kbd "C-c s")
+            'eshell)
+(define-key (current-global-map)
+            (kbd "C-c l")
+            'ielm)
 
 ;; magit
-(global-set-key (kbd "C-x g") 'magit-status)
-(global-set-key (kbd "C-x M-g") 'magit-dispatch-popup)
+(define-key (current-global-map)
+            (kbd "C-x g")
+            'magit-status)
+(define-key (current-global-map)
+            (kbd "C-x M-g")
+            'magit-dispatch-popup)
+
+;; Customization via "UI" below
 
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
