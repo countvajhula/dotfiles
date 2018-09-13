@@ -22,6 +22,9 @@
     (package-refresh-contents)
     (package-install 'use-package))
 
+;; convenient list- and functional-related macros
+(require 'dash)
+
 ;; other packages
 ;(require 'sublimity-scroll)
 (require 'sr-speedbar)
@@ -134,13 +137,46 @@
 ;; Personal customizations
 ;;
 
-;; get info on current buffer -- similar to Vim's C-g
-;; TODO: improve
-(defun my-buf-info ()
+(defun my-count-lines-page ()
+  "Modified from emacs's built-in count-lines-page to return a list of
+   values corresponding to the position in the page."
   (interactive)
-  (setq bufinfo (list (buffer-file-name)))
-  (add-to-list 'bufinfo (count-lines-page))
-  (print bufinfo))
+  (save-excursion
+    (let ((opoint (point)) beg end
+	  total before after)
+      (forward-page)
+      (beginning-of-line)
+      (or (looking-at page-delimiter)
+	  (end-of-line))
+      (setq end (point))
+      (backward-page)
+      (setq beg (point))
+      (setq total (count-lines beg end)
+	    before (count-lines beg opoint)
+	    after (count-lines opoint end))
+      (list total before after))))
+
+(defun my-buffer-info ()
+  "get info on current buffer -- similar to Vim's C-g"
+  (interactive)
+  (-let [(total before after) (my-count-lines-page)]
+    (if (= total 0)
+	(setq bufinfo (list "-- No lines in buffer --"))
+      (progn (setq percentage (floor (* (/ (float before)
+					   total)
+					100)))
+	     (setq page-position (concat
+				  "-- "
+				  (number-to-string percentage)
+				  "%"
+				  " --"))
+	     (setq total-lines (concat
+				(number-to-string total)
+				" lines"))
+	     (setq bufinfo (list total-lines page-position))))
+    (add-to-list 'bufinfo
+		 (buffer-file-name))
+    (print bufinfo)))
 
 (defun xah-new-empty-buffer ()
   "Create a new empty buffer.
