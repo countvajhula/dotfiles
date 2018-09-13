@@ -176,7 +176,7 @@
 	     (setq bufinfo (list total-lines page-position))))
     (add-to-list 'bufinfo
 		 (buffer-file-name))
-    (print bufinfo)))
+    (display-message-or-buffer (string-join bufinfo " "))))
 
 (defun xah-new-empty-buffer ()
   "Create a new empty buffer.
