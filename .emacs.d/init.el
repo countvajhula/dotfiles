@@ -1,12 +1,16 @@
-;;
-;; initial setup
-;;
+;;;;;;;;;;;;;;;;;;;
+;; INITIAL SETUP ;;
+;;;;;;;;;;;;;;;;;;;
 
+
+;; 'require' looks in the load-path, so packages need to be
+;; downloaded from melpa prior to this.
+;; package.el, though, is bundled with emacs
 (require 'package)
 
 ;; add some standard package repos with lots of non-bundled goodies
 (setq my-package-archives
-      '(("marmalade" . "http://marmalade-repo.org/packages/")
+      '(("melpa-stable" . "http://stable.melpa.org/packages/")
 	("melpa" . "https://melpa.org/packages/")))
 (setq package-archives
       (append package-archives
@@ -17,87 +21,35 @@
 ;; avoid extra call to (package-initialize) after loading init.el
 (setq package-enable-at-startup nil)
 
-;; bootstrap use-package
+;; bootstrap use-package, a macro to keep configuration
+;; (e.g. in this file) organized
 (unless (package-installed-p 'use-package)
     (package-refresh-contents)
     (package-install 'use-package))
 
+
+;;;;;;;;;;;;;;;;;;;;;;;;;
+;; PACKAGES AND CONFIG ;;
+;;;;;;;;;;;;;;;;;;;;;;;;;
+
+
 ;; convenient list- and functional-related macros
-(require 'dash)
+(use-package dash)
 
-;; other packages
-;(require 'sublimity-scroll)
-(require 'sr-speedbar)
-(require 'projectile)
+;; navigation sidebar
+(use-package sr-speedbar)
 
-;; remove the toolbar at the top of the window
-(tool-bar-mode -1)
-
-;;
-;; general behavior
-;;
-
-;; appearance
-
-(load-theme 'tango-dark t)
-(add-to-list 'custom-theme-load-path "~/.emacs.d/themes")
-(set-frame-font "Menlo 12" nil t)
-
-;; refresh files from disk if there are changes
-(global-auto-revert-mode t)
-
-;; save autosave files in emacs folder instead of locally
-;; in the folder containing the files being edited
-(setq auto-save-file-name-transforms
-          `((".*" ,(concat user-emacs-directory "auto-save/") t)))
-
-;;
-;; choose package defaults
-;;
+;; handy project-related functions like grep search, find file, etc.
+(use-package projectile
+  :config
+  (projectile-mode +1)
+  (define-key projectile-mode-map (kbd "s-p") 'projectile-command-map)
+  (define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map))
 
 ;; Vim interface
-(evil-mode 1)
-;; python IDE
-(use-package elpy
-  :ensure t
+(use-package evil
   :config
-  (elpy-enable)
-  (setq elpy-modules
-	(remove 'elpy-module-highlight-indentation
-		elpy-modules))
-  (setq elpy-rpc-python-command "python3")
-  ;; use jedi for completion with elpy instead of rope
-  (setq elpy-rpc-backend "jedi")
-  (setq python-check-command "~/.local/bin/pyflakes")
-  (add-hook 'python-mode-hook (lambda () (show-paren-mode 1))))
-
-;; ido mode
-(setq ido-enable-flex-matching t)
-(setq ido-everywhere t)
-(ido-mode 1)
-
-;(sublimity-mode 1)
-
-;; enable company mode autocompletion in all buffers
-(add-hook 'after-init-hook 'global-company-mode)
-
-(ivy-mode 1)
-
-(projectile-mode +1)
-(define-key projectile-mode-map (kbd "s-p") 'projectile-command-map)
-(define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map)
-
-;;
-;; navigation optimizations
-;;
-
-;; line numbers on by default
-(global-linum-mode 1)
-;; show (line #, column #) in mode line
-(setq column-number-mode t)
-
-(with-eval-after-load 'evil-maps
-
+  (evil-mode 1)
   ;; use Emacs keybindings when in insert mode }:)
   (setcdr evil-insert-state-map nil)
   ;; Esc goes to normal mode in "insert" (emacs) mode
@@ -128,14 +80,92 @@
   (define-key evil-insert-state-map (kbd "M-<tab>") 'elpy-company-backend)
   (define-key evil-motion-state-map (kbd "SPC") 'my-jump-down)
   (define-key evil-motion-state-map (kbd "C-SPC") 'my-jump-up)
-  (define-key evil-motion-state-map (kbd "<backspace>") 'my-jump-up))
-
+  (define-key evil-motion-state-map (kbd "<backspace>") 'my-jump-up)
   (define-key evil-motion-state-map (kbd "C-S-e") 'my-scroll-down)
-  (define-key evil-motion-state-map (kbd "C-S-y") 'my-scroll-up)
+  (define-key evil-motion-state-map (kbd "C-S-y") 'my-scroll-up))
 
-;;
-;; Personal customizations
-;;
+;; python IDE
+(use-package elpy
+  :ensure t
+  :config
+  (elpy-enable)
+  (setq elpy-modules
+	(remove 'elpy-module-highlight-indentation
+		elpy-modules))
+  (setq elpy-rpc-python-command "python3")
+  ;; use jedi for completion with elpy instead of rope
+  (setq elpy-rpc-backend "jedi")
+  (setq python-check-command "~/.local/bin/pyflakes")
+  (add-hook 'python-mode-hook (lambda () (show-paren-mode 1))))
+
+;; ido mode
+(use-package ido
+  :config
+  (setq ido-enable-flex-matching t)
+  (setq ido-everywhere t)
+  (ido-mode 1))
+
+(use-package sublimity
+  :disabled t
+  :config
+  (sublimity-mode 1))
+
+(use-package company
+  :config
+  ;; enable company mode autocompletion in all buffers
+  (global-company-mode 1))
+
+(use-package ivy
+  :config
+  (ivy-mode 1))
+
+(use-package magit
+  :config
+  (define-key (current-global-map)
+              (kbd "C-x g")
+              'magit-status)
+  (define-key (current-global-map)
+              (kbd "C-x M-g")
+              'magit-dispatch-popup))
+
+
+;;;;;;;;;;;;;;;;;;;;;;
+;; GENERAL BEHAVIOR ;;
+;;;;;;;;;;;;;;;;;;;;;;
+
+
+;; remove the toolbar at the top of the window
+(tool-bar-mode -1)
+
+;; refresh files from disk if there are changes
+(global-auto-revert-mode t)
+
+;; save autosave files in emacs folder instead of locally
+;; in the folder containing the files being edited
+(setq auto-save-file-name-transforms
+          `((".*" ,(concat user-emacs-directory "auto-save/") t)))
+
+
+;;;;;;;;;;;;;;;;;;;
+;; LOOK AND FEEL ;;
+;;;;;;;;;;;;;;;;;;;
+
+
+;; appearance
+(load-theme 'tango-dark t)
+(add-to-list 'custom-theme-load-path "~/.emacs.d/themes")
+(set-frame-font "Menlo 12" nil t)
+
+;; line numbers on by default
+(global-linum-mode 1)
+;; show (line #, column #) in mode line
+(setq column-number-mode t)
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; CUSTOM FUNCTIONS AND KEYBINDINGS ;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
 
 (defun my-count-lines-page ()
   "Modified from emacs's built-in count-lines-page to return a list of
@@ -194,9 +224,11 @@
     $buf
     ))
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;;; CUSTOM KEYBINDINGS ;;;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(defun my-lisp-repl ()
+  (interactive)
+  (evil-window-vsplit)
+  (evil-window-right 1)
+  (ielm))
 
 ; Note: "define-key (current-global-map)" is the same as global-set-key
 
@@ -214,17 +246,13 @@
             'eshell)
 (define-key (current-global-map)
             (kbd "C-c l")
-            'ielm)
+            'my-lisp-repl)
 
-;; magit
-(define-key (current-global-map)
-            (kbd "C-x g")
-            'magit-status)
-(define-key (current-global-map)
-            (kbd "C-x M-g")
-            'magit-dispatch-popup)
 
-;; Customization via "UI" below
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; CUSTOMIZATION VIA "UI" BELOW ;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
 
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
