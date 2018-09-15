@@ -151,6 +151,10 @@
   :config
   (global-evil-tabs-mode t))
 
+(use-package evil-matchit
+  :config
+  (global-evil-matchit-mode 1))
+
 
 ;;;;;;;;;;;;;;;;;;;;;;
 ;; GENERAL BEHAVIOR ;;
@@ -170,6 +174,14 @@
 
 ;; show diffs side-by-side
 (setq ediff-split-window-function 'split-window-horizontally)
+
+;; evil matchit mode loads automatically for html-mode and sgml-mode
+;; but not the derivative mhtml-mode, which is actually the default
+;; mode for HTML. manually enable it here for mhtml mode (probably figure
+;; out a cleaner way to do this, e.g. by adding mhtml to the modes
+;; that trigger autoloading, or via hooks for mhtml mode)
+(plist-put evilmi-plugins 'mhtml-mode '((evilmi-simple-get-tag evilmi-simple-jump)
+					(evilmi-html-get-tag evilmi-html-jump)))
 
 ;;;;;;;;;;;;;;;;;;;
 ;; LOOK AND FEEL ;;
@@ -295,9 +307,6 @@
             (kbd "C-c l")
             'my-lisp-repl)
 (define-key (current-global-map)
-            (kbd "s-w")
-            'delete-window)
-(define-key (current-global-map)
             (kbd "s-}")
             'mac-next-tab)
 (define-key (current-global-map)
@@ -312,6 +321,9 @@
 ;; (define-key (current-global-map)
 ;;             (kbd "s-w")
 ;;             'mac-close-tab)
+(define-key (current-global-map)
+            (kbd "s-w")
+            'delete-window)
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -328,7 +340,7 @@
  '(mac-option-modifier (quote meta))
  '(package-selected-packages
    (quote
-    (evil-tabs tabbar projectile evil-magit php-mode ivy sicp company-jedi company sr-speedbar magit dictionary sublimity evil elpy)))
+    (evil-matchit evil-tabs tabbar projectile evil-magit php-mode ivy sicp company-jedi company sr-speedbar magit dictionary sublimity evil elpy)))
  '(python-check-command "/usr/local/bin/pyflakes"))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
