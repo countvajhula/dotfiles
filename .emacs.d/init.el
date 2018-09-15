@@ -156,6 +156,8 @@
 (setq auto-save-file-name-transforms
           `((".*" ,(concat user-emacs-directory "auto-save/") t)))
 
+;; show diffs side-by-side
+(setq ediff-split-window-function 'split-window-horizontally)
 
 ;;;;;;;;;;;;;;;;;;;
 ;; LOOK AND FEEL ;;
@@ -172,10 +174,22 @@
 ;; show (line #, column #) in mode line
 (setq column-number-mode t)
 
+;; cool transparency [from emacswiki]
+;; the alpha params are "active" and "inactive" frame
+;; this is if you want the in-focus and not-in-focus
+;; emacs frames to have different transparencies
+(set-frame-parameter (selected-frame) 'alpha '(95 95))
+(add-to-list 'default-frame-alist '(alpha 95 95))
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; CUSTOM FUNCTIONS AND KEYBINDINGS ;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(defun transparency (value)
+  "Sets the transparency of the frame window. 0=transparent/100=opaque"
+  (interactive "nTransparency Value 0 - 100 opaque:")
+  (set-frame-parameter (selected-frame) 'alpha value))
+
+
+;;;;;;;;;;;;;;;;;;;;;;
+;; CUSTOM FUNCTIONS ;;
+;;;;;;;;;;;;;;;;;;;;;;
 
 
 (defun my-count-lines-page ()
@@ -240,6 +254,15 @@
   (evil-window-vsplit)
   (evil-window-right 1)
   (ielm))
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;
+;; CUSTOM KEYBINDINGS ;;
+;;;;;;;;;;;;;;;;;;;;;;;;
+
+
+; map Mac's Command key to Emacs/Lisp's Super key
+(setq mac-command-modifier 'super)
 
 ; Note: "define-key (current-global-map)" is the same as global-set-key
 
