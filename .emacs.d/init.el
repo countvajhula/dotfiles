@@ -140,6 +140,12 @@
               (kbd "s-}")
               'tabbar-forward))
 
+(use-package evil-tabs
+  :disabled t
+  :config
+  (global-evil-tabs-mode t))
+
+
 ;;;;;;;;;;;;;;;;;;;;;;
 ;; GENERAL BEHAVIOR ;;
 ;;;;;;;;;;;;;;;;;;;;;;
@@ -315,7 +321,7 @@
  '(mac-option-modifier (quote meta))
  '(package-selected-packages
    (quote
-    (tabbar projectile evil-magit php-mode ivy sicp company-jedi company sr-speedbar magit dictionary sublimity evil elpy)))
+    (evil-tabs tabbar projectile evil-magit php-mode ivy sicp company-jedi company sr-speedbar magit dictionary sublimity evil elpy)))
  '(python-check-command "/usr/local/bin/pyflakes"))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
