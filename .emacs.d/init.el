@@ -266,9 +266,10 @@
 ;; CUSTOM KEYBINDINGS ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;
 
-
-; map Mac's Command key to Emacs/Lisp's Super key
+;; map Mac's Command key to Emacs/Lisp's Super key
 (setq mac-command-modifier 'super)
+;; make Fn key do Hyper [coz, why not]
+(setq mac-function-modifier 'hyper)
 
 ; Note: "define-key (current-global-map)" is the same as global-set-key
 
