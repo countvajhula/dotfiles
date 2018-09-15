@@ -128,6 +128,17 @@
               (kbd "C-x M-g")
               'magit-dispatch-popup))
 
+(use-package tabbar
+  :disabled t
+  :config
+  ;; turn on the tabbar
+  (tabbar-mode t)
+  (define-key (current-global-map)
+              (kbd "s-{")
+              'tabbar-backward)
+  (define-key (current-global-map)
+              (kbd "s-}")
+              'tabbar-forward))
 
 ;;;;;;;;;;;;;;;;;;;;;;
 ;; GENERAL BEHAVIOR ;;
@@ -247,6 +258,24 @@
 (define-key (current-global-map)
             (kbd "C-c l")
             'my-lisp-repl)
+(define-key (current-global-map)
+            (kbd "s-w")
+            'delete-window)
+(define-key (current-global-map)
+            (kbd "s-}")
+            'mac-next-tab)
+(define-key (current-global-map)
+            (kbd "s-{")
+            'mac-previous-tab)
+;; TODO: the following keybindings for tabs
+;; These don't work at the moment since I'm not able
+;; to locate the required functions
+;; (define-key (current-global-map)
+;;             (kbd "s-t")
+;;             'mac-make-tab)
+;; (define-key (current-global-map)
+;;             (kbd "s-w")
+;;             'mac-close-tab)
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -263,7 +292,7 @@
  '(mac-option-modifier (quote meta))
  '(package-selected-packages
    (quote
-    (projectile evil-magit php-mode ivy sicp company-jedi company sr-speedbar magit dictionary sublimity evil elpy)))
+    (tabbar projectile evil-magit php-mode ivy sicp company-jedi company sr-speedbar magit dictionary sublimity evil elpy)))
  '(python-check-command "/usr/local/bin/pyflakes"))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
