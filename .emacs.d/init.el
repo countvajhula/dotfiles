@@ -155,6 +155,26 @@
   :config
   (global-evil-matchit-mode 1))
 
+(use-package multiple-cursors
+  :disabled t
+  :config
+  (global-set-key (kbd "C-S-c C-S-c") 'mc/edit-lines)
+  (global-set-key (kbd "C->") 'mc/mark-next-like-this)
+  (global-set-key (kbd "C-<") 'mc/mark-previous-like-this)
+  (global-set-key (kbd "C-c C-<") 'mc/mark-all-like-this))
+
+(use-package evil-mc
+  :config
+  (global-evil-mc-mode 1)
+  (global-set-key (kbd "C-S-c C-S-c") 'evil-mc-make-cursor-here)
+  (global-set-key (kbd "C->") 'evil-mc-make-and-goto-next-match)
+  (global-set-key (kbd "C-<") 'evil-mc-make-and-goto-prev-match)
+  (global-set-key (kbd "C-c C-<") 'evil-mc-make-all-cursors)
+  (global-set-key (kbd "C-c C->") 'evil-mc-undo-all-cursors)
+  ;; for sublime emulation
+  (global-set-key (kbd "s-d") 'evil-mc-make-and-goto-next-match)
+  (global-set-key (kbd "s-D") 'evil-mc-make-and-goto-prev-match)
+  (global-set-key (kbd "s-<escape>") 'evil-mc-undo-all-cursors))
 
 ;;;;;;;;;;;;;;;;;;;;;;
 ;; GENERAL BEHAVIOR ;;
@@ -340,7 +360,7 @@
  '(mac-option-modifier (quote meta))
  '(package-selected-packages
    (quote
-    (evil-matchit evil-tabs tabbar projectile evil-magit php-mode ivy sicp company-jedi company sr-speedbar magit dictionary sublimity evil elpy)))
+    (evil-mc multiple-cursors minimap evil-matchit evil-tabs tabbar projectile evil-magit php-mode ivy sicp company-jedi company sr-speedbar magit dictionary sublimity evil elpy)))
  '(python-check-command "/usr/local/bin/pyflakes"))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
