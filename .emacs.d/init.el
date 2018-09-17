@@ -156,6 +156,8 @@
   (global-evil-matchit-mode 1))
 
 (use-package multiple-cursors
+  ;; the original multiple-cursors mode, looks great but isn't
+  ;; compatible with evil mode. evil-mc looks pretty similar
   :disabled t
   :config
   (global-set-key (kbd "C-S-c C-S-c") 'mc/edit-lines)
@@ -355,6 +357,9 @@
 (define-key (current-global-map)
             (kbd "s-w")
             'delete-window)
+(define-key (current-global-map)
+            (kbd "s-s")
+            'save-buffer)
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
