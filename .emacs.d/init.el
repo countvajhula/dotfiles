@@ -143,9 +143,16 @@
   :bind ("C-s" . swiper)
   :bind ("C-h f" . counsel-describe-function)
   :bind ("C-h v" . counsel-describe-variable)
+  :bind ("C-h b" . counsel-descbinds)
+  :bind ("C-x C-f" . counsel-find-file)
   :bind ("C-c k" . counsel-unicode-char)
+  :bind ("s-o" . ivy-occur)
   :config
   (ivy-mode 1)
+  ;; use fuzzy-style matching in all cases except swiper (from SX)
+  ;; (setq ivy-re-builders-alist
+  ;; 	'((swiper . ivy--regex-plus)
+  ;; 	  (t . ivy--regex-fuzzy)))
   (setq ivy-wrap t))
 
 (use-package magit
