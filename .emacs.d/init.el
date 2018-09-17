@@ -141,8 +141,12 @@
 (use-package ivy
   :bind ("M-x" . counsel-M-x)
   :bind ("C-s" . swiper)
+  :bind ("C-h f" . counsel-describe-function)
+  :bind ("C-h v" . counsel-describe-variable)
+  :bind ("C-c k" . counsel-unicode-char)
   :config
-  (ivy-mode 1))
+  (ivy-mode 1)
+  (setq ivy-wrap t))
 
 (use-package magit
   :config
