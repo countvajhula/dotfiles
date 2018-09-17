@@ -176,6 +176,11 @@
   (global-set-key (kbd "s-D") 'evil-mc-make-and-goto-prev-match)
   (global-set-key (kbd "s-<escape>") 'evil-mc-undo-all-cursors))
 
+(use-package yasnippet
+  :config
+  (yas-global-mode 1))
+
+
 ;;;;;;;;;;;;;;;;;;;;;;
 ;; GENERAL BEHAVIOR ;;
 ;;;;;;;;;;;;;;;;;;;;;;
@@ -360,7 +365,7 @@
  '(mac-option-modifier (quote meta))
  '(package-selected-packages
    (quote
-    (evil-mc multiple-cursors minimap evil-matchit evil-tabs tabbar projectile evil-magit php-mode ivy sicp company-jedi company sr-speedbar magit dictionary sublimity evil elpy)))
+    (yasnippet-snippets yasnippet evil-mc multiple-cursors minimap evil-matchit evil-tabs tabbar projectile evil-magit php-mode ivy sicp company-jedi company sr-speedbar magit dictionary sublimity evil elpy)))
  '(python-check-command "/usr/local/bin/pyflakes"))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
