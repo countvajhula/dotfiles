@@ -180,6 +180,12 @@
   :config
   (yas-global-mode 1))
 
+(use-package undo-tree
+  :config
+  (global-undo-tree-mode)
+  (global-set-key (kbd "C-c u") 'undo-tree-visualize)
+  (global-set-key (kbd "C-c U") 'undo-tree-visualizer-abort))
+
 
 ;;;;;;;;;;;;;;;;;;;;;;
 ;; GENERAL BEHAVIOR ;;
