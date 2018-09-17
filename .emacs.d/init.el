@@ -204,6 +204,7 @@
 (use-package undo-tree
   :config
   (global-undo-tree-mode)
+  (setq undo-tree-enable-undo-in-region nil)  ; workaround for undotree bug
   (global-set-key (kbd "C-c u") 'undo-tree-visualize)
   (global-set-key (kbd "C-c U") 'undo-tree-visualizer-abort))
 
