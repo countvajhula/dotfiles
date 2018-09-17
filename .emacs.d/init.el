@@ -84,12 +84,27 @@
     (interactive)
     (evil-scroll-line-up 3))
 
-  (define-key evil-insert-state-map (kbd "M-<tab>") 'elpy-company-backend)
-  (define-key evil-motion-state-map (kbd "SPC") 'my-jump-down)
-  (define-key evil-motion-state-map (kbd "C-SPC") 'my-jump-up)
-  (define-key evil-motion-state-map (kbd "<backspace>") 'my-jump-up)
-  (define-key evil-motion-state-map (kbd "C-S-e") 'my-scroll-down)
-  (define-key evil-motion-state-map (kbd "C-S-y") 'my-scroll-up))
+  (define-key evil-insert-state-map
+              (kbd "M-<tab>")
+	      'elpy-company-backend)
+  (define-key evil-motion-state-map
+              (kbd "SPC")
+              'my-jump-down)
+  (define-key evil-motion-state-map
+              (kbd "C-SPC")
+              'my-jump-up)
+  (define-key evil-motion-state-map
+              (kbd "<backspace>")
+              'my-jump-up)
+  (define-key evil-motion-state-map
+              (kbd "C-S-e")
+              'my-scroll-down)
+  (define-key evil-motion-state-map
+              (kbd "C-S-y")
+              'my-scroll-up)
+  (define-key (current-global-map)
+              (kbd "s-f")
+              'evil-search-forward))
 
 ;; python IDE
 (use-package elpy
@@ -373,9 +388,6 @@
 (define-key (current-global-map)
             (kbd "s-w")
             'delete-window)
-(define-key (current-global-map)
-            (kbd "s-f")
-            'evil-search-forward)
 (define-key (current-global-map)
             (kbd "s-s")
             'save-buffer)
