@@ -43,13 +43,14 @@
 (use-package projectile
   :config
   (projectile-mode +1)
+  (setq projectile-completion-system 'ivy)
   ;; (define-key projectile-mode-map (kbd "s-p") 'projectile-command-map)
   (define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map)
   (define-key projectile-mode-map
               (kbd "s-p")
               'projectile-find-file)
   (define-key (current-global-map)
-              (kbd "s-f")
+              (kbd "s-F")
               'projectile-grep))
 
 ;; Vim interface
@@ -106,6 +107,7 @@
 
 ;; ido mode
 (use-package ido
+  :disabled t
   :config
   (setq ido-enable-flex-matching t)
   (setq ido-everywhere t)
@@ -122,6 +124,8 @@
   (global-company-mode 1))
 
 (use-package ivy
+  :bind ("M-x" . counsel-M-x)
+  :bind ("C-s" . swiper)
   :config
   (ivy-mode 1))
 
@@ -187,6 +191,12 @@
   (global-undo-tree-mode)
   (global-set-key (kbd "C-c u") 'undo-tree-visualize)
   (global-set-key (kbd "C-c U") 'undo-tree-visualizer-abort))
+
+;; looks like smex (smart command history in M-x) is used by counsel just
+;; by being installed, and doesn't need to be explicitly invoked here
+;; (use-package smex
+;;   :config
+;;   (smex-initialize))
 
 
 ;;;;;;;;;;;;;;;;;;;;;;
