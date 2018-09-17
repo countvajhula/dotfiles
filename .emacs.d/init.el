@@ -347,6 +347,9 @@
             (kbd "C-c s")
             'eshell)
 (define-key (current-global-map)
+            (kbd "C-c d")
+            'dictionary-lookup-definition)
+(define-key (current-global-map)
             (kbd "C-c l")
             'my-lisp-repl)
 (define-key (current-global-map)
@@ -355,6 +358,9 @@
 (define-key (current-global-map)
             (kbd "s-{")
             'mac-previous-tab)
+(define-key (current-global-map)
+            (kbd "C-<escape>")
+            'caps-lock-mode)
 ;; TODO: the following keybindings for tabs
 ;; These don't work at the moment since I'm not able
 ;; to locate the required functions
@@ -367,6 +373,9 @@
 (define-key (current-global-map)
             (kbd "s-w")
             'delete-window)
+(define-key (current-global-map)
+            (kbd "s-f")
+            'evil-search-forward)
 (define-key (current-global-map)
             (kbd "s-s")
             'save-buffer)
@@ -386,7 +395,7 @@
  '(mac-option-modifier (quote meta))
  '(package-selected-packages
    (quote
-    (yasnippet-snippets yasnippet evil-mc multiple-cursors minimap evil-matchit evil-tabs tabbar projectile evil-magit php-mode ivy sicp company-jedi company sr-speedbar magit dictionary sublimity evil elpy)))
+    (caps-lock smex counsel yasnippet-snippets yasnippet evil-mc multiple-cursors minimap evil-matchit evil-tabs tabbar projectile evil-magit php-mode ivy sicp company-jedi company sr-speedbar magit dictionary sublimity evil elpy)))
  '(python-check-command "/usr/local/bin/pyflakes"))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
