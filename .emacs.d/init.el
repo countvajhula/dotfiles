@@ -198,15 +198,21 @@
 (use-package evil-mc
   :config
   (global-evil-mc-mode 1)
-  (global-set-key (kbd "C-S-c C-S-c") 'evil-mc-make-cursor-here)
-  (global-set-key (kbd "C->") 'evil-mc-make-and-goto-next-match)
-  (global-set-key (kbd "C-<") 'evil-mc-make-and-goto-prev-match)
-  (global-set-key (kbd "C-c C-<") 'evil-mc-make-all-cursors)
-  (global-set-key (kbd "C-c C->") 'evil-mc-undo-all-cursors)
-  ;; for sublime emulation
-  (global-set-key (kbd "s-d") 'evil-mc-make-and-goto-next-match)
-  (global-set-key (kbd "s-D") 'evil-mc-make-and-goto-prev-match)
-  (global-set-key (kbd "s-<escape>") 'evil-mc-undo-all-cursors))
+  ;; interface with multiple cursors via a hydra menu
+  (defhydra hydra-cursors ()
+    "Multiple cursors"
+    ("a" evil-mc-make-all-cursors "make all cursors")
+    ("n" evil-mc-make-and-goto-next-match "mark, go to next")
+    ("N" evil-mc-make-and-goto-prev-match "mark, go to previous")
+    ("s" evil-mc-skip-and-goto-next-match "skip, go to next")
+    ("S" evil-mc-skip-and-goto-prev-match "skip, go to previous")
+    ("h" evil-mc-make-cursor-here  "make cursor here")
+    ("p" evil-mc-pause-cursors  "pause cursors")
+    ("P" evil-mc-resume-cursors  "resume cursors")
+    ("<escape>" evil-mc-undo-all-cursors "undo all cursors"))
+
+  ;; access the multiple-cursors menu via a "body" keybinding
+  (global-set-key (kbd "s-d") 'hydra-cursors/body))
 
 (use-package yasnippet
   :config
