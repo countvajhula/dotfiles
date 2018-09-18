@@ -84,27 +84,42 @@
     (interactive)
     (evil-scroll-line-up 3))
 
-  (define-key evil-insert-state-map
-              (kbd "M-<tab>")
-	      'elpy-company-backend)
-  (define-key evil-motion-state-map
-              (kbd "SPC")
-              'my-jump-down)
-  (define-key evil-motion-state-map
-              (kbd "C-SPC")
-              'my-jump-up)
-  (define-key evil-motion-state-map
-              (kbd "<backspace>")
-              'my-jump-up)
-  (define-key evil-motion-state-map
-              (kbd "C-S-e")
-              'my-scroll-down)
-  (define-key evil-motion-state-map
-              (kbd "C-S-y")
-              'my-scroll-up)
-  (define-key (current-global-map)
-              (kbd "s-f")
-              'evil-search-forward))
+  (define-key
+    ;; re-bind elpy completion in evil insert mode
+    ;; which apparently gets overridden by evil
+    evil-insert-state-map
+    (kbd "M-<tab>")
+    'elpy-company-backend)
+  (define-key
+    ;; handy navigation to jump down the file
+    evil-motion-state-map
+    (kbd "SPC")
+    'my-jump-down)
+  (define-key
+    ;; handy navigation to jump up the file
+    evil-motion-state-map
+    (kbd "C-SPC")
+    'my-jump-up)
+  (define-key
+    ;; handy navigation to jump up the file
+    evil-motion-state-map
+    (kbd "<backspace>")
+    'my-jump-up)
+  (define-key
+    ;; scroll down the file a little faster than usual
+    evil-motion-state-map
+    (kbd "C-S-e")
+    'my-scroll-down)
+  (define-key
+    ;; scroll up the file a little faster than usual
+    evil-motion-state-map
+    (kbd "C-S-y")
+    'my-scroll-up)
+  (define-key
+    ;; standard alternative keybinding to search file
+    (current-global-map)
+    (kbd "s-f")
+    'evil-search-forward))
 
 ;; python IDE
 (use-package elpy
