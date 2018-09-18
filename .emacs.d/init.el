@@ -154,10 +154,11 @@
   (global-company-mode 1))
 
 (use-package ivy
+  ;; company is for in-buffer auto-completion,
+  ;; ivy is for application-level on-demand completion
   :bind ("M-x" . counsel-M-x)
   :bind ("C-s" . swiper)
   :bind ("C-c k" . counsel-unicode-char)
-  :bind ("s-o" . ivy-occur)
   :config
   (ivy-mode 1)
   (counsel-mode 1)
@@ -270,6 +271,7 @@
 ;; that trigger autoloading, or via hooks for mhtml mode)
 (plist-put evilmi-plugins 'mhtml-mode '((evilmi-simple-get-tag evilmi-simple-jump)
 					(evilmi-html-get-tag evilmi-html-jump)))
+
 
 ;;;;;;;;;;;;;;;;;;;
 ;; LOOK AND FEEL ;;
