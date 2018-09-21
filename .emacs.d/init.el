@@ -6,5 +6,4 @@
 (load "customize-behavior")
 (load "utils")
 (load "keybindings")
-(load "hydras")
 (load custom-file 'noerror)
