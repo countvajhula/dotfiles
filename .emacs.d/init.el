@@ -170,6 +170,8 @@
 
 (use-package magit
   :config
+  ;; use side-by-side view for blame -- this doesn't work atm
+  ;; (setq magit-blame--style (nth 1 magit-blame-styles))
   (define-key (current-global-map)
               (kbd "C-x g")
               'magit-status)
@@ -486,7 +488,7 @@
   ("k" previous-buffer "previous buffer")
   ("<escape>" return-to-original-buffer "return to original buffer" :exit t))
 
-;; access the buffer menu via a "body" keybinding
+;; access the system menu via a "body" keybinding
 (global-set-key (kbd "s-b") 'hydra-buffers/body)
 
 (defhydra hydra-system (:exit t)
