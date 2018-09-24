@@ -269,3 +269,7 @@ _s-f_: file            _s_: search (grep)     _i_: Ibuffer           _c_: cache 
   ;;avy-goto-char-timer is also nice
   :bind ("M-s" . avy-goto-word-1)
   :ensure t)
+
+(use-package ace-jump-buffer
+  :disabled t
+  :bind ("C-x b" . ace-jump-buffer))
