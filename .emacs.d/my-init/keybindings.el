@@ -117,3 +117,47 @@
 
 ;; access the buffer menu via a "body" keybinding
 (global-set-key (kbd "s-i") 'hydra-system/body)
+
+(defun current-transparency ()
+  (nth 0
+       (frame-parameter (selected-frame)
+			'alpha)))
+
+;; Set transparency of emacs
+(defun transparency (value)
+ "Sets the transparency of the frame window. 0=transparent/100=opaque"
+ (interactive "nTransparency Value 0 - 100 opaque:")
+ (set-frame-parameter (selected-frame) 'alpha (cons value value)))
+
+(defun adjust-transparency (delta)
+  "Adjust the transparency of the frame window by the configured delta,
+   in the range: 0=transparent/100=opaque"
+  (interactive)
+  (transparency (+ (current-transparency)
+		   delta)))
+
+(defun increase-transparency ()
+  "Increase frame transparency."
+  (interactive)
+  (adjust-transparency -3))
+
+(defun decrease-transparency ()
+  "Decrease frame transparency."
+  (interactive)
+  (adjust-transparency 3))
+
+(defun return-to-original-transparency ()
+  "Return to original transparency prior to making changes."
+  (interactive)
+  (transparency original-transparency))
+
+(defhydra hydra-transparency (:body-pre (setq original-transparency (current-transparency)))
+  "Control frame transparency"
+  ("+" decrease-transparency "decrease transparency")
+  ("-" increase-transparency "increase transparency")
+  ("k" decrease-transparency "decrease transparency")
+  ("j" increase-transparency "increase transparency")
+  ("<escape>" return-to-original-transparency "return to original transparency" :exit t))
+
+;; access the system menu via a "body" keybinding
+(global-set-key (kbd "s-e t") 'hydra-transparency/body)
