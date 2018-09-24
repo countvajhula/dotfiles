@@ -37,11 +37,13 @@
 
 
 ;; appearance
-(add-to-list 'custom-theme-load-path "~/.emacs.d/themes")
+(add-to-list 'custom-theme-load-path (concat user-emacs-directory
+					     "themes/"))
 ;; some themes have several variations (e.g. light and dark)
 ;; and share code between these variations in common elisp modules;
 ;; these modules need to be on the load path so that these themes work
-(add-to-list 'load-path "~/.emacs.d/themes/")
+(add-to-list 'load-path (concat user-emacs-directory
+				"themes/"))
 (load-theme 'tango-dark t)
 (set-frame-font "Menlo 12" nil t)
 
