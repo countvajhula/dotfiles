@@ -16,7 +16,7 @@
  '(mac-option-modifier (quote meta))
  '(package-selected-packages
    (quote
-    (ivy-hydra caps-lock smex counsel yasnippet-snippets yasnippet evil-mc multiple-cursors minimap evil-matchit evil-tabs tabbar projectile evil-magit php-mode ivy sicp company-jedi company sr-speedbar magit dictionary sublimity evil elpy)))
+    (avy ivy-hydra caps-lock smex counsel yasnippet-snippets yasnippet evil-mc multiple-cursors minimap evil-matchit evil-tabs tabbar projectile evil-magit php-mode ivy sicp company-jedi company sr-speedbar magit dictionary sublimity evil elpy)))
  '(python-check-command "/usr/local/bin/pyflakes"))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.

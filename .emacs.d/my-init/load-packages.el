@@ -223,3 +223,8 @@
 ;; not sure why this is necessary, but this initializes sunrise
 ;; commander, along with all of its extensions
 (el-get-bundle sunrise-commander)
+
+(use-package avy
+  ;;avy-goto-char-timer is also nice
+  :bind ("M-s" . avy-goto-word-1)
+  :ensure t)
