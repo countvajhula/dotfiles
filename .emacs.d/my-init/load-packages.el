@@ -6,6 +6,10 @@
 ;; convenient list- and functional-related macros
 (use-package dash)
 
+;; used in some (third-party) custom themes
+;; (not sure if there's a better way to indicate this dependency)
+(use-package autothemer)
+
 ;; navigation sidebar
 (use-package sr-speedbar)
 
