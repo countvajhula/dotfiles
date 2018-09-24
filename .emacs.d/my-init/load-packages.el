@@ -215,3 +215,7 @@
 ;; (use-package smex
 ;;   :config
 ;;   (smex-initialize))
+
+;; not sure why this is necessary, but this initializes sunrise
+;; commander, along with all of its extensions
+(el-get-bundle sunrise-commander)
