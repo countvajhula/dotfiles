@@ -113,7 +113,8 @@
 
 (defhydra hydra-system (:exit t)
   "System information"
-  ("b" my-battery-life "show power info including battery life"))
+  ("b" my-battery-life "show power info including battery life")
+  ("s-i" my-battery-life "show power info including battery life"))
 
 ;; access the buffer menu via a "body" keybinding
 (global-set-key (kbd "s-i") 'hydra-system/body)
