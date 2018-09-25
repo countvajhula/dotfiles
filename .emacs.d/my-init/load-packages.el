@@ -274,3 +274,8 @@ _d_: dir
 (use-package ace-jump-buffer
   :disabled t
   :bind ("C-x b" . ace-jump-buffer))
+
+(use-package recentf
+  :config
+  (recentf-mode t)
+  (setq recentf-max-menu-items 25))
