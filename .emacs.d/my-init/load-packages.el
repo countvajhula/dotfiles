@@ -32,9 +32,9 @@
      Find File            Search/Tags          Buffers                Cache
 ------------------------------------------------------------------------------------------
 _f_: file            _s_: search (grep)     _i_: Ibuffer           _c_: cache clear
-_e_: file dwim       _g_: update gtags      _b_: switch to buffer  _x_: remove known project
-_l_: file curr dir   _o_: multi-occur     _s-k_: Kill all buffers  _X_: cleanup non-existing
-_r_: recent file                                               ^^^^_z_: cache current
+_e_: file dwim       _r_: replace           _b_: switch to buffer  _x_: remove known project
+_l_: file curr dir   _g_: update gtags    _s-k_: Kill all buffers  _X_: cleanup non-existing
+_t_: recent file     _o_: multi-occur                              ^^^^_z_: cache current
 _d_: dir
 
 "
@@ -54,9 +54,10 @@ _d_: dir
     ("o"   projectile-multi-occur)
     ("s-p" projectile-switch-project "switch project")
     ("p"   projectile-switch-project)
+    ("r"   projectile-replace)
     ("s"   projectile-grep)
     ("s-s" projectile-grep)
-    ("r"   projectile-recentf)
+    ("t"   projectile-recentf)
     ("x"   projectile-remove-known-project)
     ("X"   projectile-cleanup-known-projects)
     ("z"   projectile-cache-current-file)
