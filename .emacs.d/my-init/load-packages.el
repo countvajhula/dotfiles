@@ -182,6 +182,7 @@ _d_: dir
   ;; (setq ivy-re-builders-alist
   ;; 	'((swiper . ivy--regex-plus)
   ;; 	  (t . ivy--regex-fuzzy)))
+  (setq ivy-use-virtual-buffers t)
   (setq ivy-wrap t))
 
 (use-package magit
