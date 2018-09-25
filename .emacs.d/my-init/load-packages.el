@@ -33,9 +33,9 @@
 ------------------------------------------------------------------------------------------
 _f_: file            _s_: search (grep)     _i_: Ibuffer           _c_: cache clear
 _e_: file dwim       _r_: replace           _b_: switch to buffer  _x_: remove known project
-_l_: file curr dir   _g_: update gtags    _s-k_: Kill all buffers  _X_: cleanup non-existing
-_t_: recent file     _o_: multi-occur                              ^^^^_z_: cache current
-_d_: dir
+_l_: file curr dir   _o_: multi-occur     _s-k_: Kill all buffers  _X_: cleanup non-existing
+_t_: recent file     _j_: jump to tag                            ^^^^_z_: cache current
+_d_: dir             _g_: update gtags
 
 "
     ("b"   projectile-switch-to-buffer)
@@ -45,6 +45,7 @@ _d_: dir
     ("f"   projectile-find-file)
     ("s-f" projectile-find-file)
     ("l"   projectile-find-file-in-directory)
+    ("j"   projectile-find-tag)
     ("g"   ggtags-update-tags)
     ("s-g" ggtags-update-tags)
     ("i"   projectile-ibuffer)
