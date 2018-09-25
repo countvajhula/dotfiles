@@ -151,7 +151,8 @@
   (interactive)
   (transparency original-transparency))
 
-(defhydra hydra-transparency (:body-pre (setq original-transparency (current-transparency)))
+(defhydra hydra-transparency (:columns 1
+                              :body-pre (setq original-transparency (current-transparency)))
   "Control frame transparency"
   ("+" decrease-transparency "decrease transparency")
   ("-" increase-transparency "increase transparency")

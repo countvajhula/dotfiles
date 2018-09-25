@@ -230,7 +230,7 @@ _d_: dir
   :config
   (global-evil-mc-mode 1)
   ;; interface with multiple cursors via a hydra menu
-  (defhydra hydra-cursors ()
+  (defhydra hydra-cursors (:columns 2)
     "Multiple cursors"
     ("a" evil-mc-make-all-cursors "make all cursors")
     ("n" evil-mc-make-and-goto-next-match "mark, go to next")
