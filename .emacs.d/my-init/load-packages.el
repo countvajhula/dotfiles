@@ -126,13 +126,25 @@ _d_: dir             _g_: update gtags
   (define-key
     ;; scroll down the file a little faster than usual
     evil-motion-state-map
-    (kbd "C-S-e")
+    (kbd "C-e")
     'my-scroll-down)
   (define-key
     ;; scroll up the file a little faster than usual
     evil-motion-state-map
-    (kbd "C-S-y")
+    (kbd "C-y")
     'my-scroll-up)
+  (define-key
+    ;; remap original vim scroll bindings as "fine tuning"
+    ;; rather than default scroll behavior
+    evil-motion-state-map
+    (kbd "C-S-e")
+    'evil-scroll-line-down)
+  (define-key
+    ;; remap original vim scroll bindings as "fine tuning"
+    ;; rather than default scroll behavior
+    evil-motion-state-map
+    (kbd "C-S-y")
+    'evil-scroll-line-up)
   (define-key
     ;; standard alternative keybinding to search file
     (current-global-map)
