@@ -256,7 +256,7 @@ _d_: dir             _g_: update gtags
   ;; by default evil-mc creates its own keymap that overrides some
   ;; useful evil mode bindings (like C-p!). Disable all default
   ;; evil-mc keybindings here (by making the keymap empty), in favor
-  ;; of a custom hydra (defined elsewhere)
+  ;; of a custom hydra (defined below)
   (setcdr evil-mc-key-map nil)
   (global-evil-mc-mode 1)
   ;; interface with multiple cursors via a hydra menu
@@ -272,6 +272,12 @@ _d_: dir             _g_: update gtags
     ("P" evil-mc-resume-cursors "resume cursors")
     ("j" evil-mc-make-cursor-move-next-line "mark, go down")
     ("k" evil-mc-make-cursor-move-prev-line "mark, go up")
+    ("f" evil-mc-make-and-goto-first-cursor "mark, goto first cursor")
+    ("F" evil-mc-make-and-goto-last-cursor "mark, goto last cursor")
+    ("l" evil-mc-make-and-goto-next-cursor "mark, goto next cursor")
+    ("L" evil-mc-skip-and-goto-next-cursor "skip, goto next cursor")
+    ("h" evil-mc-make-and-goto-prev-cursor "mark, goto previous cursor")
+    ("H" evil-mc-skip-and-goto-prev-cursor "skip, goto previous cursor")
     ("<escape>" evil-mc-undo-all-cursors "undo all cursors"))
 
   ;; access the multiple-cursors menu via a "body" keybinding
