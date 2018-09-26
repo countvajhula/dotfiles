@@ -292,8 +292,9 @@ _d_: dir             _g_: update gtags
 (el-get-bundle sunrise-commander)
 
 (use-package avy
-  ;;avy-goto-char-timer is also nice
-  :bind ("M-s" . avy-goto-word-1)
+  ;; although avy-goto-word-1 is probably faster,
+  ;; avy-goto-char-timer is more intuitive
+  :bind ("M-s" . avy-goto-char-timer)
   :ensure t)
 
 (use-package ace-jump-buffer
