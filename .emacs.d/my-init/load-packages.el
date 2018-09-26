@@ -73,6 +73,10 @@ _d_: dir             _g_: update gtags
 
 ;; Vim interface
 (use-package evil
+  :init
+  ;; these settings are required by evil-collection
+  (setq evil-want-integration t) ;; This is optional since it's already set to t by default.
+  (setq evil-want-keybinding nil)
   :config
   (evil-mode 1)
   ;; use Emacs keybindings when in insert mode }:)
@@ -150,6 +154,12 @@ _d_: dir             _g_: update gtags
     (current-global-map)
     (kbd "s-f")
     'evil-search-forward))
+
+(use-package evil-collection
+  :disabled t
+  :after evil
+  :config
+  (evil-collection-init))
 
 ;; python IDE
 (use-package elpy
