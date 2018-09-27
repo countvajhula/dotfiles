@@ -106,6 +106,16 @@ _d_: dir             _g_: update gtags
     (interactive)
     (evil-scroll-line-up 3))
 
+  ;; Vim C-x line completion emulation,
+  ;; from https://stackoverflow.com/questions/17928467/full-line-completion-in-emacs
+  (defun my-expand-lines ()
+    (interactive)
+    (let ((hippie-expand-try-functions-list
+	   '(try-expand-line)))
+      (call-interactively 'hippie-expand)))
+
+  (define-key evil-insert-state-map (kbd "C-x C-l") 'my-expand-lines)
+
   (define-key
     ;; re-bind elpy completion in evil insert mode
     ;; which apparently gets overridden by evil
