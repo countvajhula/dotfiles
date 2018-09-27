@@ -291,7 +291,9 @@ _d_: dir             _g_: update gtags
     ("<escape>" evil-mc-undo-all-cursors "undo all cursors"))
 
   ;; access the multiple-cursors menu via a "body" keybinding
-  (global-set-key (kbd "s-d") 'hydra-cursors/body))
+  (global-set-key (kbd "s-d") 'hydra-cursors/body)
+  ;; retain a convenient, non-hydra, escape hatch
+  (global-set-key (kbd "s-<escape>") 'evil-mc-undo-all-cursors))
 
 (use-package yasnippet
   :config
