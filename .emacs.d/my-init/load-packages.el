@@ -329,3 +329,8 @@ _d_: dir             _g_: update gtags
   :config
   (recentf-mode t)
   (setq recentf-max-menu-items 25))
+
+(use-package popwin
+  :disabled t
+  :config
+  (popwin-mode t))
