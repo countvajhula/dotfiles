@@ -13,6 +13,9 @@
 ;; navigation sidebar
 (use-package sr-speedbar)
 
+;; intuitive "state machine" menus
+(use-package hydra)
+
 ;; handy project-related functions like grep search, find file, etc.
 (use-package projectile
   :config
