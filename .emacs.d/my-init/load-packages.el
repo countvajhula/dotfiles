@@ -205,18 +205,28 @@ _d_: dir             _g_: update gtags
 (use-package ivy
   ;; company is for in-buffer auto-completion,
   ;; ivy is for application-level on-demand completion
-  :bind ("M-x" . counsel-M-x)
-  :bind ("C-s" . swiper)
-  :bind ("C-c k" . counsel-unicode-char)
   :config
   (ivy-mode 1)
-  (counsel-mode 1)
   ;; use fuzzy-style matching in all cases except swiper (from SX)
   ;; (setq ivy-re-builders-alist
   ;; 	'((swiper . ivy--regex-plus)
   ;; 	  (t . ivy--regex-fuzzy)))
   (setq ivy-use-virtual-buffers t)
   (setq ivy-wrap t))
+
+(use-package counsel
+  :bind ("M-x" . counsel-M-x)
+  :bind ("C-c k" . counsel-unicode-char)
+  :config
+  (counsel-mode 1))
+
+(use-package swiper
+  :bind ("C-s" . swiper))
+
+(use-package ivy-rich
+  :disabled t
+  :config
+  (ivy-rich-mode t))
 
 (use-package magit
   :config
