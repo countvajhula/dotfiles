@@ -227,7 +227,6 @@ _d_: dir             _g_: update gtags
   :bind ("C-s" . swiper))
 
 (use-package ivy-rich
-  :disabled t
   :config
   (ivy-rich-mode t))
 
