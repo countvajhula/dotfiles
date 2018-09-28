@@ -166,7 +166,6 @@ _d_: dir             _g_: update gtags
     'evil-search-forward))
 
 (use-package evil-collection
-  :disabled t
   :after evil
   :config
   (evil-collection-init))
