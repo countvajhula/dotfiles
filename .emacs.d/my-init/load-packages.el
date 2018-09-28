@@ -347,3 +347,31 @@ _d_: dir             _g_: update gtags
   :disabled t
   :config
   (popwin-mode t))
+
+(use-package ibuffer
+  ;; replace oldschool buffer-list
+  :bind ("C-x C-b" . ibuffer)
+  :init
+  (add-hook 'ibuffer-mode-hook
+	    '(lambda ()
+	       (ibuffer-auto-mode 1)))
+	       ;;(ibuffer-switch-to-saved-filter-groups "default"))))
+  :config
+  (setq ibuffer-show-empty-filter-groups nil))
+
+(use-package ibuffer-vc
+  :disabled t
+  :init
+  (add-hook 'ibuffer-hook
+	    (lambda ()
+	      (ibuffer-vc-set-filter-groups-by-vc-root)
+	      (unless (eq ibuffer-sorting-mode 'alphabetic)
+		(ibuffer-do-sort-by-alphabetic)))))
+
+(use-package ibuffer-sidebar
+  :disabled t
+  :commands (ibuffer-sidebar-toggle-sidebar)
+  :bind ("C-c b" . ibuffer-sidebar-toggle-sidebar)
+  :config
+  (setq ibuffer-sidebar-use-custom-font t)
+  (setq ibuffer-sidebar-face `(:family "Helvetica" :height 140)))
