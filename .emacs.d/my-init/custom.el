@@ -64,9 +64,13 @@ static char *gnus-pointer[] = {
 \"###########.######\" };")) t)
  '(initial-frame-alist (quote ((fullscreen . maximized))))
  '(mac-option-modifier (quote meta))
+ '(org-agenda-files (quote ("~/log/org/beginning.org")))
+ '(org-todo-keywords
+   (quote
+    ((sequence "[ ](t)" "[\\](w)" "[o](o)" "[-](-)" "[x](x)"))))
  '(package-selected-packages
    (quote
-    (telephone-line smart-mode-line ibuffer-vc ibuffer-sidebar ivy-rich popwin projectile evil-collection ace-jump-buffer avy ivy-hydra caps-lock smex counsel yasnippet-snippets yasnippet evil-mc multiple-cursors minimap evil-matchit evil-tabs tabbar evil-magit php-mode ivy sicp company-jedi company sr-speedbar magit dictionary sublimity evil elpy)))
+    (org telephone-line smart-mode-line ibuffer-vc ibuffer-sidebar ivy-rich popwin projectile evil-collection ace-jump-buffer avy ivy-hydra caps-lock smex counsel yasnippet-snippets yasnippet evil-mc multiple-cursors minimap evil-matchit evil-tabs tabbar evil-magit php-mode ivy sicp company-jedi company sr-speedbar magit dictionary sublimity evil elpy)))
  '(pos-tip-background-color "#1A3734")
  '(pos-tip-foreground-color "#FFFFC8")
  '(python-check-command "/usr/local/bin/pyflakes")

@@ -386,3 +386,24 @@ _d_: dir             _g_: update gtags
 (use-package telephone-line
   :config
   (telephone-line-mode t))
+
+(use-package org
+  :config
+  ;; interface with org-mode via a hydra menu
+  (defhydra hydra-org ()
+    "Org-mode Menu"
+    ("l" org-store-link "store link")
+    ("a" org-agenda "agenda")
+    ("c" org-capture "capture")
+    ("b" org-switchb "org switch buffer"))
+
+  ;; nest this hydra inside the previous one under `a`
+  (defhydra hydra-org-agenda ()
+    "Agenda"
+    ("a" org-agenda "agenda")
+    ("+" org-agenda-file-to-front "add file to agenda")
+    ("-" org-remove-file "remove file from agenda")
+    ("b" org-switchb "org switch buffer"))
+
+  ;; access the org-mode menu via a "body" keybinding
+  (global-set-key (kbd "s-o") 'hydra-org/body))
