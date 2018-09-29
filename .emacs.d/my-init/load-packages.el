@@ -189,6 +189,7 @@ _d_: dir             _g_: update gtags
 
 ;; ido mode
 (use-package ido
+  ;; disabled since using ivy
   :disabled t
   :config
   (setq ido-enable-flex-matching t)
@@ -348,7 +349,8 @@ _d_: dir             _g_: update gtags
   (popwin-mode t))
 
 (use-package ibuffer
-  ;; replace oldschool buffer-list
+  ;; replace oldschool buffer-list, as recommended here:
+  ;; http://martinowen.net/blog/2010/02/03/tips-for-emacs-ibuffer.html
   :bind ("C-x C-b" . ibuffer)
   :init
   (add-hook 'ibuffer-mode-hook
@@ -374,3 +376,13 @@ _d_: dir             _g_: update gtags
   :config
   (setq ibuffer-sidebar-use-custom-font t)
   (setq ibuffer-sidebar-face `(:family "Helvetica" :height 140)))
+
+(use-package smart-mode-line
+  :disabled t
+  :config
+  (sml/setup)
+  (setq sml/theme 'dark))
+
+(use-package telephone-line
+  :config
+  (telephone-line-mode t))
