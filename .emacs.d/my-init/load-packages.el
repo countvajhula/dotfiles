@@ -411,3 +411,6 @@ _d_: dir             _g_: update gtags
 
   ;; access the org-mode menu via a "body" keybinding
   (global-set-key (kbd "s-o") 'hydra-org/body))
+
+;; cozy time
+(use-package fireplace)
