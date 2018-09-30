@@ -86,6 +86,8 @@ _d_: dir             _g_: update gtags
   (setcdr evil-insert-state-map nil)
   ;; Esc goes to normal mode in "insert" (emacs) mode
   (define-key evil-insert-state-map [escape] 'evil-normal-state)
+  ;; C-z goes to emacs mode in "insert" mode
+  (define-key evil-insert-state-map (kbd "C-z") 'evil-emacs-state)
   ;; use "symbols" instead of simple words in point searches
   (defalias #'forward-evil-word #'forward-evil-symbol)
 
