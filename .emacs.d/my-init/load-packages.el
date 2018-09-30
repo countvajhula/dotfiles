@@ -389,12 +389,16 @@ _d_: dir             _g_: update gtags
 
 (use-package org
   :config
+  (setq org-agenda-files '("~/log/org/"))
+  (setq org-todo-keywords
+	'((sequence "[ ](t)" "[\\](w)" "[o](o)" "[-](-)" "[x](x)")))
   ;; interface with org-mode via a hydra menu
   (defhydra hydra-org ()
     "Org-mode Menu"
     ("l" org-store-link "store link")
     ("a" org-agenda "agenda")
     ("c" org-capture "capture")
+    ("t" org-todo "todo")
     ("b" org-switchb "org switch buffer"))
 
   ;; nest this hydra inside the previous one under `a`
