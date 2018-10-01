@@ -1,6 +1,6 @@
 (setq user-home-directory (getenv "HOME"))
 (setq user-customizations-directory (concat user-emacs-directory
-					    "my-init/"))
+											"my-init/"))
 (add-to-list 'load-path user-customizations-directory)
 (load "setup")
 (load "load-packages")

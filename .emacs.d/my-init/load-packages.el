@@ -368,6 +368,7 @@ _d_: dir             _g_: update gtags
   (setq ibuffer-show-empty-filter-groups nil))
 
 (use-package ibuffer-vc
+  ;; organize buffers by version-controlled repo
   :disabled t
   :init
   (add-hook 'ibuffer-hook
@@ -394,7 +395,11 @@ _d_: dir             _g_: update gtags
   :config
   (telephone-line-mode t))
 
+(use-package org-ibuffer
+  :load-path "~/.emacs.d/my-packages/")
+
 (use-package org
+  :after org-ibuffer
   :config
   (setq org-agenda-files '("~/log/org/"))
   (setq org-todo-keywords
@@ -406,6 +411,7 @@ _d_: dir             _g_: update gtags
     ("a" org-agenda "agenda")
     ("c" org-capture "capture")
     ("t" org-todo "todo")
+    ("i" org-ibuffer "view all open org buffers")
     ("b" org-switchb "org switch buffer"))
 
   ;; nest this hydra inside the previous one under `a`
