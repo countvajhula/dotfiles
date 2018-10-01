@@ -416,3 +416,14 @@ _d_: dir             _g_: update gtags
 
 ;; cozy time
 (use-package fireplace)
+
+(use-package evil-goggles
+  :config
+  (evil-goggles-mode)
+
+  (setq evil-goggles-duration 0.060) ;; default is 0.200
+  ;; optionally use diff-mode's faces; as a result, deleted text
+  ;; will be highlighed with `diff-removed` face which is typically
+  ;; some red color (as defined by the color theme)
+  ;; other faces such as `diff-added` will be used for other actions
+  (evil-goggles-use-diff-faces))
