@@ -187,7 +187,12 @@ _d_: dir             _g_: update gtags
   ;; use jedi for completion with elpy instead of rope
   (setq elpy-rpc-backend "jedi")
   (setq python-check-command "~/.local/bin/pyflakes")
-  (add-hook 'python-mode-hook (lambda () (show-paren-mode 1))))
+  (add-hook 'python-mode-hook
+			(lambda () (show-paren-mode 1)))
+  (add-hook 'python-mode-hook
+			(lambda ()
+			  (setq tab-width 4)
+			  (setq python-indent-offset 4))))
 
 ;; ido mode
 (use-package ido

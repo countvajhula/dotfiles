@@ -30,6 +30,10 @@
 (plist-put evilmi-plugins 'mhtml-mode '((evilmi-simple-get-tag evilmi-simple-jump)
 					(evilmi-html-get-tag evilmi-html-jump)))
 
+;; tab width of 4
+(setq tab-stop-list (number-sequence 4 120 4))
+(setq-default tab-width 4)
+
 
 ;;;;;;;;;;;;;;;;;;;
 ;; LOOK AND FEEL ;;
