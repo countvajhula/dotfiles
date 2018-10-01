@@ -421,7 +421,16 @@ _d_: dir             _g_: update gtags
   :config
   (evil-goggles-mode)
 
-  (setq evil-goggles-duration 0.060) ;; default is 0.200
+  ;; this variable affects "blocking" hints, for example when deleting - the hint is displayed,
+  ;; the deletion is delayed (blocked) until the hint disappers, then the hint is removed and the
+  ;; deletion executed; it makes sense to have this duration short
+  (setq evil-goggles-blocking-duration 0.060) ;; default is nil, i.e. use `evil-goggles-duration'
+
+  ;; this variable affects "async" hints, for example when indenting - the indentation
+  ;; is performed with the hint visible, i.e. the hint is displayed, the action (indent) is
+  ;; executed (asynchronous), then the hint is removed, highlighting the result of the indentation
+  (setq evil-goggles-async-duration 0.360) ;; default is nil, i.e. use `evil-goggles-duration'
+
   ;; optionally use diff-mode's faces; as a result, deleted text
   ;; will be highlighed with `diff-removed` face which is typically
   ;; some red color (as defined by the color theme)
