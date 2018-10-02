@@ -447,3 +447,6 @@ _d_: dir             _g_: update gtags
   ;; some red color (as defined by the color theme)
   ;; other faces such as `diff-added` will be used for other actions
   (evil-goggles-use-diff-faces))
+
+(use-package tab-indentation
+  :load-path "~/.emacs.d/my-packages/")
