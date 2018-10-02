@@ -6,6 +6,7 @@
 ;; Two callable functions for enabling/disabling tabs in Emacs
 (defun disable-tabs ()
   (interactive)
+  (local-set-key (kbd "TAB") 'indent-for-tab-command)
   (setq indent-tabs-mode nil))
 (defun enable-tabs  ()
   (interactive)
