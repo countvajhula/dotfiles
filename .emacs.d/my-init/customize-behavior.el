@@ -52,7 +52,7 @@
 (set-frame-font "Menlo 12" nil t)
 
 ;; line numbers on by default
-(global-linum-mode 1)
+(global-display-line-numbers-mode)
 ;; show (line #, column #) in mode line
 (setq column-number-mode t)
 
