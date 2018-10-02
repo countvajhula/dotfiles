@@ -163,3 +163,6 @@
 
 ;; access the system menu via a "body" keybinding
 (global-set-key (kbd "s-e t") 'hydra-transparency/body)
+
+;; toggle line numbers
+(global-set-key (kbd "s-e n") 'display-line-numbers-mode)
