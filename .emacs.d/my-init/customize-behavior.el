@@ -31,7 +31,7 @@
 					(evilmi-html-get-tag evilmi-html-jump)))
 
 ;; tab width of 4
-(setq tab-stop-list (number-sequence 4 120 4))
+;; (setq tab-stop-list (number-sequence 4 120 4)) ;; don't think this is needed anymore, bases off of tab-width since Emacs 24
 (setq-default tab-width 4)
 
 
