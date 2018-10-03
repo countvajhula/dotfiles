@@ -104,8 +104,6 @@
   ("P" next-buffer "next buffer")
   ("h" previous-buffer "previous buffer")
   ("l" next-buffer "next buffer")
-  ("j" next-buffer "next buffer")
-  ("k" previous-buffer "previous buffer")
   ("<escape>" return-to-original-buffer "return to original buffer" :exit t))
 
 ;; access the system menu via a "body" keybinding
