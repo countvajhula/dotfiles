@@ -122,6 +122,11 @@ _d_: dir             _g_: update gtags
   (define-key evil-insert-state-map (kbd "C-x C-l") 'my-expand-lines)
 
   (define-key
+    ;; alternative to Vim's C-u (since emacs reserves C-u)
+    evil-motion-state-map
+    (kbd "C-S-d")
+    'evil-scroll-up)
+  (define-key
     ;; re-bind elpy completion in evil insert mode
     ;; which apparently gets overridden by evil
     evil-insert-state-map
@@ -130,12 +135,12 @@ _d_: dir             _g_: update gtags
   (define-key
     ;; handy navigation to jump down the file
     evil-motion-state-map
-    (kbd "SPC")
+    (kbd "C-s-j")
     'my-jump-down)
   (define-key
     ;; handy navigation to jump up the file
     evil-motion-state-map
-    (kbd "C-SPC")
+    (kbd "C-s-k")
     'my-jump-up)
   (define-key
     ;; handy navigation to jump up the file
@@ -435,12 +440,12 @@ _d_: dir             _g_: update gtags
   ;; this variable affects "blocking" hints, for example when deleting - the hint is displayed,
   ;; the deletion is delayed (blocked) until the hint disappers, then the hint is removed and the
   ;; deletion executed; it makes sense to have this duration short
-  (setq evil-goggles-blocking-duration 0.010) ;; default is nil, i.e. use `evil-goggles-duration'
+  (setq evil-goggles-blocking-duration 0.010) ;; default is nil, i.e. use `evil-goggles-duration' which defaults to 0.200
 
   ;; this variable affects "async" hints, for example when indenting - the indentation
   ;; is performed with the hint visible, i.e. the hint is displayed, the action (indent) is
   ;; executed (asynchronous), then the hint is removed, highlighting the result of the indentation
-  (setq evil-goggles-async-duration 0.360) ;; default is nil, i.e. use `evil-goggles-duration'
+  (setq evil-goggles-async-duration 0.360) ;; default is nil, i.e. use `evil-goggles-duration' which defaults to 0.200
 
   ;; optionally use diff-mode's faces; as a result, deleted text
   ;; will be highlighed with `diff-removed` face which is typically
@@ -450,3 +455,30 @@ _d_: dir             _g_: update gtags
 
 (use-package tab-indentation
   :load-path "~/.emacs.d/my-packages/")
+
+(use-package general
+  :config
+  (setq general-override-states '(insert
+                                  emacs
+                                  hybrid
+                                  normal
+                                  visual
+                                  motion
+                                  operator
+                                  replace))
+  (general-override-mode)
+
+  (defhydra hydra-leader (:idle 1.0
+                          :columns 2
+                          :exit t)
+    "Quick actions"
+    ("a" org-agenda "Org agenda")
+    ("s" eshell "Shell")
+    ("t" sr-speedbar-toggle "Nav Sidebar")
+    ("u" undo-tree-visualize "Undo tree")
+    ("d" dictionary-lookup-definition "lookup in dictionary"))
+
+  (general-define-key
+   :states '(normal visual motion)
+   :keymaps 'override
+   "SPC" 'hydra-leader/body))
