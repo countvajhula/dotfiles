@@ -50,39 +50,6 @@
   (current-global-map)
   (kbd "C-+")
   'calc)
-(define-key
-  ;; cycle forward through tabs
-  (current-global-map)
-  (kbd "s-}")
-  'mac-next-tab)
-(define-key
-  ;; cycle backward through tabs
-  (current-global-map)
-  (kbd "s-{")
-  'mac-previous-tab)
-;; TODO: the following keybindings for tabs
-;; These don't work at the moment since I'm not able
-;; to locate the required functions
-;; (define-key
-;;   ;; create a new tab
-;;   (current-global-map)
-;;   (kbd "s-t")
-;;   'mac-make-tab)
-;; (define-key
-;;   ;; close current tab
-;;   (current-global-map)
-;;   (kbd "s-w")
-;;   'mac-close-tab)
-(define-key
-  ;; delete current window
-  (current-global-map)
-  (kbd "s-w")
-  'delete-window)
-(define-key
-  ;; save file
-  (current-global-map)
-  (kbd "s-s")
-  'save-buffer)
 
 
 ;;;;;;;;;;;;;;;;;
