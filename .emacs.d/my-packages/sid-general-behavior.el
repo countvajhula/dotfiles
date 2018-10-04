@@ -35,4 +35,11 @@
 ;; (setq tab-stop-list (number-sequence 4 120 4)) ;; don't think this is needed anymore, bases off of tab-width since Emacs 24
 (setq-default tab-width 4)
 
+;; scroll with 2 line margin for continuity
+(setq scroll-margin 2)
+
+;; keyboard scroll one line at a time instead of jumping
+(setq scroll-step            1
+      scroll-conservatively  10000)
+
 (provide 'sid-general-behavior)
