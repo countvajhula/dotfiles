@@ -457,6 +457,8 @@ _d_: dir             _g_: update gtags
   :load-path "~/.emacs.d/my-packages/")
 
 (use-package general
+  ;; general is a package that provides various
+  ;; resources and utilities for defining keybindings
   :config
   (setq general-override-states '(insert
                                   emacs
@@ -482,3 +484,14 @@ _d_: dir             _g_: update gtags
    :states '(normal visual motion)
    :keymaps 'override
    "SPC" 'hydra-leader/body))
+
+;; local packages for other custom configuration; managing this
+;; via use-package gives us some flexibility and modularity
+
+(use-package sid-general-behavior)
+
+(use-package sid-look-and-feel)
+
+(use-package sid-utils)
+
+(use-package sid-keybindings)
