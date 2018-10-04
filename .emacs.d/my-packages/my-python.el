@@ -14,4 +14,4 @@
  :keymaps 'override
  "`" 'hydra-python/body)
 
-(provide 'sid-python)
+(provide 'my-python)

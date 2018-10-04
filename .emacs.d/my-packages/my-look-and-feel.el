@@ -26,4 +26,4 @@
 (set-frame-parameter (selected-frame) 'alpha '(95 95))
 (add-to-list 'default-frame-alist '(alpha 95 95))
 
-(provide 'sid-look-and-feel)
+(provide 'my-look-and-feel)

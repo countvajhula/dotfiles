@@ -42,4 +42,4 @@
 (setq scroll-step            1
       scroll-conservatively  10000)
 
-(provide 'sid-general-behavior)
+(provide 'my-general-behavior)

@@ -4,4 +4,4 @@
   (kbd "s-f")
   'evil-search-forward)
 
-(provide 'sid-familiar)
+(provide 'my-familiar)

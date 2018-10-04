@@ -72,4 +72,4 @@
   (interactive)
   (display-message-or-buffer (shell-command-to-string "pmset -g batt")))
 
-(provide 'sid-utils)
+(provide 'my-utils)

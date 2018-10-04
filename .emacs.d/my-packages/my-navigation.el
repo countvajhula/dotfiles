@@ -61,4 +61,4 @@
   (kbd "C-S-y")
   'evil-scroll-line-up)
 
-(provide 'sid-navigation)
+(provide 'my-navigation)

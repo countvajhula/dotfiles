@@ -389,7 +389,7 @@ _d_: dir             _g_: update gtags
 (use-package general
   ;; general is a package that provides various
   ;; resources and utilities for defining keybindings
-  :after sid-utils
+  :after my-utils
   :config
   (setq general-override-states '(insert
                                   emacs
@@ -420,19 +420,19 @@ _d_: dir             _g_: update gtags
 ;; local packages for other custom configuration; managing this
 ;; via use-package gives us some flexibility and modularity
 
-(use-package sid-navigation
+(use-package my-navigation
   :after evil)
 
-(use-package sid-familiar
+(use-package my-familiar
   :after evil)
 
-(use-package sid-python
+(use-package my-python
   :after (elpy general))
 
-(use-package sid-general-behavior)
+(use-package my-general-behavior)
 
-(use-package sid-look-and-feel)
+(use-package my-look-and-feel)
 
-(use-package sid-utils)
+(use-package my-utils)
 
-(use-package sid-keybindings)
+(use-package my-keybindings)

@@ -167,4 +167,4 @@
 ;; toggle line numbers
 (global-set-key (kbd "s-e n") 'display-line-numbers-mode)
 
-(provide 'sid-keybindings)
+(provide 'my-keybindings)
