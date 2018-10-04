@@ -91,26 +91,6 @@ _d_: dir             _g_: update gtags
   ;; use "symbols" instead of simple words in point searches
   (defalias #'forward-evil-word #'forward-evil-symbol)
 
-  (defun my-jump-down ()
-    (interactive)
-    (dotimes (i 9)
-      (evil-next-line))
-    (evil-scroll-line-to-center nil))
-
-  (defun my-jump-up ()
-    (interactive)
-    (dotimes (i 9)
-      (evil-previous-line))
-    (evil-scroll-line-to-center nil))
-
-  (defun my-scroll-down ()
-    (interactive)
-    (evil-scroll-line-down 3))
-
-  (defun my-scroll-up ()
-    (interactive)
-    (evil-scroll-line-up 3))
-
   ;; Vim C-x line completion emulation,
   ;; from https://stackoverflow.com/questions/17928467/full-line-completion-in-emacs
   (defun my-expand-lines ()
@@ -123,54 +103,7 @@ _d_: dir             _g_: update gtags
     ;; Vim style full line completion
     evil-insert-state-map
     (kbd "C-x C-l")
-    'my-expand-lines)
-  (define-key
-    ;; alternative to Vim's C-u (since emacs reserves C-u)
-    evil-motion-state-map
-    (kbd "C-S-d")
-    'evil-scroll-up)
-  (define-key
-    ;; handy navigation to jump down the file
-    evil-motion-state-map
-    (kbd "C-s-j")
-    'my-jump-down)
-  (define-key
-    ;; handy navigation to jump up the file
-    evil-motion-state-map
-    (kbd "C-s-k")
-    'my-jump-up)
-  (define-key
-    ;; handy navigation to jump up the file
-    evil-motion-state-map
-    (kbd "<backspace>")
-    'my-jump-up)
-  (define-key
-    ;; scroll down the file a little faster than usual
-    evil-motion-state-map
-    (kbd "C-e")
-    'my-scroll-down)
-  (define-key
-    ;; scroll up the file a little faster than usual
-    evil-motion-state-map
-    (kbd "C-y")
-    'my-scroll-up)
-  (define-key
-    ;; remap original vim scroll bindings as "fine tuning"
-    ;; rather than default scroll behavior
-    evil-motion-state-map
-    (kbd "C-S-e")
-    'evil-scroll-line-down)
-  (define-key
-    ;; remap original vim scroll bindings as "fine tuning"
-    ;; rather than default scroll behavior
-    evil-motion-state-map
-    (kbd "C-S-y")
-    'evil-scroll-line-up)
-  (define-key
-    ;; standard alternative keybinding to search file
-    (current-global-map)
-    (kbd "s-f")
-    'evil-search-forward))
+    'my-expand-lines))
 
 (use-package evil-collection
   :after evil
@@ -456,6 +389,7 @@ _d_: dir             _g_: update gtags
 (use-package general
   ;; general is a package that provides various
   ;; resources and utilities for defining keybindings
+  :after sid-utils
   :config
   (setq general-override-states '(insert
                                   emacs
@@ -466,23 +400,6 @@ _d_: dir             _g_: update gtags
                                   operator
                                   replace))
   (general-override-mode)
-
-  ;; TODO: move this to a python-specific package
-  (defhydra hydra-python (:idle 1.0
-                          :columns 2
-                          :exit t)
-    "Python menu"
-    ("c" elpy-check "Run lint checks")
-    ("d" elpy-doc "See documentation on this")
-    ("o" elpy-occur-definitions "See all definitions in current buffer")
-    ("p" elpy-shell-switch-to-shell "Go to Python REPL")
-    ("r" elpy-shell-send-region-or-buffer "Send to REPL")
-    ("t" elpy-test "Run test(s)"))
-
-  (general-define-key
-   :states '(normal visual motion)
-   :keymaps 'override
-   "`" 'hydra-python/body)
 
   (defhydra hydra-leader (:idle 1.0
                           :columns 2
@@ -502,6 +419,15 @@ _d_: dir             _g_: update gtags
 
 ;; local packages for other custom configuration; managing this
 ;; via use-package gives us some flexibility and modularity
+
+(use-package sid-navigation
+  :after evil)
+
+(use-package sid-familiar
+  :after evil)
+
+(use-package sid-python
+  :after (elpy general))
 
 (use-package sid-general-behavior)
 
