@@ -12,11 +12,12 @@
 ;; save autosave files in emacs folder instead of locally
 ;; in the folder containing the files being edited
 (setq auto-save-file-name-transforms
-          `((".*" ,(concat user-emacs-directory "auto-save/") t)))
+      `((".*" ,(concat user-emacs-directory "auto-save/") t)))
 
 ;; save any customizations done via Customize or set automatically by
 ;; various emacs modes to a designated file, instead of cluttering init.el
-(setq custom-file (concat user-customizations-directory "custom.el"))
+(setq custom-file (concat user-customizations-directory
+                          "custom.el"))
 (load custom-file 'noerror)
 
 ;; show diffs side-by-side
@@ -28,7 +29,7 @@
 ;; out a cleaner way to do this, e.g. by adding mhtml to the modes
 ;; that trigger autoloading, or via hooks for mhtml mode)
 (plist-put evilmi-plugins 'mhtml-mode '((evilmi-simple-get-tag evilmi-simple-jump)
-					(evilmi-html-get-tag evilmi-html-jump)))
+                                        (evilmi-html-get-tag evilmi-html-jump)))
 
 ;; tab width of 4
 ;; (setq tab-stop-list (number-sequence 4 120 4)) ;; don't think this is needed anymore, bases off of tab-width since Emacs 24
@@ -42,12 +43,12 @@
 
 ;; appearance
 (add-to-list 'custom-theme-load-path (concat user-emacs-directory
-					     "themes/"))
+                                             "themes/"))
 ;; some themes have several variations (e.g. light and dark)
 ;; and share code between these variations in common elisp modules;
 ;; these modules need to be on the load path so that these themes work
 (add-to-list 'load-path (concat user-emacs-directory
-				"themes/"))
+                                "themes/"))
 (load-theme 'tango-dark t)
 (set-frame-font "Menlo 12" nil t)
 

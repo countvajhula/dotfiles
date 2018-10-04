@@ -95,7 +95,8 @@
   (switch-to-buffer original-buffer))
 
 (defhydra hydra-buffers (:idle 1.0
-			 :body-pre (setq original-buffer (current-buffer)))
+			             :body-pre (setq original-buffer
+                                         (current-buffer)))
   "Cycle through buffers, Alt-tab style"
   ("b" list-buffers "show all buffers")
   ("n" next-buffer "next buffer")
@@ -151,7 +152,8 @@
   (transparency original-transparency))
 
 (defhydra hydra-transparency (:columns 1
-                              :body-pre (setq original-transparency (current-transparency)))
+                              :body-pre (setq original-transparency
+                                              (current-transparency)))
   "Control frame transparency"
   ("+" decrease-transparency "decrease transparency")
   ("-" increase-transparency "increase transparency")
