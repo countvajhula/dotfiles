@@ -470,15 +470,33 @@ _d_: dir             _g_: update gtags
                                   replace))
   (general-override-mode)
 
+  ;; TODO: move this to a python-specific package
+  (defhydra hydra-python (:idle 1.0
+                          :columns 2
+                          :exit t)
+    "Python menu"
+    ("c" elpy-check "Run lint checks")
+    ("d" elpy-doc "See documentation on this")
+    ("o" elpy-occur-definitions "See all definitions in current buffer")
+    ("p" elpy-shell-switch-to-shell "Go to Python REPL")
+    ("r" elpy-shell-send-region-or-buffer "Send to REPL")
+    ("t" elpy-test "Run test(s)"))
+
+  (general-define-key
+   :states '(normal visual motion)
+   :keymaps 'override
+   "`" 'hydra-python/body)
+
   (defhydra hydra-leader (:idle 1.0
                           :columns 2
                           :exit t)
     "Quick actions"
     ("a" org-agenda "Org agenda")
+    ("d" dictionary-lookup-definition "lookup in dictionary")
+    ("l" my-lisp-repl "Lisp REPL")
     ("s" eshell "Shell")
     ("t" sr-speedbar-toggle "Nav Sidebar")
-    ("u" undo-tree-visualize "Undo tree")
-    ("d" dictionary-lookup-definition "lookup in dictionary"))
+    ("u" undo-tree-visualize "Undo tree"))
 
   (general-define-key
    :states '(normal visual motion)
