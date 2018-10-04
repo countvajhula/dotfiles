@@ -119,19 +119,16 @@ _d_: dir             _g_: update gtags
 	   '(try-expand-line)))
       (call-interactively 'hippie-expand)))
 
-  (define-key evil-insert-state-map (kbd "C-x C-l") 'my-expand-lines)
-
+  (define-key
+    ;; Vim style full line completion
+    evil-insert-state-map
+    (kbd "C-x C-l")
+    'my-expand-lines)
   (define-key
     ;; alternative to Vim's C-u (since emacs reserves C-u)
     evil-motion-state-map
     (kbd "C-S-d")
     'evil-scroll-up)
-  (define-key
-    ;; re-bind elpy completion in evil insert mode
-    ;; which apparently gets overridden by evil
-    evil-insert-state-map
-    (kbd "M-<tab>")
-    'elpy-company-backend)
   (define-key
     ;; handy navigation to jump down the file
     evil-motion-state-map
