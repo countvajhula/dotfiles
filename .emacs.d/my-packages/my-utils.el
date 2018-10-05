@@ -66,10 +66,4 @@
   (evil-window-right 1)
   (ielm))
 
-(defun my-battery-life ()
-  "Show power info including battery life
-   (Mac-specific, at the moment)."
-  (interactive)
-  (display-message-or-buffer (shell-command-to-string "pmset -g batt")))
-
 (provide 'my-utils)

@@ -74,16 +74,8 @@
   ("l" next-buffer "next buffer")
   ("<escape>" return-to-original-buffer "return to original buffer" :exit t))
 
-;; access the system menu via a "body" keybinding
-(global-set-key (kbd "s-b") 'hydra-buffers/body)
-
-(defhydra hydra-system (:exit t)
-  "System information"
-  ("b" my-battery-life "show power info including battery life")
-  ("s-i" my-battery-life "show power info including battery life"))
-
 ;; access the buffer menu via a "body" keybinding
-(global-set-key (kbd "s-i") 'hydra-system/body)
+(global-set-key (kbd "s-b") 'hydra-buffers/body)
 
 (defun current-transparency ()
   (nth 0
@@ -128,7 +120,7 @@
   ("j" increase-transparency "increase transparency")
   ("<escape>" return-to-original-transparency "return to original transparency" :exit t))
 
-;; access the system menu via a "body" keybinding
+;; access the transparency menu via a "body" keybinding
 (global-set-key (kbd "s-e t") 'hydra-transparency/body)
 
 ;; toggle line numbers
