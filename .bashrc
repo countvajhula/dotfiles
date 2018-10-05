@@ -20,8 +20,8 @@ export PATH=$HOME/bin:/usr/local/opt/python/libexec/bin:/usr/local/bin:/usr/loca
 # for python mysql
 export DYLD_LIBRARY_PATH=/usr/local/mysql/lib/
 # for ruby
-export PATH="$HOME/.rbenv/bin:$PATH"
-eval "$(rbenv init -)"
+# export PATH="$HOME/.rbenv/bin:$PATH"
+# eval "$(rbenv init -)"
 
 # for mono (.NET), "to use assemblies from other formulae" - homebrew
 export MONO_GAC_PREFIX="/usr/local"
