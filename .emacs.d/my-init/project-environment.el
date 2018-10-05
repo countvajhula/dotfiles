@@ -9,9 +9,9 @@
   ;; (define-key projectile-mode-map (kbd "s-p") 'projectile-command-map)
   (define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map)
   ;; for sublime emulation:
-  ;; (define-key projectile-mode-map
-  ;;             (kbd "s-p")
-  ;;             'projectile-find-file)
+  (define-key projectile-mode-map
+              (kbd "s-p")
+              'projectile-find-file)
   (defhydra hydra-projectile (:color teal
                               :hint nil)
     "
@@ -52,9 +52,9 @@ _d_: dir             _g_: update gtags
     ("z"   projectile-cache-current-file)
     ("`"   hydra-projectile-other-window/body "other window")
     ("q"   nil "cancel" :color blue))
-  (define-key (current-global-map)
-              (kbd "s-p")
-              'hydra-projectile/body)
+  ;; (define-key (current-global-map)
+  ;;             (kbd "s-p")
+  ;;             'hydra-projectile/body)
   (define-key (current-global-map)
               (kbd "s-F")
               'projectile-grep))

@@ -117,6 +117,7 @@
 (el-get-bundle sunrise-commander)
 
 (use-package recentf
+  :disabled t
   :config
   (recentf-mode t)
   (setq recentf-max-menu-items 25))
