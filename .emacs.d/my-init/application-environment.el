@@ -8,6 +8,8 @@
 ;; intuitive "state machine" menus
 (use-package hydra)
 
+(use-package dictionary)
+
 ;; python IDE
 (use-package elpy
   :ensure t
@@ -30,6 +32,8 @@
 (use-package my-python
   :after (elpy general))
 
+(use-package php-mode)
+
 ;; ido mode
 (use-package ido
   ;; disabled since using ivy
@@ -44,10 +48,15 @@
   :config
   (sublimity-mode 1))
 
+(use-package minimap
+  :disabled t)
+
 (use-package company
   :config
   ;; enable company mode autocompletion in all buffers
   (global-company-mode 1))
+
+(use-package company-jedi)
 
 (use-package ivy
   ;; company is for in-buffer auto-completion,
@@ -70,15 +79,17 @@
 (use-package swiper
   :bind ("C-s" . swiper))
 
+(use-package ivy-hydra)
+
 (use-package ivy-rich
   :config
   (ivy-rich-mode t))
 
 ;; looks like smex (smart command history in M-x) is used by counsel just
 ;; by being installed, and doesn't need to be explicitly invoked here
-;; (use-package smex
-;;   :config
-;;   (smex-initialize))
+(use-package smex
+  :config
+  (smex-initialize))
 
 (use-package magit
   :config
@@ -169,6 +180,8 @@
 ;; cozy time
 (use-package fireplace)
 
+;; virtual caps lock since actual one is remapped to Esc
+(use-package caps-lock)
 
 ;;;;;;;;;;;;;;;;;;;;;;
 ;; CUSTOM FUNCTIONS ;;

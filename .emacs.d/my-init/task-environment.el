@@ -54,6 +54,9 @@
   ;; other faces such as `diff-added` will be used for other actions
   (evil-goggles-use-diff-faces))
 
+(use-package evil-magit
+  :disabled t)
+
 (use-package multiple-cursors
   ;; the original multiple-cursors mode, looks great but isn't
   ;; compatible with evil mode. evil-mc looks pretty similar
@@ -101,6 +104,9 @@
 (use-package yasnippet
   :config
   (yas-global-mode 1))
+
+;; widely used collection of useful snippets
+(use-package yasnippet-snippets)
 
 (use-package undo-tree
   :config
