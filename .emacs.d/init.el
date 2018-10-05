@@ -13,9 +13,17 @@
                                          "el-get/el-get"))))
 
 (setup-load-path)
+
 ;; initialize package managers and installed packages
 (load "setup")
+
 ;; load all configured packages
-(load "load-packages")
+(load "task-environment")
+(load "project-environment")
+(load "application-environment")
+(load "system-environment")
+(load "network-environment")
+(load "physical-environment")
+
 ;; load any customizations done via EMACS UI
 (load custom-file 'noerror)
