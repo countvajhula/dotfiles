@@ -243,6 +243,7 @@
 (use-package general
   ;; general is a package that provides various
   ;; resources and utilities for defining keybindings
+  :ensure t
   :config
   (setq general-override-states '(insert
                                   emacs

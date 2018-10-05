@@ -30,11 +30,13 @@
     'my-expand-lines))
 
 (use-package evil-collection
+  :ensure t
   :after evil
   :config
   (evil-collection-init))
 
 (use-package evil-goggles
+  :ensure t
   :config
   (evil-goggles-mode)
 
