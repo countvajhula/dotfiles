@@ -17,8 +17,8 @@
 (define-key my-window-map (kbd "c") 'evil-window-delete)
 (define-key my-window-map (kbd "C-x") 'evil-window-delete)
 (define-key my-window-map (kbd "x") 'evil-window-delete)
-(define-key my-window-map (kbd "C-o") 'delete-other-windows)
-(define-key my-window-map (kbd "o") 'delete-other-windows)
+(define-key my-window-map (kbd "C-o") 'other-window)
+(define-key my-window-map (kbd "o") 'other-window)
 (define-key my-window-map (kbd "C-w") 'delete-other-windows)
 (define-key my-window-map (kbd "w") 'delete-other-windows)
 (define-key my-window-map (kbd "C-s") 'evil-window-split)
@@ -34,5 +34,7 @@
 (define-key evil-motion-state-map (kbd "C-w x") 'evil-window-delete)
 (define-key evil-motion-state-map (kbd "C-w C-w") 'delete-other-windows)
 (define-key evil-motion-state-map (kbd "C-w w") 'delete-other-windows)
+(define-key evil-motion-state-map (kbd "C-w C-o") 'other-window)
+(define-key evil-motion-state-map (kbd "C-w o") 'other-window)
 
 (provide 'my-window-manager)
