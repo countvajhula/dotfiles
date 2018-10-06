@@ -1,4 +1,12 @@
-;; use window manager prefix in all modes (including insert and emacs states)
+;; Evil provides some good window navigation functionality, but these
+;; bindings aren't available in Emacs state and also consequently in
+;; Insert state if the insert mode keymap is overridden in favor of
+;; Emacs native bindings. Additionally, for the most common window
+;; operations, some of the evil mode defaults could be further
+;; improved.  This package provides evil window navigation globally
+;; and also overrides some defaults to make them faster or more
+;; useful/intuitive.
+
 (define-prefix-command 'my-window-map)
 (global-set-key (kbd "C-w") 'my-window-map)
 (define-key my-window-map (kbd "h") 'evil-window-left)
