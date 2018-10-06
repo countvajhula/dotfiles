@@ -129,3 +129,6 @@
 
 (use-package my-navigation
   :after evil)
+
+(use-package my-window-manager
+  :after evil)

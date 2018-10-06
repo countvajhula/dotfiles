@@ -183,6 +183,13 @@
 ;; virtual caps lock since actual one is remapped to Esc
 (use-package caps-lock)
 
+(use-package ace-window
+  :disabled t
+  :bind ("s-w" . ace-window)
+  :config
+  (setq aw-keys '(?h ?j ?k ?l ?g ?f ?d ?s ?a)))
+
+
 ;;;;;;;;;;;;;;;;;;;;;;
 ;; CUSTOM FUNCTIONS ;;
 ;;;;;;;;;;;;;;;;;;;;;;
@@ -227,7 +234,7 @@
 	     (setq bufinfo (list total-lines page-position))))
     (add-to-list 'bufinfo
 		 (buffer-file-name))
-    (display-message-or-buffer (string-join bufinfo " "))))
+    (message "%s" (string-join bufinfo " "))))
 
 (defun xah-new-empty-buffer ()
   "Create a new empty buffer.
@@ -308,36 +315,43 @@
   (current-global-map)
   (kbd "C-c b")
   'my-buffer-info)
+
 (define-key
   ;; navigation sidebar
   (current-global-map)
   (kbd "C-c t")
   'sr-speedbar-toggle)
+
 (define-key
   ;; open a new empty buffer
   (current-global-map)
   (kbd "C-c n")
   'xah-new-empty-buffer)
+
 (define-key
   ;; drop into a shell (preserves path)
   (current-global-map)
   (kbd "C-c s")
   'eshell)
+
 (define-key
   ;; lookup in dictionary
   (current-global-map)
   (kbd "C-c d")
   'dictionary-lookup-definition)
+
 (define-key
   ;; open an elisp shell
   (current-global-map)
   (kbd "C-c l")
   'my-lisp-repl)
+
 (define-key
   ;; emulate caps lock -- alternative to an actual CAPS LOCK key
   (current-global-map)
   (kbd "C-<escape>")
   'caps-lock-mode)
+
 (define-key
   ;; calculator mode
   (current-global-map)
