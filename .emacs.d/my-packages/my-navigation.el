@@ -34,6 +34,18 @@
   (kbd "C-s-k")
   'my-jump-up)
 (define-key
+  ;; handy navigation to jump down the file (more convenient alternative,
+  ;; which may be overridden in some modes (like org, and magit)
+  evil-motion-state-map
+  (kbd "C-j")
+  'my-jump-down)
+(define-key
+  ;; handy navigation to jump up the file (more convenient alternative,
+  ;; which may be overridden in some modes (like org, and magit)
+  evil-motion-state-map
+  (kbd "C-k")
+  'my-jump-up)
+(define-key
   ;; handy navigation to jump up the file
   evil-motion-state-map
   (kbd "<backspace>")
