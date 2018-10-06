@@ -28,7 +28,7 @@
 (define-key my-window-map (kbd "=") 'balance-windows)
 (define-key my-window-map (kbd "C-f") 'ffap-other-window)
 (define-key my-window-map (kbd "f") 'ffap-other-window)
-(global-set-key (kbd "s-w") 'evil-window-mru)
+(global-set-key (kbd "s-w") 'evil-window-mru)  ; like "Alt-Tab"
 ;; also override to provide the same behavior in evil states
 (define-key evil-motion-state-map (kbd "C-w C-x") 'evil-window-delete)
 (define-key evil-motion-state-map (kbd "C-w x") 'evil-window-delete)
