@@ -420,6 +420,16 @@
   (interactive)
   (adjust-transparency 3))
 
+(defun maximize-transparency ()
+  "Maximize frame transparency (i.e. make transparent)"
+  (interactive)
+  (transparency 0))
+
+(defun minimize-transparency ()
+  "Minimize frame transparency (i.e. make opaque)"
+  (interactive)
+  (transparency 100))
+
 (defun return-to-original-transparency ()
   "Return to original transparency prior to making changes."
   (interactive)
@@ -433,6 +443,8 @@
   ("-" increase-transparency "increase transparency")
   ("k" decrease-transparency "decrease transparency")
   ("j" increase-transparency "increase transparency")
+  ("K" minimize-transparency "min transparency (opaque)")
+  ("J" maximize-transparency "max transparency (transparent)")
   ("<escape>" return-to-original-transparency "return to original transparency" :exit t))
 
 (defhydra hydra-application (:columns 1
