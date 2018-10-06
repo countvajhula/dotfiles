@@ -151,13 +151,21 @@
 
 (use-package ibuffer-vc
   ;; organize buffers by version-controlled repo
+  ;; note: there's projectile-ibuffer
   :disabled t
   :init
+  ;; TODO: C-k doesn't go up filter groups as expected
+  ;; (add-hook 'ibuffer-hook
+  ;;           (lambda ()
+  ;;             (define-key
+  ;;               (current-local-map)
+  ;;               (kbd "C-k")
+  ;;               'ibuffer-backward-filter-group)))
   (add-hook 'ibuffer-hook
 	    (lambda ()
 	      (ibuffer-vc-set-filter-groups-by-vc-root)
 	      (unless (eq ibuffer-sorting-mode 'alphabetic)
-		(ibuffer-do-sort-by-alphabetic)))))
+            (ibuffer-do-sort-by-alphabetic)))))
 
 (use-package ibuffer-sidebar
   :disabled t
