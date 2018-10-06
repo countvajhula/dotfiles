@@ -51,7 +51,7 @@
   ;; this variable affects "blocking" hints, for example when deleting - the hint is displayed,
   ;; the deletion is delayed (blocked) until the hint disappers, then the hint is removed and the
   ;; deletion executed; it makes sense to have this duration short
-  (setq evil-goggles-blocking-duration 0.010) ;; default is nil, i.e. use `evil-goggles-duration' which defaults to 0.200
+  (setq evil-goggles-blocking-duration 0.020) ;; default is nil, i.e. use `evil-goggles-duration' which defaults to 0.200
 
   ;; this variable affects "async" hints, for example when indenting - the indentation
   ;; is performed with the hint visible, i.e. the hint is displayed, the action (indent) is
