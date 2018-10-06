@@ -24,6 +24,11 @@
   (kbd "C-S-d")
   'evil-scroll-up)
 (define-key
+  ;; alternative to Vim's C-b (for symmetry with C-S-d necessitated above)
+  evil-motion-state-map
+  (kbd "C-S-f")
+  'evil-scroll-page-up)
+(define-key
   ;; handy navigation to jump down the file
   evil-motion-state-map
   (kbd "C-s-j")
