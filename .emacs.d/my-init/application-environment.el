@@ -435,8 +435,13 @@
   ("j" increase-transparency "increase transparency")
   ("<escape>" return-to-original-transparency "return to original transparency" :exit t))
 
-;; access the transparency menu via a "body" keybinding
-(global-set-key (kbd "s-e t") 'hydra-transparency/body)
+(defhydra hydra-application (:columns 1
+                             :exit t)
+  "Control application environment"
+  ("t" hydra-transparency/body "transparency")
+  ("n" display-line-numbers-mode "toggle line numbers")
+  ("l" hl-line-mode "toggle highlight line"))
 
-;; toggle line numbers
-(global-set-key (kbd "s-e n") 'display-line-numbers-mode)
+;; hydra to configure the application environment
+;; contains a nested hydra to modulate transparency
+(global-set-key (kbd "s-e") 'hydra-application/body)
