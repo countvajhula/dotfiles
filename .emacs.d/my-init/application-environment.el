@@ -445,6 +445,7 @@
   ("j" increase-transparency "increase transparency")
   ("K" minimize-transparency "min transparency (opaque)")
   ("J" maximize-transparency "max transparency (transparent)")
+  ("<return>" my-noop "quit" :exit t)
   ("q" my-noop "quit" :exit t)
   ("<escape>" return-to-original-transparency "return to original transparency" :exit t))
 
