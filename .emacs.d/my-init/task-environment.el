@@ -140,5 +140,5 @@
 (use-package my-navigation
   :after evil)
 
-(use-package my-window-manager
+(use-package my-window-mode
   :after evil)
