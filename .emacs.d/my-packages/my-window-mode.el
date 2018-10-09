@@ -40,7 +40,8 @@
   ("R" evil-window-rotate-upwards "rotate upwards")
   ("s-f" ffap-other-window "go to file in other window" :exit t)
   ("f" ffap-other-window "" :exit t)
-  ("i" my-noop "exit" :exit t))
+  ("i" my-noop "exit" :exit t)
+  ("<escape>" my-noop "exit" :exit t))
 
 (global-set-key (kbd "s-w") 'hydra-windows/body)
 
