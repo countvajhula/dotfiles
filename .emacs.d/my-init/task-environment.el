@@ -142,3 +142,6 @@
 
 (use-package my-window-mode
   :after evil)
+
+(use-package my-page-mode
+  :after evil)
