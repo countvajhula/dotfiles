@@ -32,12 +32,6 @@
 ;;   'mac-close-tab)
 
 (define-key
-  ;; delete current window
-  (current-global-map)
-  (kbd "s-w")
-  'delete-window)
-
-(define-key
   ;; save file
   (current-global-map)
   (kbd "s-s")

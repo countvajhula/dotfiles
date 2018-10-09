@@ -66,8 +66,14 @@ _d_: dir             _g_: update gtags
   :after org-ibuffer
   :config
   (setq org-agenda-files '("~/log/org/"))
-  (setq org-todo-keywords
-	'((sequence "[ ](t)" "[\\](w)" "[o](o)" "[-](-)" "[x](x)")))
+  (setq org-todo-keywords '((sequence "[ ](t)"    ; todo
+                                      "[\\](w)"   ; working / in-progress
+                                      "[o](o)"    ; blocked / waiting
+                                      "[-](-)"    ; won't do / invalid
+                                      "[x](x)"))) ; done
+  (setq org-tag-alist '(("@SF" . ?s)
+                        ("@Oakland" . ?o)
+                        ("raMP" . ?r)))
   ;; interface with org-mode via a hydra menu
   (defhydra hydra-org ()
     "Org-mode Menu"
@@ -88,3 +94,5 @@ _d_: dir             _g_: update gtags
 
   ;; access the org-mode menu via a "body" keybinding
   (global-set-key (kbd "s-o") 'hydra-org/body))
+
+(use-package sicp)

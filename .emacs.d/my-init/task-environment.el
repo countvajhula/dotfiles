@@ -35,6 +35,16 @@
   :config
   (evil-collection-init))
 
+(use-package evil-indent-plus
+  ;; make indent-level a textobject in evil, e.g. cii and dai
+  :config
+  (define-key evil-inner-text-objects-map "i" 'evil-indent-plus-i-indent)
+  (define-key evil-outer-text-objects-map "i" 'evil-indent-plus-a-indent)
+  (define-key evil-inner-text-objects-map "I" 'evil-indent-plus-i-indent-up)
+  (define-key evil-outer-text-objects-map "I" 'evil-indent-plus-a-indent-up)
+  (define-key evil-inner-text-objects-map "J" 'evil-indent-plus-i-indent-up-down)
+  (define-key evil-outer-text-objects-map "J" 'evil-indent-plus-a-indent-up-down))
+
 (use-package evil-goggles
   :ensure t
   :config
@@ -43,7 +53,7 @@
   ;; this variable affects "blocking" hints, for example when deleting - the hint is displayed,
   ;; the deletion is delayed (blocked) until the hint disappers, then the hint is removed and the
   ;; deletion executed; it makes sense to have this duration short
-  (setq evil-goggles-blocking-duration 0.010) ;; default is nil, i.e. use `evil-goggles-duration' which defaults to 0.200
+  (setq evil-goggles-blocking-duration 0.120) ;; default is nil, i.e. use `evil-goggles-duration' which defaults to 0.200
 
   ;; this variable affects "async" hints, for example when indenting - the indentation
   ;; is performed with the hint visible, i.e. the hint is displayed, the action (indent) is
@@ -55,6 +65,8 @@
   ;; some red color (as defined by the color theme)
   ;; other faces such as `diff-added` will be used for other actions
   (evil-goggles-use-diff-faces))
+
+(use-package evil-magit)
 
 (use-package multiple-cursors
   ;; the original multiple-cursors mode, looks great but isn't
@@ -105,6 +117,9 @@
   :config
   (yas-global-mode 1))
 
+;; widely used collection of useful snippets
+(use-package yasnippet-snippets)
+
 (use-package undo-tree
   :config
   (global-undo-tree-mode)
@@ -126,4 +141,10 @@
   :load-path "~/.emacs.d/my-packages/")
 
 (use-package my-navigation
+  :after evil)
+
+(use-package my-window-mode
+  :after evil)
+
+(use-package my-page-mode
   :after evil)

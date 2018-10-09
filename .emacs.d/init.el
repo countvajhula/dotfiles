@@ -16,6 +16,8 @@
 
 ;; initialize package managers and installed packages
 (load "setup")
+;; load any local general-purpose utilities
+(load "utils")
 
 ;; load all configured packages
 (load "task-environment")

@@ -8,6 +8,8 @@
 ;; intuitive "state machine" menus
 (use-package hydra)
 
+(use-package dictionary)
+
 ;; python IDE
 (use-package elpy
   :ensure t
@@ -30,6 +32,8 @@
 (use-package my-python
   :after (elpy general))
 
+(use-package php-mode)
+
 ;; ido mode
 (use-package ido
   ;; disabled since using ivy
@@ -44,10 +48,15 @@
   :config
   (sublimity-mode 1))
 
+(use-package minimap
+  :disabled t)
+
 (use-package company
   :config
   ;; enable company mode autocompletion in all buffers
   (global-company-mode 1))
+
+(use-package company-jedi)
 
 (use-package ivy
   ;; company is for in-buffer auto-completion,
@@ -70,15 +79,17 @@
 (use-package swiper
   :bind ("C-s" . swiper))
 
+(use-package ivy-hydra)
+
 (use-package ivy-rich
   :config
   (ivy-rich-mode t))
 
 ;; looks like smex (smart command history in M-x) is used by counsel just
 ;; by being installed, and doesn't need to be explicitly invoked here
-;; (use-package smex
-;;   :config
-;;   (smex-initialize))
+(use-package smex
+  :config
+  (smex-initialize))
 
 (use-package magit
   :config
@@ -141,13 +152,21 @@
 
 (use-package ibuffer-vc
   ;; organize buffers by version-controlled repo
+  ;; note: there's projectile-ibuffer
   :disabled t
   :init
+  ;; TODO: C-k doesn't go up filter groups as expected
+  ;; (add-hook 'ibuffer-hook
+  ;;           (lambda ()
+  ;;             (define-key
+  ;;               (current-local-map)
+  ;;               (kbd "C-k")
+  ;;               'ibuffer-backward-filter-group)))
   (add-hook 'ibuffer-hook
 	    (lambda ()
 	      (ibuffer-vc-set-filter-groups-by-vc-root)
 	      (unless (eq ibuffer-sorting-mode 'alphabetic)
-		(ibuffer-do-sort-by-alphabetic)))))
+            (ibuffer-do-sort-by-alphabetic)))))
 
 (use-package ibuffer-sidebar
   :disabled t
@@ -169,6 +188,23 @@
 
 ;; cozy time
 (use-package fireplace)
+
+;; virtual caps lock since actual one is remapped to Esc
+(use-package caps-lock)
+
+(use-package ace-window
+  :disabled t
+  :bind ("s-w" . ace-window)
+  :config
+  (setq aw-keys '(?h ?j ?k ?l ?g ?f ?d ?s ?a)))
+
+
+;;;;;;;;;;;;;;;;;;
+;; CUSTOM MODES ;;
+;;;;;;;;;;;;;;;;;;
+
+
+(use-package my-buffer-mode)
 
 
 ;;;;;;;;;;;;;;;;;;;;;;
@@ -215,7 +251,7 @@
 	     (setq bufinfo (list total-lines page-position))))
     (add-to-list 'bufinfo
 		 (buffer-file-name))
-    (display-message-or-buffer (string-join bufinfo " "))))
+    (message "%s" (string-join bufinfo " "))))
 
 (defun xah-new-empty-buffer ()
   "Create a new empty buffer.
@@ -297,36 +333,43 @@
   (current-global-map)
   (kbd "C-c b")
   'my-buffer-info)
+
 (define-key
   ;; navigation sidebar
   (current-global-map)
   (kbd "C-c t")
   'sr-speedbar-toggle)
+
 (define-key
   ;; open a new empty buffer
   (current-global-map)
   (kbd "C-c n")
   'xah-new-empty-buffer)
+
 (define-key
   ;; drop into a shell (preserves path)
   (current-global-map)
   (kbd "C-c s")
   'eshell)
+
 (define-key
   ;; lookup in dictionary
   (current-global-map)
   (kbd "C-c d")
   'dictionary-lookup-definition)
+
 (define-key
   ;; open an elisp shell
   (current-global-map)
   (kbd "C-c l")
   'my-lisp-repl)
+
 (define-key
   ;; emulate caps lock -- alternative to an actual CAPS LOCK key
   (current-global-map)
   (kbd "C-<escape>")
   'caps-lock-mode)
+
 (define-key
   ;; calculator mode
   (current-global-map)
@@ -338,26 +381,6 @@
 ;; HYDRA MENUS ;;
 ;;;;;;;;;;;;;;;;;
 
-
-(defun return-to-original-buffer ()
-  (interactive)
-  (switch-to-buffer original-buffer))
-
-(defhydra hydra-buffers (:idle 1.0
-			             :body-pre (setq original-buffer
-                                         (current-buffer)))
-  "Cycle through buffers, Alt-tab style"
-  ("b" list-buffers "show all buffers")
-  ("n" next-buffer "next buffer")
-  ("N" previous-buffer "previous buffer")
-  ("p" previous-buffer "previous buffer")
-  ("P" next-buffer "next buffer")
-  ("h" previous-buffer "previous buffer")
-  ("l" next-buffer "next buffer")
-  ("<escape>" return-to-original-buffer "return to original buffer" :exit t))
-
-;; access the buffer menu via a "body" keybinding
-(global-set-key (kbd "s-b") 'hydra-buffers/body)
 
 (defun current-transparency ()
   (nth 0
@@ -387,6 +410,16 @@
   (interactive)
   (adjust-transparency 3))
 
+(defun maximize-transparency ()
+  "Maximize frame transparency (i.e. make transparent)"
+  (interactive)
+  (transparency 0))
+
+(defun minimize-transparency ()
+  "Minimize frame transparency (i.e. make opaque)"
+  (interactive)
+  (transparency 100))
+
 (defun return-to-original-transparency ()
   "Return to original transparency prior to making changes."
   (interactive)
@@ -400,10 +433,19 @@
   ("-" increase-transparency "increase transparency")
   ("k" decrease-transparency "decrease transparency")
   ("j" increase-transparency "increase transparency")
+  ("K" minimize-transparency "min transparency (opaque)")
+  ("J" maximize-transparency "max transparency (transparent)")
+  ("<return>" my-noop "quit" :exit t)
+  ("q" my-noop "quit" :exit t)
   ("<escape>" return-to-original-transparency "return to original transparency" :exit t))
 
-;; access the transparency menu via a "body" keybinding
-(global-set-key (kbd "s-e t") 'hydra-transparency/body)
+(defhydra hydra-application (:columns 1
+                             :exit t)
+  "Control application environment"
+  ("t" hydra-transparency/body "transparency")
+  ("n" display-line-numbers-mode "toggle line numbers")
+  ("l" hl-line-mode "toggle highlight line"))
 
-;; toggle line numbers
-(global-set-key (kbd "s-e n") 'display-line-numbers-mode)
+;; hydra to configure the application environment
+;; contains a nested hydra to modulate transparency
+(global-set-key (kbd "s-e") 'hydra-application/body)
