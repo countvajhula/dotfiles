@@ -96,7 +96,8 @@
     ("<escape>" evil-mc-undo-all-cursors "undo all cursors"))
 
   ;; access the multiple-cursors menu via a "body" keybinding
-  (global-set-key (kbd "s-d") 'hydra-cursors/body)
+  ;; (global-set-key (kbd "s-d") 'hydra-cursors/body)
+  (global-set-key (kbd "s-d") 'evil-mc-make-and-goto-next-match)
   ;; retain a convenient, non-hydra, escape hatch
   (global-set-key (kbd "s-<escape>") 'evil-mc-undo-all-cursors))
 
