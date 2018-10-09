@@ -34,6 +34,10 @@
 
 (use-package php-mode)
 
+(use-package tex
+  :defer t
+  :ensure auctex)
+
 ;; ido mode
 (use-package ido
   ;; disabled since using ivy
