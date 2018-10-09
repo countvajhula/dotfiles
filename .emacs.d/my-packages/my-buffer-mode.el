@@ -37,6 +37,7 @@
   (switch-to-buffer original-buffer))
 
 (defhydra hydra-buffers (:idle 1.0
+                         :columns 3
 			             :body-pre (setq original-buffer
                                          (current-buffer)))
   "Cycle through buffers, Alt-tab style"
@@ -44,6 +45,7 @@
   ("s-b" evil-switch-to-windows-last-buffer "switch to last buffer" :exit t)
   ("h" previous-buffer "previous buffer")
   ("l" next-buffer "next buffer")
+  ("s" ivy-switch-buffer "search buffers" :exit t)
   ("q" return-to-original-buffer "return to original buffer" :exit t)
   ("i" my-noop "exit" :exit t)
   ("<escape>" my-noop "exit" :exit t))
