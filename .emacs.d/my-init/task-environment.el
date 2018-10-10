@@ -44,6 +44,10 @@
   (define-key evil-inner-text-objects-map "J" 'evil-indent-plus-i-indent-up-down)
   (define-key evil-outer-text-objects-map "J" 'evil-indent-plus-a-indent-up-down))
 
+(use-package evil-surround
+  :config
+  (global-evil-surround-mode 1))
+
 (use-package evil-goggles
   :config
   (evil-goggles-mode)

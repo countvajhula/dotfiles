@@ -66,7 +66,7 @@ static char *gnus-pointer[] = {
  '(mac-option-modifier (quote meta))
  '(package-selected-packages
    (quote
-    (auctex evil-indent-plus ace-window evil-goggles fireplace general org telephone-line smart-mode-line ibuffer-vc ibuffer-sidebar ivy-rich popwin projectile evil-collection ace-jump-buffer avy ivy-hydra caps-lock smex counsel yasnippet-snippets yasnippet evil-mc multiple-cursors minimap evil-matchit evil-tabs tabbar evil-magit php-mode ivy sicp company-jedi company sr-speedbar magit dictionary sublimity evil elpy)))
+    (evil-surround projectile auctex evil-indent-plus ace-window evil-goggles fireplace general org telephone-line smart-mode-line ibuffer-vc ibuffer-sidebar ivy-rich popwin evil-collection ace-jump-buffer avy ivy-hydra caps-lock smex counsel yasnippet-snippets yasnippet evil-mc multiple-cursors minimap evil-matchit evil-tabs tabbar evil-magit php-mode ivy sicp company-jedi company sr-speedbar magit dictionary sublimity evil elpy)))
  '(pos-tip-background-color "#1A3734")
  '(pos-tip-foreground-color "#FFFFC8")
  '(python-check-command "/usr/local/bin/pyflakes")
