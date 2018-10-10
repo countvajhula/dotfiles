@@ -46,8 +46,9 @@
   ("h" previous-buffer "previous buffer")
   ("l" next-buffer "next buffer")
   ("s" ivy-switch-buffer "search buffers" :exit t)
+  ("i" ibuffer "ibuffer" :exit t)
+  ("x" kill-buffer "kill buffer")
   ("q" return-to-original-buffer "return to original buffer" :exit t)
-  ("i" my-noop "exit" :exit t)
   ("<escape>" my-noop "exit" :exit t))
 
 ;; access the buffer menu via a "body" keybinding
