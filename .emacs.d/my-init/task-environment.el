@@ -145,3 +145,6 @@
 
 (use-package my-page-mode
   :after evil)
+
+(use-package my-line-mode
+  :after evil)
