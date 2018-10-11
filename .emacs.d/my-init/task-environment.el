@@ -46,7 +46,17 @@
 
 (use-package evil-surround
   :config
-  (global-evil-surround-mode 1))
+  (global-evil-surround-mode 1)
+  ;; use non-spaced pairs when surrounding with an opening brace
+  ;; from: https://github.com/emacs-evil/evil-surround/issues/86
+  (evil-add-to-alist
+   'evil-surround-pairs-alist
+   ?\( '("(" . ")")
+   ?\[ '("[" . "]")
+   ?\{ '("{" . "}")
+   ?\) '("( " . " )")
+   ?\] '("[ " . " ]")
+   ?\} '("{ " . " }")))
 
 (use-package evil-goggles
   :config
