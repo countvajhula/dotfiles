@@ -36,6 +36,10 @@
 ;; For the vim-like motions of ">>" and "<<".
 (setq-default evil-shift-width custom-tab-width)
 
+;; Show trailing characters as they are useful to spot.
+(setq whitespace-style '(face trailing))
+(global-whitespace-mode) ; Enable whitespace mode everywhere
+
 ;; WARNING: This will change your life
 ;; (OPTIONAL) Visualize tabs as a pipe character - "|"
 ;; This will also show trailing characters as they are useful to spot.
