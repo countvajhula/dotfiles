@@ -133,6 +133,10 @@ From: https://emacs.stackexchange.com/questions/17846/calculating-the-length-of-
   (setq current-line-length (line-length current-line-number))
   (message "Line %d, length = %d" current-line-number current-line-length))
 
+(defun my-toggle-comment-line ()
+  "Comment / uncomment line"
+  (interactive)
+  (comment-line 1))
 
 (defun my-yank-line ()
   "Yank (copy) line"
@@ -157,6 +161,7 @@ From: https://emacs.stackexchange.com/questions/17846/calculating-the-length-of-
   ("s" my-split-line)
   ("v" my-pulverize-line "pulverize")
   ("y" my-yank-line "yank (copy)")
+  (";" my-toggle-comment-line "toggle comment")
   ("i" my-line-info "info" :exit t)
   ("<escape>" my-noop "exit" :exit t))
 
