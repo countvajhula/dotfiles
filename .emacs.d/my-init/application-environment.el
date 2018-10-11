@@ -442,9 +442,8 @@
   ("j" increase-transparency "increase transparency")
   ("K" minimize-transparency "min transparency (opaque)")
   ("J" maximize-transparency "max transparency (transparent)")
-  ("<return>" my-noop "quit" :exit t)
-  ("q" my-noop "quit" :exit t)
-  ("<escape>" return-to-original-transparency "return to original transparency" :exit t))
+  ("q" return-to-original-transparency  "return to original transparency" :exit t)
+  ("<escape>" my-noop "quit" :exit t))
 
 (defhydra hydra-application (:columns 1
                              :exit t)
