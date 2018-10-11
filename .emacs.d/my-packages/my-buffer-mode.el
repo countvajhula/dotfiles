@@ -48,6 +48,7 @@
   ("s" ivy-switch-buffer "search buffers" :exit t)
   ("i" ibuffer "ibuffer" :exit t)
   ("x" kill-buffer "kill buffer")
+  ("?" my-buffer-info "info" :exit t)
   ("q" return-to-original-buffer "return to original buffer" :exit t)
   ("<escape>" my-noop "exit" :exit t))
 
