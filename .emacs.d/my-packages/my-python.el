@@ -12,6 +12,6 @@
 (general-define-key
  :states '(normal visual motion)
  :keymaps 'override
- "`" 'hydra-python/body)
+ "\\" 'hydra-python/body)
 
 (provide 'my-python)

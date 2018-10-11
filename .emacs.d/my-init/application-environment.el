@@ -330,6 +330,11 @@
 
 ; Note: "define-key (current-global-map)" is the same as global-set-key
 
+;; default "emacs leader" is \, but rebinding that (Vim default) key
+;; to be a local leader for different modes (like python) since that's
+;; more useful. Move emacs leader to s-\ instead
+(global-set-key (kbd "s-\\") 'evil-execute-in-emacs-state)
+
 (define-key
   ;; info on the current buffer
   (current-global-map)
