@@ -99,4 +99,17 @@
   (kbd "C-S-y")
   'evil-scroll-line-up)
 
+(define-key
+  ;; go all the way to the beginning of the buffer
+  evil-motion-state-map
+  (kbd "C-S-h")
+  'evil-goto-first-line)
+
+(define-key
+  ;; go all the way to the end of the buffer
+  evil-motion-state-map
+  (kbd "C-S-l")
+  'evil-goto-line)
+
+
 (provide 'my-navigation)
