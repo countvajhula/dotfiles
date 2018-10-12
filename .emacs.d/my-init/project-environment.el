@@ -67,6 +67,8 @@ _d_: dir             _g_: update gtags
 (use-package org
   :after org-ibuffer
   :config
+  ;; visually indent lower hierarchy levels
+  (setq org-startup-indented t)
   (setq org-agenda-files '("~/log/org/"))
   (setq org-todo-keywords '((sequence "[ ](t)"    ; todo
                                       "[\\](w)"   ; working / in-progress
