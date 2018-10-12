@@ -27,11 +27,11 @@
   ("r" elpy-shell-send-region-or-buffer "Send to REPL")
   ("t" elpy-test "Run test(s)"))
 
-;; "/" is intended to be the "local leader," so it should
-;; rather be assigned to a relevant hydra in mode hooks
-(general-define-key
- :states '(normal visual motion)
- :keymaps 'override
- "\\" 'hydra-python/body)
+;; pull up python hydra with local leader
+(add-hook 'python-mode-hook
+          (lambda () (general-define-key
+                      :states '(normal visual motion)
+                      :keymaps 'local
+                      "\\" 'hydra-python/body)))
 
 (provide 'my-python)
