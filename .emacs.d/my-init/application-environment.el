@@ -1,3 +1,7 @@
+;; vim-style local leader key for mode-specific
+;; (e.g. python-specific) functionality
+(defvar my-local-leader "\\")
+
 ;; convenient list- and functional-related macros
 (use-package dash)
 

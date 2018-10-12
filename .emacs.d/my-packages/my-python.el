@@ -32,6 +32,6 @@
           (lambda () (general-define-key
                       :states '(normal visual motion)
                       :keymaps 'local
-                      "\\" 'hydra-python/body)))
+                      my-local-leader 'hydra-python/body)))
 
 (provide 'my-python)
