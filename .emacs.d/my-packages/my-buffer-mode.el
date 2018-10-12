@@ -47,6 +47,7 @@
   ("l" next-buffer "next buffer")
   ("s" ivy-switch-buffer "search buffers" :exit t)
   ("i" ibuffer "ibuffer" :exit t)
+  ("s-i" ibuffer "ibuffer" :exit t)
   ("x" kill-buffer "kill buffer")
   ("?" my-buffer-info "info" :exit t)
   ("q" return-to-original-buffer "return to original buffer" :exit t)
