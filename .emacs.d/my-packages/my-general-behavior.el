@@ -57,4 +57,7 @@
 (setq scroll-step            1
       scroll-conservatively  10000)
 
+;; wrap lines visually, preserving indentation (like vim's breakindent)
+(global-visual-line-mode)
+
 (provide 'my-general-behavior)
