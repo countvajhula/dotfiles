@@ -1,3 +1,21 @@
+;; python IDE
+(use-package elpy
+  :config
+  (elpy-enable)
+  (setq elpy-modules
+	(remove 'elpy-module-highlight-indentation
+		elpy-modules))
+  (setq elpy-rpc-python-command "python3")
+  ;; use jedi for completion with elpy instead of rope
+  (setq elpy-rpc-backend "jedi")
+  (setq python-check-command "~/.local/bin/pyflakes")
+  (add-hook 'python-mode-hook
+			(lambda () (show-paren-mode 1)))
+  (add-hook 'python-mode-hook
+			(lambda ()
+			  (setq tab-width 4)
+			  (setq python-indent-offset 4))))
+
 (defhydra hydra-python (:idle 1.0
                         :columns 2
                         :exit t)
@@ -9,6 +27,8 @@
   ("r" elpy-shell-send-region-or-buffer "Send to REPL")
   ("t" elpy-test "Run test(s)"))
 
+;; "/" is intended to be the "local leader," so it should
+;; rather be assigned to a relevant hydra in mode hooks
 (general-define-key
  :states '(normal visual motion)
  :keymaps 'override

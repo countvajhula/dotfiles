@@ -10,27 +10,11 @@
 
 (use-package dictionary)
 
-;; python IDE
-(use-package elpy
-  :ensure t
-  :config
-  (elpy-enable)
-  (setq elpy-modules
-	(remove 'elpy-module-highlight-indentation
-		elpy-modules))
-  (setq elpy-rpc-python-command "python3")
-  ;; use jedi for completion with elpy instead of rope
-  (setq elpy-rpc-backend "jedi")
-  (setq python-check-command "~/.local/bin/pyflakes")
-  (add-hook 'python-mode-hook
-			(lambda () (show-paren-mode 1)))
-  (add-hook 'python-mode-hook
-			(lambda ()
-			  (setq tab-width 4)
-			  (setq python-indent-offset 4))))
+(use-package my-python
+  :after general)
 
 (use-package my-python
-  :after (elpy general))
+  :after general)
 
 (use-package php-mode)
 
