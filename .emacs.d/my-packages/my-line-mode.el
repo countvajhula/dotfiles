@@ -143,6 +143,14 @@ From: https://emacs.stackexchange.com/questions/17846/calculating-the-length-of-
   (interactive)
   (evil-yank-line (line-beginning-position) (line-end-position) 'line nil))
 
+(defun my-change-line ()
+  "Change line"
+  (interactive)
+  (evil-change-whole-line (line-beginning-position)
+                          (+ 1 (line-end-position))
+                          (quote line)
+                          nil))
+
 (defhydra hydra-line (:idle 1.0
                       :columns 4)
   "Line mode"
@@ -155,6 +163,7 @@ From: https://emacs.stackexchange.com/questions/17846/calculating-the-length-of-
   ("K" my-move-line-very-top "move to top")
   ("L" my-move-line-far-right "move to far right")
   ("x" my-delete-line "delete line")
+  ("c" my-change-line "change line")
   ("s-o" my-flashback "flashback")
   ("o" my-flashback)
   ("s-s" my-split-line "split horizontally")
