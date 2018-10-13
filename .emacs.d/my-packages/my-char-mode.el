@@ -78,6 +78,11 @@
   (interactive)
   (evil-yank-characters (point) (+ (point) 1)))
 
+(defun my-toggle-case-char ()
+  "Toggle upper-/lower-case"
+  (interactive)
+  (evil-invert-char (point) (+ (point) 1) (quote exclusive)))
+
 (defhydra hydra-char (:idle 1.0
                       :columns 4)
   "Character mode"
@@ -92,6 +97,7 @@
   ("c" my-change-char "change character" :exit t)
   ("y" my-yank-char "yank (copy)" :exit t)
   ("x" my-delete-char "delete char")
+  ("~" my-toggle-case-char "toggle case")
   ("i" my-char-info "info" :exit t)
   ("<escape>" my-noop "exit" :exit t))
 
