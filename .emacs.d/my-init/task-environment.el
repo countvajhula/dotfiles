@@ -162,3 +162,6 @@
 
 (use-package my-line-mode
   :after evil)
+
+(use-package my-char-mode
+  :after evil)
