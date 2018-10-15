@@ -8,7 +8,7 @@
   (interactive)
   (local-set-key (kbd "TAB") 'indent-for-tab-command)
   (setq indent-tabs-mode nil))
-(defun enable-tabs  ()
+(defun enable-tabs ()
   (interactive)
   (local-set-key (kbd "TAB") 'tab-to-tab-stop)
   (setq indent-tabs-mode t)

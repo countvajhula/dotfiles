@@ -280,7 +280,7 @@
                                   replace))
   (general-override-mode)
 
-  (defhydra hydra-leader (:idle 1.0
+  (defhydra hydra-leader (:timeout 2.0
                           :columns 2
                           :exit t)
     "Quick actions"
@@ -292,6 +292,7 @@
     ("t" sr-speedbar-toggle "Nav Sidebar")
     ("u" undo-tree-visualize "Undo tree"))
 
+  ;; define global vim-style "leader" key
   (general-define-key
    :states '(normal visual motion)
    :keymaps 'override
