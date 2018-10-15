@@ -1,3 +1,12 @@
+
+(use-package ace-window
+  :config
+  (setq aw-keys '(?h ?j ?k ?l ?g ?f ?d ?s ?a)))
+
+(use-package winner
+  :config
+  (winner-mode t))
+
 ;; Evil provides some good window navigation functionality, but these
 ;; bindings aren't available in Emacs state and also consequently in
 ;; Insert state if the insert mode keymap is overridden in favor of
@@ -30,7 +39,10 @@
   ("s-s" evil-window-split "split horizontally")
   ("s" evil-window-split "")
   ("s-v" evil-window-vsplit "split vertically")
+  ("u" winner-undo "undo")
+  ("C-r" winner-redo "redo")
   ("v" evil-window-vsplit "")
+  ("/" ace-window "search")
   ("+" evil-window-increase-height "expand vertically")
   ("-" evil-window-decrease-height "shrink vertically")
   (">" evil-window-increase-width "expand horizontally")

@@ -183,12 +183,6 @@
 ;; virtual caps lock since actual one is remapped to Esc
 (use-package caps-lock)
 
-(use-package ace-window
-  :disabled t
-  :bind ("s-w" . ace-window)
-  :config
-  (setq aw-keys '(?h ?j ?k ?l ?g ?f ?d ?s ?a)))
-
 
 ;;;;;;;;;;;;;;;;;;
 ;; CUSTOM MODES ;;
