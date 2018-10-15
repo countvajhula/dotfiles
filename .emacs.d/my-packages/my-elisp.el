@@ -1,3 +1,8 @@
+(defun my-describe-symbol ()
+  "Describe symbol at point"
+  (interactive)
+  (describe-symbol (symbol-at-point)))
+
 (defhydra hydra-elisp (:timeout 2.0
                        :columns 2
                        :exit t)
@@ -6,6 +11,7 @@
   ("v" eval-last-sexp "Eval sexp")
   ("f" eval-defun "Eval function")
   ("d" edebug-defun "Eval fn for debug")
+  ("i" my-describe-symbol "See documentation on this")
   ("r" my-lisp-repl "Go to elisp REPL"))
 
 (defun register-elisp-leader ()
