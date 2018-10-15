@@ -17,7 +17,7 @@
 (use-package my-python
   :after general)
 
-(use-package my-python
+(use-package my-elisp
   :after general)
 
 (use-package php-mode)
@@ -258,12 +258,6 @@
     (funcall (default-value 'major-mode))
     (setq buffer-offer-save t)
     $buf))
-
-(defun my-lisp-repl ()
-  (interactive)
-  (evil-window-vsplit)
-  (evil-window-right 1)
-  (ielm))
 
 
 (use-package general
