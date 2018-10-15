@@ -32,19 +32,33 @@
 ;; and provide a custom keymap. still, seems like it needs to be
 ;; managed inside a hydra
 
+(defun my-buffer-set-mark (mark-name)
+  "Set a mark"
+  (interactive "Mark name")
+  (puthash mark-name (current-buffer) my-buffer-marks-hash))
+
+(defun my-buffer-return-to-mark (mark-name)
+  "Return to mark"
+  (interactive "Mark name")
+  (switch-to-buffer (gethash mark-name my-buffer-marks-hash)))
+
 (defun return-to-original-buffer ()
   (interactive)
   (switch-to-buffer original-buffer))
 
 (defhydra hydra-buffers (:idle 1.0
                          :columns 3
-			             :body-pre (setq original-buffer
-                                         (current-buffer)))
-  "Cycle through buffers, Alt-tab style"
+			             :body-pre (progn (setq original-buffer
+                                                (current-buffer))
+                                          (defvar my-buffer-marks-hash (make-hash-table :test 'equal))))
+  "Buffer mode"
   ("b" list-buffers "show all buffers")
   ("s-b" evil-switch-to-windows-last-buffer "switch to last buffer" :exit t)
   ("h" previous-buffer "previous buffer")
   ("l" next-buffer "next buffer")
+  ("m" my-buffer-set-mark "set mark")
+  ("'" my-buffer-return-to-mark "return to mark")
+  ("`" my-buffer-return-to-mark "return to mark")
   ("s" ivy-switch-buffer "search buffers" :exit t)
   ("i" ibuffer "ibuffer" :exit t)
   ("s-i" ibuffer "ibuffer" :exit t)
