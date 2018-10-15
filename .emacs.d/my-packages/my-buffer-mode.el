@@ -44,13 +44,20 @@
 
 (defun return-to-original-buffer ()
   (interactive)
-  (switch-to-buffer original-buffer))
+  (switch-to-buffer (gethash "0" my-buffer-marks-hash)))
+
+(defun setup-buffer-marks-table ()
+  "Initialize the buffer marks hashtable and add an entry for the
+current ('original') buffer."
+  (interactive)
+  (defvar my-buffer-marks-hash
+    (make-hash-table :test 'equal))
+  (puthash "0" (current-buffer)
+           my-buffer-marks-hash))
 
 (defhydra hydra-buffers (:idle 1.0
                          :columns 3
-			             :body-pre (progn (setq original-buffer
-                                                (current-buffer))
-                                          (defvar my-buffer-marks-hash (make-hash-table :test 'equal))))
+			             :body-pre (setup-buffer-marks-table))
   "Buffer mode"
   ("b" list-buffers "show all buffers")
   ("s-b" evil-switch-to-windows-last-buffer "switch to last buffer" :exit t)
