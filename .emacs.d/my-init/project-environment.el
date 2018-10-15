@@ -100,3 +100,5 @@ _d_: dir             _g_: update gtags
   (global-set-key (kbd "s-o") 'hydra-org/body))
 
 (use-package sicp)
+
+(use-package my-debugger)
