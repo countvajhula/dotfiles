@@ -34,12 +34,13 @@
 
 (defun my-buffer-set-mark (mark-name)
   "Set a mark"
-  (interactive "Mark name")
-  (puthash mark-name (current-buffer) my-buffer-marks-hash))
+  (interactive "cMark name?")
+  (puthash mark-name (current-buffer) my-buffer-marks-hash)
+  (message "Mark '%c' set." mark-name))
 
 (defun my-buffer-return-to-mark (mark-name)
   "Return to mark"
-  (interactive "Mark name")
+  (interactive "cMark name?")
   (switch-to-buffer (gethash mark-name my-buffer-marks-hash)))
 
 (defun return-to-original-buffer ()
