@@ -21,6 +21,7 @@
                         :exit t)
   "Python menu"
   ("c" elpy-check "Run lint checks")
+  ("g" evil-jump-to-tag "Go to definition")
   ("i" elpy-doc "See documentation on this")
   ("o" elpy-occur-definitions "See all definitions in current buffer")
   ("p" elpy-shell-switch-to-shell "Go to Python REPL")
