@@ -3,12 +3,20 @@
   (interactive)
   (describe-symbol (symbol-at-point)))
 
+(defun my-eval-exp-or-region ()
+  "Eval region or last sexp"
+  (interactive)
+  (if mark-active
+      (progn (eval-region (region-beginning) (region-end))
+             (deactivate-mark))
+    (eval-last-sexp nil)))
+
 (defhydra hydra-elisp (:timeout 2.0
                        :columns 2
                        :exit t)
   "Elisp menu"
-  ("e" eval-last-sexp "Eval sexp")
-  ("v" eval-last-sexp "Eval sexp")
+  ("e" my-eval-exp-or-region "Eval")
+  ("v" my-eval-exp-or-region "Eval")
   ("f" eval-defun "Eval function")
   ("d" edebug-defun "Eval fn for debug")
   ("i" my-describe-symbol "See documentation on this")
