@@ -12,7 +12,7 @@
              (message "Evaluated region."))
     (eval-last-sexp nil)))
 
-(defhydra hydra-elisp (:timeout 2.0
+(defhydra hydra-elisp (:timeout my-leader-timeout
                        :columns 2
                        :exit t)
   "Elisp menu"

@@ -16,7 +16,7 @@
 			  (setq tab-width 4)
 			  (setq python-indent-offset 4))))
 
-(defhydra hydra-python (:timeout 2.0
+(defhydra hydra-python (:timeout my-leader-timeout
                         :columns 2
                         :exit t)
   "Python menu"

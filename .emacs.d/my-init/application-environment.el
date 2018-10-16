@@ -1,6 +1,7 @@
 ;; vim-style local leader key for mode-specific
 ;; (e.g. python-specific) functionality
 (defvar my-local-leader "\\")
+(defvar my-leader-timeout 2.0)
 
 ;; convenient list- and functional-related macros
 (use-package dash)
@@ -268,7 +269,7 @@
                                   replace))
   (general-override-mode)
 
-  (defhydra hydra-leader (:timeout 2.0
+  (defhydra hydra-leader (:timeout my-leader-timeout
                           :columns 2
                           :exit t)
     "Quick actions"
