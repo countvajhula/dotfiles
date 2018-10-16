@@ -43,6 +43,8 @@
   (switch-to-buffer (gethash mark-name my-buffer-marks-hash)))
 
 (defun return-to-original-buffer ()
+  "Return to the buffer we were in at the time of entering
+buffer mode."
   (interactive)
   (switch-to-buffer (gethash "0" my-buffer-marks-hash)))
 
@@ -67,6 +69,7 @@ current ('original') buffer."
   ("'" my-buffer-return-to-mark "return to mark")
   ("`" my-buffer-return-to-mark "return to mark")
   ("s" ivy-switch-buffer "search buffers" :exit t)
+  ("/" ivy-switch-buffer "search buffers" :exit t)
   ("i" ibuffer "ibuffer" :exit t)
   ("s-i" ibuffer "ibuffer" :exit t)
   ("x" kill-buffer "kill buffer")
