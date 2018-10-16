@@ -1,3 +1,5 @@
+(use-package edebug-x)
+
 (defhydra hydra-debugger (:color amaranth
                           :columns 2)
   "Debugger"
@@ -19,7 +21,7 @@
   ("s" edebug-step-mode "step")
   ("n" edebug-next-mode "step to next after current expression")
   ("t" edebug-trace "Trace execution with pauses")
-  ("t" edebug-Trace-fast-mode "Trace execution without pauses")
+  ("T" edebug-Trace-fast-mode "Trace execution without pauses")
   ("x" edebug-set-conditional-breakpoint "set conditional breakpoint")
   ("X" edebug-set-global-break-condition "set break condition")
   ("w" edebug-where "return to current stop point")

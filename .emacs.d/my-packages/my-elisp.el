@@ -41,4 +41,6 @@
   (kbd "C-s-k")
   'my-jump-up)
 
+(use-package my-elisp-debugger)
+
 (provide 'my-elisp)
