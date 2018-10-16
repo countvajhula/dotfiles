@@ -8,7 +8,8 @@
   (interactive)
   (if mark-active
       (progn (eval-region (region-beginning) (region-end))
-             (deactivate-mark))
+             (deactivate-mark)
+             (message "Evaluated region."))
     (eval-last-sexp nil)))
 
 (defhydra hydra-elisp (:timeout 2.0
