@@ -12,13 +12,22 @@
              (message "Evaluated region."))
     (eval-last-sexp nil)))
 
+
+(defun my-eval (what)
+  "Evaluate something"
+  (interactive "cwhat?")
+  (cond ((equal what ?e) (my-eval-exp-or-region))
+        ((equal what ?r) (my-eval-exp-or-region))
+        ((equal what ?f) (eval-defun nil))
+        ((equal what ?d) (edebug-defun))
+        (t nil)))
+
 (defhydra hydra-elisp (:timeout my-leader-timeout
                        :columns 2
                        :exit t)
   "Elisp menu"
-  ("e" my-eval-exp-or-region "Eval")
-  ("v" my-eval-exp-or-region "Eval")
-  ("f" eval-defun "Eval function")
+  ("e" my-eval "Eval")
+  ("v" my-eval "Eval")
   ("d" edebug-defun "Eval fn for debug")
   ("g" evil-jump-to-tag "Go to definition")
   ("i" my-describe-symbol "See documentation on this")
