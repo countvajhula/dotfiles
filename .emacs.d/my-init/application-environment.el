@@ -427,7 +427,8 @@
   "Control application environment"
   ("t" hydra-transparency/body "transparency")
   ("n" display-line-numbers-mode "toggle line numbers")
-  ("l" hl-line-mode "toggle highlight line"))
+  ("l" hl-line-mode "toggle highlight line")
+  ("c" counsel-load-theme "change color scheme"))
 
 ;; hydra to configure the application environment
 ;; contains a nested hydra to modulate transparency
