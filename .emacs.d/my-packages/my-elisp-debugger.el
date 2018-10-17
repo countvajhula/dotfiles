@@ -1,4 +1,15 @@
-(use-package edebug-x)
+(use-package edebug
+  :defer t
+  :config
+  ;; retain evil movement keys, don't override h
+  (define-key edebug-mode-map (kbd "h") nil)
+  ;; retain binding of "g" for edebug's "Go"
+  (define-key edebug-mode-map (kbd "g") 'edebug-go-mode)
+  (define-key edebug-mode-map (kbd "G") 'edebug-Go-nonstop-mode))
+
+(use-package edebug-x
+  :defer t
+  :after edebug)
 
 (defhydra hydra-debugger (:color amaranth
                           :columns 2)
