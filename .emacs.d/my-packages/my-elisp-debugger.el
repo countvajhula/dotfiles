@@ -36,4 +36,4 @@
 ;; (add-hook 'edebug-mode-hook (lambda () (when (not edebug-entered)
 ;;                                          (hydra-debugger/body))))
 
-(provide 'my-debugger)
+(provide 'my-elisp-debugger)

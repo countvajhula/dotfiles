@@ -78,6 +78,17 @@ _d_: dir             _g_: update gtags
   (setq org-tag-alist '(("@SF" . ?s)
                         ("@Oakland" . ?o)
                         ("raMP" . ?r)))
+
+
+  ;; From: https://www.reddit.com/r/emacs/comments/7wsnoi/using_countdown_timers_for_alerts/
+  (defun show-msg-after-timer ()
+    "Show a message after timer expires. Based on run-at-time and can understand time like it can."
+    (interactive)
+    (let* ((msg-to-show (read-string "Enter msg to show: "))
+           (time-duration (read-string "Time? ")))
+      (message time-duration)
+      (run-at-time time-duration nil #'message-box msg-to-show)))
+
   ;; interface with org-mode via a hydra menu
   (defhydra hydra-org ()
     "Org-mode Menu"
@@ -85,6 +96,7 @@ _d_: dir             _g_: update gtags
     ("a" org-agenda "agenda")
     ("c" org-capture "capture")
     ("t" org-todo "todo")
+    ("o" show-msg-after-timer "timer")
     ("i" org-ibuffer "view all open org buffers")
     ("b" org-switchb "org switch buffer"))
 
