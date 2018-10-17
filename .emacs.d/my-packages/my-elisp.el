@@ -31,6 +31,7 @@
   ("d" edebug-defun "Eval fn for debug")
   ("g" evil-jump-to-tag "Go to definition")
   ("i" my-describe-symbol "See documentation on this")
+  ("?" my-describe-symbol "See documentation on this")
   ("r" my-lisp-repl "Go to elisp REPL"))
 
 (defun register-elisp-leader ()
