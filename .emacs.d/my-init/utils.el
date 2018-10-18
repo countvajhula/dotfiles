@@ -3,8 +3,13 @@
   (interactive))
 
 (defun my-lisp-repl ()
-  "An elisp REPL."
+  "Enter elisp REPL, context-aware.
+
+If there is only one window, open REPL in a new window. Otherwise
+open in current window."
   (interactive)
-  (evil-window-vsplit)
-  (evil-window-right 1)
+  (when (= (length (window-list))
+           1)
+    (progn (evil-window-vsplit)
+           (evil-window-right 1)))
   (ielm))
