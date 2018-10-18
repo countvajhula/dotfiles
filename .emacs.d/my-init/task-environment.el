@@ -151,6 +151,9 @@
 (use-package tab-indentation
   :load-path "~/.emacs.d/my-packages/")
 
+(use-package highlight
+  :disabled t)
+
 (use-package my-navigation
   :after evil)
 
