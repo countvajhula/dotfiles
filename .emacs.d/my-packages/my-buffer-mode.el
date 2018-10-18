@@ -66,6 +66,7 @@ current ('original') buffer."
   ("s-b" evil-switch-to-windows-last-buffer "switch to last buffer" :exit t)
   ("h" previous-buffer "previous buffer")
   ("l" next-buffer "next buffer")
+  ("n" xah-new-empty-buffer "new")
   ("m" my-buffer-set-mark "set mark")
   ("'" my-buffer-return-to-mark "return to mark")
   ("`" my-buffer-return-to-mark "return to mark")

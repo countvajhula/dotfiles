@@ -37,4 +37,10 @@
   (kbd "s-s")
   'save-buffer)
 
+(define-key
+  ;; new frame
+  (current-global-map)
+  (kbd "s-n")
+  'make-frame)
+
 (provide 'my-familiar)
