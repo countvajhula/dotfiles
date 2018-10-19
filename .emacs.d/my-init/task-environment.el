@@ -168,14 +168,5 @@
 (use-package my-navigation
   :after evil)
 
-(use-package my-window-mode
-  :after evil)
-
-(use-package my-page-mode
-  :after evil)
-
-(use-package my-line-mode
-  :after evil)
-
-(use-package my-char-mode
+(use-package evil-epistemic-mode
   :after evil)

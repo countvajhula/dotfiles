@@ -185,14 +185,6 @@
 (use-package caps-lock)
 
 
-;;;;;;;;;;;;;;;;;;
-;; CUSTOM MODES ;;
-;;;;;;;;;;;;;;;;;;
-
-
-(use-package my-buffer-mode)
-
-
 ;;;;;;;;;;;;;;;;;;;;;;
 ;; CUSTOM FUNCTIONS ;;
 ;;;;;;;;;;;;;;;;;;;;;;
