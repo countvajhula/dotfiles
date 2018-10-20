@@ -1,10 +1,4 @@
 (define-key
-  ;; standard alternative keybinding to search file
-  (current-global-map)
-  (kbd "s-f")
-  'evil-search-forward)
-
-(define-key
   ;; cycle forward through tabs
   (current-global-map)
   (kbd "s-}")
@@ -36,5 +30,11 @@
   (current-global-map)
   (kbd "s-s")
   'save-buffer)
+
+(define-key
+  ;; new frame
+  (current-global-map)
+  (kbd "s-n")
+  'make-frame)
 
 (provide 'my-familiar)

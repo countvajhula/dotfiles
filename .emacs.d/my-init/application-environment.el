@@ -1,3 +1,8 @@
+;; vim-style local leader key for mode-specific
+;; (e.g. python-specific) functionality
+(defvar my-local-leader "\\")
+(defvar my-leader-timeout 2.0)
+
 ;; convenient list- and functional-related macros
 (use-package dash)
 
@@ -10,29 +15,17 @@
 
 (use-package dictionary)
 
-;; python IDE
-(use-package elpy
-  :ensure t
-  :config
-  (elpy-enable)
-  (setq elpy-modules
-	(remove 'elpy-module-highlight-indentation
-		elpy-modules))
-  (setq elpy-rpc-python-command "python3")
-  ;; use jedi for completion with elpy instead of rope
-  (setq elpy-rpc-backend "jedi")
-  (setq python-check-command "~/.local/bin/pyflakes")
-  (add-hook 'python-mode-hook
-			(lambda () (show-paren-mode 1)))
-  (add-hook 'python-mode-hook
-			(lambda ()
-			  (setq tab-width 4)
-			  (setq python-indent-offset 4))))
-
 (use-package my-python
-  :after (elpy general))
+  :after general)
+
+(use-package my-elisp
+  :after general)
 
 (use-package php-mode)
+
+(use-package tex
+  :defer t
+  :ensure auctex)
 
 ;; ido mode
 (use-package ido
@@ -192,20 +185,6 @@
 ;; virtual caps lock since actual one is remapped to Esc
 (use-package caps-lock)
 
-(use-package ace-window
-  :disabled t
-  :bind ("s-w" . ace-window)
-  :config
-  (setq aw-keys '(?h ?j ?k ?l ?g ?f ?d ?s ?a)))
-
-
-;;;;;;;;;;;;;;;;;;
-;; CUSTOM MODES ;;
-;;;;;;;;;;;;;;;;;;
-
-
-(use-package my-buffer-mode)
-
 
 ;;;;;;;;;;;;;;;;;;;;;;
 ;; CUSTOM FUNCTIONS ;;
@@ -264,16 +243,9 @@
   (interactive)
   (let (($buf (generate-new-buffer "untitled")))
     (switch-to-buffer $buf)
-    (funcall initial-major-mode)
+    (funcall (default-value 'major-mode))
     (setq buffer-offer-save t)
-    $buf
-    ))
-
-(defun my-lisp-repl ()
-  (interactive)
-  (evil-window-vsplit)
-  (evil-window-right 1)
-  (ielm))
+    $buf))
 
 
 (use-package general
@@ -291,7 +263,7 @@
                                   replace))
   (general-override-mode)
 
-  (defhydra hydra-leader (:idle 1.0
+  (defhydra hydra-leader (:timeout my-leader-timeout
                           :columns 2
                           :exit t)
     "Quick actions"
@@ -303,6 +275,7 @@
     ("t" sr-speedbar-toggle "Nav Sidebar")
     ("u" undo-tree-visualize "Undo tree"))
 
+  ;; define global vim-style "leader" key
   (general-define-key
    :states '(normal visual motion)
    :keymaps 'override
@@ -327,6 +300,11 @@
 (setq mac-function-modifier 'hyper)
 
 ; Note: "define-key (current-global-map)" is the same as global-set-key
+
+;; default "emacs leader" is \, but rebinding that (Vim default) key
+;; to be a local leader for different modes (like python) since that's
+;; more useful. Move emacs leader to s-\ instead
+(global-set-key (kbd "s-\\") 'evil-execute-in-emacs-state)
 
 (define-key
   ;; info on the current buffer
@@ -435,16 +413,16 @@
   ("j" increase-transparency "increase transparency")
   ("K" minimize-transparency "min transparency (opaque)")
   ("J" maximize-transparency "max transparency (transparent)")
-  ("<return>" my-noop "quit" :exit t)
-  ("q" my-noop "quit" :exit t)
-  ("<escape>" return-to-original-transparency "return to original transparency" :exit t))
+  ("q" return-to-original-transparency  "return to original transparency" :exit t)
+  ("<escape>" my-noop "quit" :exit t))
 
 (defhydra hydra-application (:columns 1
                              :exit t)
   "Control application environment"
   ("t" hydra-transparency/body "transparency")
   ("n" display-line-numbers-mode "toggle line numbers")
-  ("l" hl-line-mode "toggle highlight line"))
+  ("l" hl-line-mode "toggle highlight line")
+  ("c" counsel-load-theme "change color scheme"))
 
 ;; hydra to configure the application environment
 ;; contains a nested hydra to modulate transparency

@@ -32,20 +32,51 @@
 ;; and provide a custom keymap. still, seems like it needs to be
 ;; managed inside a hydra
 
+(defun my-buffer-set-mark (mark-name)
+  "Set a mark"
+  (interactive "cMark name?")
+  (puthash mark-name (current-buffer) my-buffer-marks-hash)
+  (message "Mark '%c' set." mark-name))
+
+(defun my-buffer-return-to-mark (mark-name)
+  "Return to mark"
+  (interactive "cMark name?")
+  (switch-to-buffer (gethash mark-name my-buffer-marks-hash)))
+
 (defun return-to-original-buffer ()
+  "Return to the buffer we were in at the time of entering
+buffer mode."
   (interactive)
-  (switch-to-buffer original-buffer))
+  (switch-to-buffer (gethash "0" my-buffer-marks-hash)))
+
+(defun setup-buffer-marks-table ()
+  "Initialize the buffer marks hashtable and add an entry for the
+current ('original') buffer."
+  (interactive)
+  (defvar my-buffer-marks-hash
+    (make-hash-table :test 'equal))
+  (puthash "0" (current-buffer)
+           my-buffer-marks-hash))
 
 (defhydra hydra-buffers (:idle 1.0
-			             :body-pre (setq original-buffer
-                                         (current-buffer)))
-  "Cycle through buffers, Alt-tab style"
-  ("b" list-buffers "show all buffers")
-  ("s-b" evil-switch-to-windows-last-buffer "switch to last buffer" :exit t)
-  ("h" previous-buffer "previous buffer")
-  ("l" next-buffer "next buffer")
-  ("q" return-to-original-buffer "return to original buffer" :exit t)
-  ("i" my-noop "exit" :exit t)
+                         :columns 3
+			             :body-pre (setup-buffer-marks-table))
+  "Buffer mode"
+  ("b" list-buffers "show all")
+  ("s-b" evil-switch-to-windows-last-buffer "switch to last" :exit t)
+  ("h" previous-buffer "previous")
+  ("l" next-buffer "next")
+  ("n" xah-new-empty-buffer "new")
+  ("m" my-buffer-set-mark "set mark")
+  ("'" my-buffer-return-to-mark "return to mark")
+  ("`" my-buffer-return-to-mark "return to mark")
+  ("s" ivy-switch-buffer "search" :exit t)
+  ("/" ivy-switch-buffer "search" :exit t)
+  ("i" ibuffer "ibuffer" :exit t)
+  ("s-i" ibuffer "ibuffer" :exit t)
+  ("x" kill-buffer "delete")
+  ("?" my-buffer-info "info" :exit t)
+  ("q" return-to-original-buffer "return to original" :exit t)
   ("<escape>" my-noop "exit" :exit t))
 
 ;; access the buffer menu via a "body" keybinding

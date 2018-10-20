@@ -26,35 +26,38 @@ _t_: recent file     _j_: jump to tag                            ^^^^_z_: cache 
 _d_: dir             _g_: update gtags
 
 "
-    ("b"   projectile-switch-to-buffer)
-    ("c"   projectile-invalidate-cache)
-    ("d"   projectile-find-dir)
-    ("e"   projectile-find-file-dwim)
-    ("f"   projectile-find-file)
-    ("s-f" projectile-find-file)
-    ("l"   projectile-find-file-in-directory)
-    ("j"   projectile-find-tag)
-    ("g"   ggtags-update-tags)
-    ("s-g" ggtags-update-tags)
-    ("i"   projectile-ibuffer)
-    ("K"   projectile-kill-buffers)
-    ("s-k" projectile-kill-buffers)
-    ("m"   projectile-multi-occur)
-    ("o"   projectile-multi-occur)
-    ("s-p" projectile-switch-project "switch project")
-    ("p"   projectile-switch-project)
-    ("r"   projectile-replace)
-    ("s"   projectile-grep)
-    ("s-s" projectile-grep)
-    ("t"   projectile-recentf)
-    ("x"   projectile-remove-known-project)
-    ("X"   projectile-cleanup-known-projects)
-    ("z"   projectile-cache-current-file)
-    ("`"   hydra-projectile-other-window/body "other window")
-    ("q"   nil "cancel" :color blue))
+    ("b"        projectile-switch-to-buffer)
+    ("c"        projectile-invalidate-cache)
+    ("d"        projectile-find-dir)
+    ("e"        projectile-find-file-dwim)
+    ("f"        projectile-find-file)
+    ("s-f"      projectile-find-file)
+    ("l"        projectile-find-file-in-directory)
+    ("j"        projectile-find-tag)
+    ("g"        ggtags-update-tags)
+    ("s-g"      ggtags-update-tags)
+    ("i"        projectile-ibuffer)
+    ("K"        projectile-kill-buffers)
+    ("s-k"      projectile-kill-buffers)
+    ("m"        projectile-multi-occur)
+    ("o"        projectile-multi-occur)
+    ("s-p"      projectile-switch-project "switch project")
+    ("p"        projectile-switch-project)
+    ("r"        projectile-replace)
+    ("s"        projectile-grep)
+    ("s-s"      projectile-grep)
+    ("t"        projectile-recentf)
+    ("x"        projectile-remove-known-project)
+    ("X"        projectile-cleanup-known-projects)
+    ("z"        projectile-cache-current-file)
+    ("`"        hydra-projectile-other-window/body "other window")
+    ("q"        nil "cancel" :color blue)
+    ("<escape>" nil :color blue))
+
   ;; (define-key (current-global-map)
   ;;             (kbd "s-p")
   ;;             'hydra-projectile/body)
+
   (define-key (current-global-map)
               (kbd "s-F")
               'projectile-grep))
@@ -65,6 +68,8 @@ _d_: dir             _g_: update gtags
 (use-package org
   :after org-ibuffer
   :config
+  ;; visually indent lower hierarchy levels
+  (setq org-startup-indented t)
   (setq org-agenda-files '("~/log/org/"))
   (setq org-todo-keywords '((sequence "[ ](t)"    ; todo
                                       "[\\](w)"   ; working / in-progress
@@ -74,6 +79,17 @@ _d_: dir             _g_: update gtags
   (setq org-tag-alist '(("@SF" . ?s)
                         ("@Oakland" . ?o)
                         ("raMP" . ?r)))
+
+
+  ;; From: https://www.reddit.com/r/emacs/comments/7wsnoi/using_countdown_timers_for_alerts/
+  (defun show-msg-after-timer ()
+    "Show a message after timer expires. Based on run-at-time and can understand time like it can."
+    (interactive)
+    (let* ((msg-to-show (read-string "Enter msg to show: "))
+           (time-duration (read-string "Time? ")))
+      (message time-duration)
+      (run-at-time time-duration nil #'message-box msg-to-show)))
+
   ;; interface with org-mode via a hydra menu
   (defhydra hydra-org ()
     "Org-mode Menu"
@@ -81,6 +97,7 @@ _d_: dir             _g_: update gtags
     ("a" org-agenda "agenda")
     ("c" org-capture "capture")
     ("t" org-todo "todo")
+    ("o" show-msg-after-timer "timer")
     ("i" org-ibuffer "view all open org buffers")
     ("b" org-switchb "org switch buffer"))
 
@@ -95,4 +112,8 @@ _d_: dir             _g_: update gtags
   ;; access the org-mode menu via a "body" keybinding
   (global-set-key (kbd "s-o") 'hydra-org/body))
 
-(use-package sicp)
+(use-package sicp
+  :defer t)
+
+(use-package buttercup
+  :defer t)

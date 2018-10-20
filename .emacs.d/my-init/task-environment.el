@@ -15,6 +15,17 @@
   ;; use "symbols" instead of simple words in point searches
   (defalias #'forward-evil-word #'forward-evil-symbol)
 
+  ;; (defun my-goto-line (orig-fun &rest args)
+  ;;   "Recenter after going to a line"
+  ;;   (interactive)
+  ;;   (let ((res (apply orig-fun args)))
+  ;;     (recenter-top-bottom)
+  ;;     res))
+  ;; ;; recenter page after goto line (like Vim; this is otherwise overridden
+  ;; ;; due to "scroll-conservatively" settings)
+  ;; ;;(add-function :after #'evil-goto-line #'recenter-top-bottom)
+  ;; (advice-add 'my-goto-line :around #'evil-goto-line)
+
   ;; Vim C-x line completion emulation,
   ;; from https://stackoverflow.com/questions/17928467/full-line-completion-in-emacs
   (defun my-expand-lines ()
@@ -44,6 +55,20 @@
   (define-key evil-outer-text-objects-map "I" 'evil-indent-plus-a-indent-up)
   (define-key evil-inner-text-objects-map "J" 'evil-indent-plus-i-indent-up-down)
   (define-key evil-outer-text-objects-map "J" 'evil-indent-plus-a-indent-up-down))
+
+(use-package evil-surround
+  :config
+  (global-evil-surround-mode 1)
+  ;; use non-spaced pairs when surrounding with an opening brace
+  ;; from: https://github.com/emacs-evil/evil-surround/issues/86
+  (evil-add-to-alist
+   'evil-surround-pairs-alist
+   ?\( '("(" . ")")
+   ?\[ '("[" . "]")
+   ?\{ '("{" . "}")
+   ?\) '("( " . " )")
+   ?\] '("[ " . " ]")
+   ?\} '("{ " . " }")))
 
 (use-package evil-goggles
   :ensure t
@@ -140,11 +165,11 @@
 (use-package tab-indentation
   :load-path "~/.emacs.d/my-packages/")
 
+(use-package highlight
+  :disabled t)
+
 (use-package my-navigation
   :after evil)
 
-(use-package my-window-mode
-  :after evil)
-
-(use-package my-page-mode
+(use-package evil-epistemic-mode
   :after evil)

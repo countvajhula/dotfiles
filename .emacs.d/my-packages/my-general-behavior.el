@@ -14,6 +14,21 @@
 (setq auto-save-file-name-transforms
       `((".*" ,(concat user-emacs-directory "auto-save/") t)))
 
+;; "Civilized people want to version their backups and organize it so
+;; that backups are not laced out through their harddrive, but rather
+;; organized into specific backup directories."  From:
+;; https://www.emacswiki.org/emacs/BackupDirectory
+(setq
+ ;; don't clobber symlinks
+ backup-by-copying t
+ ;; don't litter my fs tree
+ backup-directory-alist `(("." . ,(concat user-emacs-directory "backups/")))
+ delete-old-versions t
+ kept-new-versions 6
+ kept-old-versions 2
+ ;; use versioned backups
+ version-control t)
+
 ;; save any customizations done via Customize or set automatically by
 ;; various emacs modes to a designated file, instead of cluttering init.el
 (setq custom-file (concat user-customizations-directory
@@ -41,5 +56,8 @@
 ;; keyboard scroll one line at a time instead of jumping
 (setq scroll-step            1
       scroll-conservatively  10000)
+
+;; wrap lines visually, preserving indentation (like vim's breakindent)
+(global-visual-line-mode)
 
 (provide 'my-general-behavior)
