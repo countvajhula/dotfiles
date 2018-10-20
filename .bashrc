@@ -21,6 +21,9 @@ export PATH=$HOME/bin:/usr/local/opt/python/libexec/bin:/usr/local/bin:/usr/loca
 export DYLD_LIBRARY_PATH=/usr/local/mysql/lib/
 # for ruby
 export PATH="$HOME/.rbenv/bin:$PATH"
+# for haskell
+export PATH="$HOME/Library/Haskell/bin:$PATH"
+
 eval "$(rbenv init -)"
 
 # for mono (.NET), "to use assemblies from other formulae" - homebrew
