@@ -86,10 +86,14 @@
 (defhydra hydra-char (:idle 1.0
                       :columns 4)
   "Character mode"
-  ("h" my-move-char-left "left")
-  ("j" my-move-char-down "down")
-  ("k" my-move-char-up "up")
-  ("l" my-move-char-right "right")
+  ("h" evil-backward-char "left")
+  ("j" evil-next-line "down")
+  ("k" evil-previous-line "up")
+  ("l" evil-forward-char "right")
+  ("C-h" my-move-char-left "left")
+  ("C-j" my-move-char-down "down")
+  ("C-k" my-move-char-up "up")
+  ("C-l" my-move-char-right "right")
   ("H" my-move-char-far-left "move to far left")
   ("J" my-move-char-very-bottom "move to bottom")
   ("K" my-move-char-very-top "move to top")
