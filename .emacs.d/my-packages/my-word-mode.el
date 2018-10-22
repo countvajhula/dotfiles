@@ -32,6 +32,11 @@
   (evil-previous-line)
   (evil-paste-before nil nil))
 
+(defun my-delete-word ()
+  "Delete word"
+  (interactive)
+  (apply 'evil-delete (evil-inner-word)))
+
 (defhydra hydra-word (:idle 1.0
                       :columns 2)
   "Word mode"
@@ -45,6 +50,9 @@
   ("C-l" my-move-word-forward "move right")
   ("C-j" my-move-word-down "move down")
   ("C-k" my-move-word-up "move up")
+  ("x" my-delete-word "delete")
+  ("d" dictionary-lookup-definition "lookup in dictionary" :exit t)
+  ("?" dictionary-lookup-definition "lookup in dictionary" :exit t)
   ("i" my-noop "exit" :exit t)
   ("<escape>" my-noop "exit" :exit t))
 
