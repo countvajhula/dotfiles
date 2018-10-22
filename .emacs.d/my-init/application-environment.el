@@ -21,7 +21,11 @@
 (use-package my-elisp
   :after general)
 
-(use-package php-mode)
+(use-package php-mode
+  :defer t)
+
+(use-package haskell-mode
+  :defer t)
 
 (use-package tex
   :defer t
