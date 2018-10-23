@@ -154,10 +154,14 @@ From: https://emacs.stackexchange.com/questions/17846/calculating-the-length-of-
 (defhydra hydra-line (:idle 1.0
                       :columns 4)
   "Line mode"
-  ("h" my-move-line-left "left")
-  ("j" my-move-line-down "down")
-  ("k" my-move-line-up "up")
-  ("l" my-move-line-right "right")
+  ("h" evil-previous-line "previous")
+  ("j" evil-next-line "next")
+  ("k" evil-previous-line "previous")
+  ("l" evil-next-line "next")
+  ("C-h" my-move-line-left "move left")
+  ("C-j" my-move-line-down "move down")
+  ("C-k" my-move-line-up "move up")
+  ("C-l" my-move-line-right "move right")
   ("H" my-move-line-far-left "move to far left")
   ("J" my-move-line-very-bottom "move to bottom")
   ("K" my-move-line-very-top "move to top")
