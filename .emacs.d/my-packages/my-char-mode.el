@@ -103,6 +103,7 @@
   ("x" my-delete-char "delete")
   ("~" my-toggle-case-char "toggle case")
   ("i" my-char-info "info" :exit t)
+  ("?" my-char-info "info" :exit t)
   ("<escape>" nil "exit" :exit t)
   ("s-<return>" evil-insert-state "enter lower level" :exit t)
   ("s-<escape>" hydra-word/body "escape to higher level" :exit t))
