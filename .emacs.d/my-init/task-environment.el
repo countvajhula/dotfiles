@@ -10,6 +10,8 @@
   (setcdr evil-insert-state-map nil)
   ;; Esc goes to normal mode in "insert" (emacs) mode
   (define-key evil-insert-state-map [escape] 'evil-normal-state)
+  ;; Enter goes to insert mode in normal mode, for consistency with epistemic modes
+  (define-key evil-normal-state-map [return] 'evil-insert-state)
   ;; C-z goes to emacs mode in "insert" mode
   (define-key evil-insert-state-map (kbd "C-z") 'evil-emacs-state)
   ;; use "symbols" instead of simple words in point searches
@@ -133,7 +135,7 @@
   ;; access the multiple-cursors menu via a "body" keybinding
   (global-set-key (kbd "s-d") 'hydra-cursors/body)
   ;; retain a convenient, non-hydra, escape hatch
-  (global-set-key (kbd "s-<escape>") 'evil-mc-undo-all-cursors))
+  (global-set-key (kbd "s-D") 'evil-mc-undo-all-cursors))
 
 (use-package yasnippet
   :config

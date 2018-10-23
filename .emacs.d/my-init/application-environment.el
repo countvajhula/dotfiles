@@ -424,7 +424,9 @@
   ("t" hydra-transparency/body "transparency")
   ("n" display-line-numbers-mode "toggle line numbers")
   ("l" hl-line-mode "toggle highlight line")
-  ("c" counsel-load-theme "change color scheme"))
+  ("c" counsel-load-theme "change color scheme")
+  ("<return>" hydra-buffer/body "enter" :exit t)
+  ("<escape>" hydra-system/body "exit" :exit t))
 
 ;; hydra to configure the application environment
 ;; contains a nested hydra to modulate transparency

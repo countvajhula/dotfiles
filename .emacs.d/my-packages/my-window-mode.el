@@ -16,8 +16,8 @@
 ;; a Vim-style "mode," implemented using a hydra, and also overrides
 ;; some defaults to make them faster or more useful/intuitive.
 
-(defhydra hydra-windows (:idle 1.0
-                         :columns 4)
+(defhydra hydra-window (:idle 1.0
+                        :columns 4)
   "Window mode"
   ("h" evil-window-left "left")
   ("j" evil-window-down "down")
@@ -53,8 +53,9 @@
   ("s-f" ffap-other-window "go to file in other window" :exit t)
   ("f" ffap-other-window "" :exit t)
   ("i" my-noop "exit" :exit t)
-  ("<escape>" my-noop "exit" :exit t))
+  ("<return>" hydra-page/body "enter" :exit t)
+  ("<escape>" hydra-buffer/body "exit" :exit t))
 
-(global-set-key (kbd "s-w") 'hydra-windows/body)
+(global-set-key (kbd "s-w") 'hydra-window/body)
 
 (provide 'my-window-mode)

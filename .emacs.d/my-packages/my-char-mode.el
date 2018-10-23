@@ -103,7 +103,8 @@
   ("x" my-delete-char "delete")
   ("~" my-toggle-case-char "toggle case")
   ("i" my-char-info "info" :exit t)
-  ("<escape>" my-noop "exit" :exit t))
+  ("<return>" evil-insert-state "enter" :exit t)
+  ("<escape>" hydra-word/body "exit" :exit t))
 
 (global-set-key (kbd "s-x") 'hydra-char/body)
 

@@ -129,7 +129,8 @@
   ("s-r" my-delete-word "delete" :exit t)
   ("s-o" my-delete-other-words "delete other words" :exit t)
   ("?" dictionary-lookup-definition "lookup in dictionary" :exit t)
-  ("<escape>" my-noop "exit" :exit t))
+  ("<escape>" hydra-line/body "exit" :exit t)
+  ("<return>" hydra-char/body "enter" :exit t))
 
 (global-set-key (kbd "s-r") 'hydra-word/body)
 

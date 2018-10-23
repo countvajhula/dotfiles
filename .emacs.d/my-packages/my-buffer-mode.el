@@ -58,7 +58,7 @@ current ('original') buffer."
   (puthash "0" (current-buffer)
            my-buffer-marks-hash))
 
-(defhydra hydra-buffers (:idle 1.0
+(defhydra hydra-buffer (:idle 1.0
                          :columns 3
 			             :body-pre (setup-buffer-marks-table))
   "Buffer mode"
@@ -77,9 +77,10 @@ current ('original') buffer."
   ("x" kill-buffer "delete")
   ("?" my-buffer-info "info" :exit t)
   ("q" return-to-original-buffer "return to original" :exit t)
-  ("<escape>" my-noop "exit" :exit t))
+  ("<return>" hydra-window/body "enter" :exit t)
+  ("<escape>" hydra-application/body "exit" :exit t))
 
 ;; access the buffer menu via a "body" keybinding
-(global-set-key (kbd "s-b") 'hydra-buffers/body)
+(global-set-key (kbd "s-b") 'hydra-buffer/body)
 
 (provide 'my-buffer-mode)
