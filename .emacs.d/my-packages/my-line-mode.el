@@ -172,8 +172,9 @@ From: https://emacs.stackexchange.com/questions/17846/calculating-the-length-of-
   ("y" my-yank-line "yank (copy)")
   (";" my-toggle-comment-line "toggle comment")
   ("i" my-line-info "info" :exit t)
-  ("<return>" hydra-word/body "enter" :exit t)
-  ("<escape>" hydra-page/body "exit" :exit t))
+  ("<escape>" nil "exit" :exit t)
+  ("s-<return>" hydra-word/body "enter lower level" :exit t)
+  ("s-<escape>" hydra-page/body "escape to higher level" :exit t))
 
 (global-set-key (kbd "s-l") 'hydra-line/body)
 

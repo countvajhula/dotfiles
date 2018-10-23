@@ -8,8 +8,9 @@
   "System information"
   ("b" my-battery-life "show power info including battery life")
   ("s-i" my-battery-life "show power info including battery life")
-  ("<return>" hydra-application/body "enter" :exit t)
-  ("<escape>" my-noop "exit" :exit t))
+  ("<escape>" nil "exit" :exit t)
+  ("s-<return>" hydra-application/body "enter lower level" :exit t)
+  ("s-<escape>" nil "escape to higher level (none)" :exit t))
 
 ;; access the system menu via a "body" keybinding
 (global-set-key (kbd "s-i") 'hydra-system/body)

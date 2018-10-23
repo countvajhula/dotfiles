@@ -13,27 +13,8 @@
   ;; start at the lowest level
   (hydra-char/body))
 
-(defun enter-epistemic-modes ()
-  "Enter epistemic modes.
-
-Enter/Escape will now go up and down the epistemic editing levels."
-  (interactive)
-  ;; Esc goes to character mode in "insert" (emacs) mode
-  (define-key evil-insert-state-map [escape] 'enter-first-level)
-  (enter-first-level))
-
-(defun exit-epistemic-modes ()
-  "Exit epistemic modes.
-
-Enter/Escape will go between Insert/Normal as usual."
-  (interactive)
-  ;; Esc goes to normal mode in "insert" (emacs) mode
-  (define-key evil-insert-state-map [escape] 'evil-normal-state)
-  ;; Enter goes to insert mode in normal mode, for consistency with epistemic modes
-  (define-key evil-normal-state-map [return] 'evil-insert-state)
-  (evil-force-normal-state))
-
-(global-set-key (kbd "s-<return>") 'enter-epistemic-modes)
-(global-set-key (kbd "s-<escape>") 'exit-epistemic-modes)
+(define-key evil-insert-state-map [s-escape] 'enter-first-level)
+(define-key evil-normal-state-map [s-escape] 'hydra-window/body)
+(define-key evil-normal-state-map [s-return] 'evil-insert-state)
 
 (provide 'evil-epistemic-mode)

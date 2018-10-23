@@ -32,8 +32,9 @@
   ("u" my-scroll-half-page-up "leap up")
   ("d" my-scroll-half-page-down "leap down")
   ("i" my-noop "exit" :exit t)
-  ("<return>" hydra-line/body "enter" :exit t)
-  ("<escape>" hydra-window/body "exit" :exit t))
+  ("<escape>" nil "exit" :exit t)
+  ("s-<return>" hydra-line/body "enter lower level" :exit t)
+  ("s-<escape>" hydra-window/body "escape to higher level" :exit t))
 
 (global-set-key (kbd "s-g") 'hydra-page/body)
 

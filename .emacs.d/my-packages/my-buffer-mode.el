@@ -77,8 +77,9 @@ current ('original') buffer."
   ("x" kill-buffer "delete")
   ("?" my-buffer-info "info" :exit t)
   ("q" return-to-original-buffer "return to original" :exit t)
-  ("<return>" hydra-window/body "enter" :exit t)
-  ("<escape>" hydra-application/body "exit" :exit t))
+  ("<escape>" nil "exit" :exit t)
+  ("s-<return>" hydra-window/body "enter lower level" :exit t)
+  ("s-<escape>" hydra-application/body "escape to higher level" :exit t))
 
 ;; access the buffer menu via a "body" keybinding
 (global-set-key (kbd "s-b") 'hydra-buffer/body)
