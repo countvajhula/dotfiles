@@ -15,16 +15,12 @@
   ;; use "symbols" instead of simple words in point searches
   (defalias #'forward-evil-word #'forward-evil-symbol)
 
-  ;; (defun my-goto-line (orig-fun &rest args)
-  ;;   "Recenter after going to a line"
-  ;;   (interactive)
-  ;;   (let ((res (apply orig-fun args)))
-  ;;     (recenter-top-bottom)
-  ;;     res))
-  ;; ;; recenter page after goto line (like Vim; this is otherwise overridden
-  ;; ;; due to "scroll-conservatively" settings)
-  ;; ;;(add-function :after #'evil-goto-line #'recenter-top-bottom)
-  ;; (advice-add 'my-goto-line :around #'evil-goto-line)
+  (defun my-recenter-view (&rest args)
+    "Recenter screen on cursor"
+    (recenter-top-bottom))
+  ;; recenter page after goto line (like Vim; this is otherwise overridden
+  ;; due to "scroll-conservatively" settings)
+  (advice-add 'evil-goto-line :after #'my-recenter-view)
 
   ;; Vim C-x line completion emulation,
   ;; from https://stackoverflow.com/questions/17928467/full-line-completion-in-emacs
