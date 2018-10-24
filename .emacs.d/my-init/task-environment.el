@@ -17,10 +17,11 @@
 
   (defun my-recenter-view (&rest args)
     "Recenter screen on cursor"
-    (recenter-top-bottom))
+    (recenter))
   ;; recenter page after goto line (like Vim; this is otherwise overridden
   ;; due to "scroll-conservatively" settings)
   (advice-add 'evil-goto-line :after #'my-recenter-view)
+  (advice-add 'evil-search :after #'my-recenter-view)
 
   ;; Vim C-x line completion emulation,
   ;; from https://stackoverflow.com/questions/17928467/full-line-completion-in-emacs
