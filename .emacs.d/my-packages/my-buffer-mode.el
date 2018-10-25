@@ -47,7 +47,7 @@
   "Return to the buffer we were in at the time of entering
 buffer mode."
   (interactive)
-  (switch-to-buffer (gethash "0" my-buffer-marks-hash)))
+  (switch-to-buffer (my-original-buffer)))
 
 (defun flash-to-original-and-back ()
   "Go momentarily to original buffer and return.
@@ -57,9 +57,10 @@ encountered while navigating to the present one, to be treated as the
 last buffer for 'flashback' ('Alt-tab') purposes. The flash should
 happen quickly enough not to be noticeable."
   (interactive)
-  (let ((inhibit-redisplay t)) ;; not sure if this is doing anything but FWIW
-    (return-to-original-buffer)
-    (evil-switch-to-windows-last-buffer)))
+  (unless (equal (current-buffer) (my-original-buffer))
+    (let ((inhibit-redisplay t)) ;; not sure if this is doing anything but FWIW
+      (return-to-original-buffer)
+      (evil-switch-to-windows-last-buffer))))
 
 (defun setup-buffer-marks-table ()
   "Initialize the buffer marks hashtable and add an entry for the
@@ -67,8 +68,18 @@ current ('original') buffer."
   (interactive)
   (defvar my-buffer-marks-hash
     (make-hash-table :test 'equal))
+  (save-original-buffer))
+
+(defun save-original-buffer ()
+  "Save current buffer as original buffer."
+  (interactive)
   (puthash "0" (current-buffer)
            my-buffer-marks-hash))
+
+(defun my-original-buffer ()
+  "Get original buffer identifier"
+  (interactive)
+  (gethash "0" my-buffer-marks-hash))
 
 (defhydra hydra-buffer (:idle 1.0
                         :columns 3
