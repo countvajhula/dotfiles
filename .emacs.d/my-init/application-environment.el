@@ -271,6 +271,7 @@
     "Quick actions"
     ("a" org-agenda "Org agenda")
     ("d" dictionary-lookup-definition "lookup in dictionary")
+    ("f" my-current-dir "dir")
     ("g" magit-status "Magit (git)")
     ("l" my-lisp-repl "Lisp REPL")
     ("s" eshell "Shell")

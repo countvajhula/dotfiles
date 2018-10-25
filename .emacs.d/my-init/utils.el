@@ -13,3 +13,8 @@ open in current window."
     (progn (evil-window-vsplit)
            (evil-window-right 1)))
   (ielm))
+
+(defun my-current-dir ()
+    "View current dir in dired."
+    (interactive)
+    (dired nil))
