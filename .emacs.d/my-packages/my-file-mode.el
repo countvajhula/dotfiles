@@ -20,7 +20,9 @@ Version 2016-04-04"
   (set-mark-command t))
 
 (defhydra hydra-file (:idle 1.0
-                      :columns 2)
+                      :columns 2
+                      :body-pre (evil-file-state)
+                      :post (evil-normal-state))
   "File mode"
   ("h" evil-backward-char "backward")
   ("j" evil-next-line "down")

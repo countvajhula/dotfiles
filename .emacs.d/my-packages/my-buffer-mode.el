@@ -83,7 +83,9 @@ current ('original') buffer."
 
 (defhydra hydra-buffer (:idle 1.0
                         :columns 3
-                        :body-pre (setup-buffer-marks-table))
+                        :body-pre (progn (setup-buffer-marks-table)
+                                         (evil-buffer-state))
+                        :post (evil-normal-state))
   "Buffer mode"
   ("b" list-buffers "show all")
   ("s-b" evil-switch-to-windows-last-buffer "switch to last" :exit t)

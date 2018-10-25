@@ -17,7 +17,9 @@
 ;; some defaults to make them faster or more useful/intuitive.
 
 (defhydra hydra-window (:idle 1.0
-                        :columns 4)
+                        :columns 4
+                        :body-pre (evil-window-state)
+                        :post (evil-normal-state))
   "Window mode"
   ("h" evil-window-left "left")
   ("j" evil-window-down "down")
