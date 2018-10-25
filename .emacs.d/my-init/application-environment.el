@@ -179,7 +179,44 @@
   (setq sml/theme 'dark))
 
 (use-package telephone-line
+  :after evil-epistemic-mode
   :config
+  ;; define faces for epistemic modes
+  (defface telephone-line-evil-char
+    '((t (:background "red3" :inherit telephone-line-evil)))
+    "Face used in evil color-coded segments when in Char state."
+    :group 'telephone-line-evil)
+
+  (defface telephone-line-evil-word
+    '((t (:background "red3" :inherit telephone-line-evil)))
+    "Face used in evil color-coded segments when in Word state."
+    :group 'telephone-line-evil)
+
+  (defface telephone-line-evil-line
+    '((t (:background "red3" :inherit telephone-line-evil)))
+    "Face used in evil color-coded segments when in Line state."
+    :group 'telephone-line-evil)
+
+  (defface telephone-line-evil-view
+    '((t (:background "red3" :inherit telephone-line-evil)))
+    "Face used in evil color-coded segments when in View state."
+    :group 'telephone-line-evil)
+
+  (defface telephone-line-evil-window
+    '((t (:background "red3" :inherit telephone-line-evil)))
+    "Face used in evil color-coded segments when in Window state."
+    :group 'telephone-line-evil)
+
+  (defface telephone-line-evil-file
+    '((t (:background "red3" :inherit telephone-line-evil)))
+    "Face used in evil color-coded segments when in File state."
+    :group 'telephone-line-evil)
+
+  (defface telephone-line-evil-buffer
+    '((t (:background "red3" :inherit telephone-line-evil)))
+    "Face used in evil color-coded segments when in Buffer state."
+    :group 'telephone-line-evil)
+
   (telephone-line-mode t))
 
 ;; cozy time
