@@ -15,6 +15,10 @@
   ;; use "symbols" instead of simple words in point searches
   (defalias #'forward-evil-word #'forward-evil-symbol)
 
+  (defun my-autoindent (&rest args)
+    "Auto-indent line"
+    (indent-according-to-mode))
+
   (defun my-recenter-view (orig-fn &rest args)
     "Depending on context, recenter screen on cursor.
 
@@ -42,6 +46,9 @@ initial screen (when centered) -- same behavior as Vim."
   ;; due to "scroll-conservatively" settings)
   (advice-add 'evil-goto-line :around #'my-recenter-view)
   (advice-add 'evil-search :around #'my-recenter-view)
+
+  ;; preserve indentation when joining lines
+  (advice-add 'evil-join :after #'my-autoindent)
 
   ;; Vim C-x line completion emulation,
   ;; from https://stackoverflow.com/questions/17928467/full-line-completion-in-emacs
