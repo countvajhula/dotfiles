@@ -49,6 +49,17 @@ buffer mode."
   (interactive)
   (switch-to-buffer (gethash "0" my-buffer-marks-hash)))
 
+(defun flash-to-original-and-back ()
+  "Go momentarily to original buffer and return.
+
+This 'flash' allows the original buffer, rather than the previous one
+encountered while navigating to the present one, to be treated as the
+last buffer for 'flashback' ('Alt-tab') purposes. The flash should
+happen quickly enough not to be noticeable."
+  (interactive)
+  (return-to-original-buffer)
+  (evil-switch-to-windows-last-buffer))
+
 (defun setup-buffer-marks-table ()
   "Initialize the buffer marks hashtable and add an entry for the
 current ('original') buffer."
@@ -59,8 +70,8 @@ current ('original') buffer."
            my-buffer-marks-hash))
 
 (defhydra hydra-buffer (:idle 1.0
-                         :columns 3
-			             :body-pre (setup-buffer-marks-table))
+                        :columns 3
+                        :body-pre (setup-buffer-marks-table))
   "Buffer mode"
   ("b" list-buffers "show all")
   ("s-b" evil-switch-to-windows-last-buffer "switch to last" :exit t)
@@ -77,7 +88,7 @@ current ('original') buffer."
   ("x" kill-buffer "delete")
   ("?" my-buffer-info "info" :exit t)
   ("q" return-to-original-buffer "return to original" :exit t)
-  ("<escape>" nil "exit" :exit t)
+  ("<escape>" flash-to-original-and-back "exit" :exit t)
   ("s-<return>" hydra-window/body "enter lower level" :exit t)
   ("s-<escape>" hydra-application/body "escape to higher level" :exit t))
 
