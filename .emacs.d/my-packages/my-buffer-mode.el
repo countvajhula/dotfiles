@@ -57,8 +57,9 @@ encountered while navigating to the present one, to be treated as the
 last buffer for 'flashback' ('Alt-tab') purposes. The flash should
 happen quickly enough not to be noticeable."
   (interactive)
-  (return-to-original-buffer)
-  (evil-switch-to-windows-last-buffer))
+  (let ((inhibit-redisplay t)) ;; not sure if this is doing anything but FWIW
+    (return-to-original-buffer)
+    (evil-switch-to-windows-last-buffer)))
 
 (defun setup-buffer-marks-table ()
   "Initialize the buffer marks hashtable and add an entry for the
