@@ -180,7 +180,7 @@ From: https://emacs.stackexchange.com/questions/17846/calculating-the-length-of-
   ("i" my-line-info "info" :exit t)
   ("<escape>" nil "exit" :exit t)
   ("s-<return>" hydra-word/body "enter lower level" :exit t)
-  ("s-<escape>" hydra-page/body "escape to higher level" :exit t))
+  ("s-<escape>" hydra-view/body "escape to higher level" :exit t))
 
 (global-set-key (kbd "s-l") 'hydra-line/body)
 
