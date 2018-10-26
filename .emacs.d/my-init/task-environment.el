@@ -42,6 +42,7 @@ initial screen (when centered) -- same behavior as Vim."
   ;; due to "scroll-conservatively" settings)
   (advice-add 'evil-goto-line :around #'my-recenter-view)
   (advice-add 'evil-search :around #'my-recenter-view)
+  (advice-add 'goto-char :around #'my-recenter-view)
 
   (defun my-autoindent (&rest args)
     "Auto-indent line"
