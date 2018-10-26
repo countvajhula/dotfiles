@@ -53,6 +53,8 @@
 (require 'my-window-mode)
 (require 'my-file-mode)
 (require 'my-buffer-mode)
+(require 'my-system-mode)
+(require 'my-application-mode)
 
 (defun enter-first-level ()
   "Enter epistemic modes at first level"

@@ -27,5 +27,8 @@
 (load "network-environment")
 (load "physical-environment")
 
+(use-package evil-epistemic-mode
+  :after evil)
+
 ;; load any customizations done via EMACS UI
 (load custom-file 'noerror)

@@ -192,6 +192,3 @@ initial screen (when centered) -- same behavior as Vim."
 
 (use-package my-navigation
   :after evil)
-
-(use-package evil-epistemic-mode
-  :after evil)
