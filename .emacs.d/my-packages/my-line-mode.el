@@ -170,6 +170,7 @@ From: https://emacs.stackexchange.com/questions/17846/calculating-the-length-of-
   ("L" my-move-line-far-right "move to far right")
   ("x" my-delete-line "delete")
   ("c" my-change-line "change")
+  ("s-l" indent-according-to-mode "autoindent")
   ("s-o" my-flashback "flashback")
   ("o" my-flashback)
   ("s-s" my-split-line "split by word")
