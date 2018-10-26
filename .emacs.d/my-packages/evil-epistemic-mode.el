@@ -45,6 +45,17 @@
   :message "-- BUFFER --"
   :enable (motion normal))
 
+(evil-define-state application
+  "Application state."
+  :tag " <A> "
+  :message "-- APPLICATION --"
+  :enable (motion normal))
+
+(evil-define-state system
+  "System state."
+  :tag " <S> "
+  :message "-- SYSTEM --"
+  :enable (motion normal))
 
 (require 'my-char-mode)
 (require 'my-word-mode)

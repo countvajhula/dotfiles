@@ -184,38 +184,48 @@
   ;; define faces for epistemic modes
   ;; (list-colors-display)
   (defface telephone-line-evil-char
-    '((t (:background "sea green" :inherit telephone-line-evil)))
+    '((t (:background "forest green" :inherit telephone-line-evil)))
     "Face used in evil color-coded segments when in Char state."
     :group 'telephone-line-evil)
 
   (defface telephone-line-evil-word
-    '((t (:background "light sea green" :inherit telephone-line-evil)))
+    '((t (:background "lime green" :inherit telephone-line-evil)))
     "Face used in evil color-coded segments when in Word state."
     :group 'telephone-line-evil)
 
   (defface telephone-line-evil-line
-    '((t (:background "medium aquamarine" :inherit telephone-line-evil)))
+    '((t (:background "sea green" :inherit telephone-line-evil)))
     "Face used in evil color-coded segments when in Line state."
     :group 'telephone-line-evil)
 
   (defface telephone-line-evil-view
-    '((t (:background "dark turquoise" :inherit telephone-line-evil)))
+    '((t (:background "light sea green" :inherit telephone-line-evil)))
     "Face used in evil color-coded segments when in View state."
     :group 'telephone-line-evil)
 
   (defface telephone-line-evil-window
-    '((t (:background "turquoise" :inherit telephone-line-evil)))
+    '((t (:background "medium aquamarine" :inherit telephone-line-evil)))
     "Face used in evil color-coded segments when in Window state."
     :group 'telephone-line-evil)
 
   (defface telephone-line-evil-file
-    '((t (:background "powder blue" :inherit telephone-line-evil)))
+    '((t (:background "dark turquoise" :inherit telephone-line-evil)))
     "Face used in evil color-coded segments when in File state."
     :group 'telephone-line-evil)
 
   (defface telephone-line-evil-buffer
-    '((t (:background "sky blue" :inherit telephone-line-evil)))
+    '((t (:background "turquoise" :inherit telephone-line-evil)))
     "Face used in evil color-coded segments when in Buffer state."
+    :group 'telephone-line-evil)
+
+  (defface telephone-line-evil-application
+    '((t (:background "powder blue" :inherit telephone-line-evil)))
+    "Face used in evil color-coded segments when in Application state."
+    :group 'telephone-line-evil)
+
+  (defface telephone-line-evil-system
+    '((t (:background "light sky blue" :inherit telephone-line-evil)))
+    "Face used in evil color-coded segments when in System state."
     :group 'telephone-line-evil)
 
   (telephone-line-mode t))
