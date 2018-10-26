@@ -151,6 +151,18 @@ From: https://emacs.stackexchange.com/questions/17846/calculating-the-length-of-
                           (quote line)
                           nil))
 
+(defun my-indent-line-left ()
+  "Reduce line indent"
+  (interactive)
+  (indent-rigidly-left-to-tab-stop (line-beginning-position)
+                                   (line-end-position)))
+
+(defun my-indent-line-right ()
+  "Increase line indent"
+  (interactive)
+  (indent-rigidly-right-to-tab-stop (line-beginning-position)
+                                    (line-end-position)))
+
 (defhydra hydra-line (:idle 1.0
                       :columns 4
                       :body-pre (evil-line-state)
@@ -164,6 +176,8 @@ From: https://emacs.stackexchange.com/questions/17846/calculating-the-length-of-
   ("C-j" my-move-line-down "move down")
   ("C-k" my-move-line-up "move up")
   ("C-l" my-move-line-right "move right")
+  ("C-." my-indent-line-right "indent right")
+  ("C-," my-indent-line-left "indent left")
   ("H" my-move-line-far-left "move to far left")
   ("J" my-move-line-very-bottom "move to bottom")
   ("K" my-move-line-very-top "move to top")
