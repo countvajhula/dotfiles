@@ -283,18 +283,21 @@
 		 (buffer-file-name))
     (message "%s" (string-join bufinfo " "))))
 
-(defun xah-new-empty-buffer ()
+(defun my-new-empty-buffer ()
   "Create a new empty buffer.
-   New buffer will be named “untitled” or “untitled<2>”, “untitled<3>”, etc.
 
-   It returns the buffer (for elisp programing).
+New buffer will be named “untitled” or “untitled<2>”, “untitled<3>”, etc.
+and will be opened in the currently active (at the time of command
+execution) major mode.
 
-   URL `http://ergoemacs.org/emacs/emacs_new_empty_buffer.html'
-   Version 2017-11-01"
+Modified from:
+URL `http://ergoemacs.org/emacs/emacs_new_empty_buffer.html'
+Version 2017-11-01"
   (interactive)
-  (let (($buf (generate-new-buffer "untitled")))
+  (let ((original-major-mode major-mode)
+        ($buf (generate-new-buffer "untitled")))
     (switch-to-buffer $buf)
-    (funcall (default-value 'major-mode))
+    (funcall original-major-mode)
     (setq buffer-offer-save t)
     $buf))
 
