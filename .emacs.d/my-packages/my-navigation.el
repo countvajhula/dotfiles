@@ -6,14 +6,12 @@
 (defun my-jump-down ()
   (interactive)
   (dotimes (i 9)
-    (evil-next-line))
-  (evil-scroll-line-to-center nil))
+    (evil-next-line)))
 
 (defun my-jump-up ()
   (interactive)
   (dotimes (i 9)
-    (evil-previous-line))
-  (evil-scroll-line-to-center nil))
+    (evil-previous-line)))
 
 (defun my-scroll-down ()
   (interactive)
