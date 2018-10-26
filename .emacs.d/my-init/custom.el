@@ -14,7 +14,7 @@
    ["#242424" "#e5786d" "#95e454" "#cae682" "#8ac6f2" "#333366" "#ccaa8f" "#f6f3e8"])
  '(custom-safe-themes
    (quote
-    ("c74e83f8aa4c78a121b52146eadb792c9facc5b1f02c917e3dbb454fca931223" "a27c00821ccfd5a78b01e4f35dc056706dd9ede09a8b90c6955ae6a390eb1c1e" "3c83b3676d796422704082049fc38b6966bcad960f896669dfc21a7a37a748fa" default)))
+	("be5b03913a1aaa3709d731e1fcfd4f162db6ca512df9196c8d4693538fa50b86" "c74e83f8aa4c78a121b52146eadb792c9facc5b1f02c917e3dbb454fca931223" "a27c00821ccfd5a78b01e4f35dc056706dd9ede09a8b90c6955ae6a390eb1c1e" "3c83b3676d796422704082049fc38b6966bcad960f896669dfc21a7a37a748fa" default)))
  '(diary-entry-marker (quote font-lock-variable-name-face))
  '(emms-mode-line-icon-image-cache
    (quote
@@ -67,7 +67,7 @@ static char *gnus-pointer[] = {
  '(next-error-recenter (quote (4)))
  '(package-selected-packages
    (quote
-    (haskell-mode highlight buttercup edebug-x evil-surround projectile auctex evil-indent-plus ace-window evil-goggles fireplace general org telephone-line smart-mode-line ibuffer-vc ibuffer-sidebar ivy-rich popwin evil-collection ace-jump-buffer avy ivy-hydra caps-lock smex counsel yasnippet-snippets yasnippet evil-mc multiple-cursors minimap evil-matchit evil-tabs tabbar evil-magit php-mode ivy sicp company-jedi company sr-speedbar magit dictionary sublimity evil elpy)))
+	(remember-last-theme haskell-mode highlight buttercup edebug-x evil-surround projectile auctex evil-indent-plus ace-window evil-goggles fireplace general org telephone-line smart-mode-line ibuffer-vc ibuffer-sidebar ivy-rich popwin evil-collection ace-jump-buffer avy ivy-hydra caps-lock smex counsel yasnippet-snippets yasnippet evil-mc multiple-cursors minimap evil-matchit evil-tabs tabbar evil-magit php-mode ivy sicp company-jedi company sr-speedbar magit dictionary sublimity evil elpy)))
  '(pos-tip-background-color "#1A3734")
  '(pos-tip-foreground-color "#FFFFC8")
  '(python-check-command "/usr/local/bin/pyflakes")
