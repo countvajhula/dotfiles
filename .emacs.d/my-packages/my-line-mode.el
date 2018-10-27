@@ -85,10 +85,14 @@
 (defun my-delete-line ()
   "Delete line"
   (interactive)
-  (evil-delete-whole-line (line-beginning-position)
-                          (+ 1 (line-end-position))
-                          (quote line)
-                          nil))
+  (let* ((line-start-position (line-beginning-position))
+         (line-end-position (if (eobp)
+                                (line-end-position)
+                              (+ 1 (line-end-position)))))
+    (evil-delete-whole-line line-start-position
+                            line-end-position
+                            (quote line)
+                            nil)))
 
 (defun my-flashback ()
   "Flashback to prev line"
