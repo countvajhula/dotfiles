@@ -136,17 +136,34 @@ initial epistemic tower."
 (define-key evil-normal-state-map [s-escape] 'hydra-window/body)
 (define-key evil-normal-state-map [s-return] 'evil-insert-state)
 
+(defun eem--enter-level (level-number)
+  "Enter level LEVEL-NUMBER"
+  (funcall (ht-get (ht-get eem-levels level-number)
+                   'mode-entry)))
+
 (defun eem-enter-level ()
   "Enter selected level"
   (interactive)
-  (funcall 'hydra-word/body))
-  (let* ((level-str (substring (thing-at-point 'line t) 0 7))
-         (level-number (elt level-str 3)))
-    (message "%s level number is %s level str is %s" "EYOOOOO" level-number level-str)
-    (message "%s" (ht-get (ht-get eem-levels level-number)
-                          'mode-entry))
-    (funcall (ht-get (ht-get eem-levels level-number)
-                     'mode-entry))))
+  (eem--enter-level eem-selected-level))
+
+(defun eem--extract-selected-level ()
+  "Extract the selected level from the current representation"
+  (interactive)
+  (let* ((level-str (substring (thing-at-point 'line t) 0 4))
+         (level-number (string-to-number (substring level-str 3 4))))
+    (setq eem-selected-level level-number)))
+
+(defun eem-select-previous-level ()
+  "Select previous level"
+  (interactive)
+  (evil-previous-line)
+  (eem--extract-selected-level))
+
+(defun eem-select-next-level ()
+  "Select next level"
+  (interactive)
+  (evil-next-line)
+  (eem--extract-selected-level))
 
 (defhydra hydra-mode (:idle 1.0
                       :columns 4
@@ -154,10 +171,10 @@ initial epistemic tower."
                       :post (my-exit-mode-mode))
   "Mode mode"
   ;; Need a textual representation of the mode tower for these to operate on
-  ("h" evil-previous-line "previous level")
-  ("j" evil-next-line "lower level")
-  ("k" evil-previous-line "higher level")
-  ("l" evil-next-line "next level")
+  ("h" eem-select-previous-level "previous level")
+  ("j" eem-select-next-level "lower level")
+  ("k" eem-select-previous-level "higher level")
+  ("l" eem-select-next-level "next level")
   ;; ("H" eem-highest-level "first level (recency)")
   ;; ("J" eem-lowest-level "lowest level")
   ;; ("K" eem-highest-level "highest level")
