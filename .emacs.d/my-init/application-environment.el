@@ -286,24 +286,25 @@
 		 (buffer-file-name))
     (message "%s" (string-join bufinfo " "))))
 
-(defun my-new-empty-buffer ()
+(defun my-new-empty-buffer (&optional buffer-name)
   "Create a new empty buffer.
 
-New buffer will be named “untitled” or “untitled<2>”, “untitled<3>”, etc.
-and will be opened in the currently active (at the time of command
-execution) major mode.
+If BUFFER-NAME is not provided, the new buffer will be named
+“untitled” or “untitled<2>”, “untitled<3>”, etc.  The buffer will be
+opened in the currently active (at the time of command execution)
+major mode.
 
 Modified from:
 URL `http://ergoemacs.org/emacs/emacs_new_empty_buffer.html'
 Version 2017-11-01"
   (interactive)
-  (let ((original-major-mode major-mode)
-        ($buf (generate-new-buffer "untitled")))
+  (let* ((buffer-name (or buffer-name "untitled"))
+         (original-major-mode major-mode)
+         ($buf (generate-new-buffer buffer-name)))
     (switch-to-buffer $buf)
     (funcall original-major-mode)
     (setq buffer-offer-save t)
     $buf))
-
 
 (use-package general
   ;; general is a package that provides various
@@ -379,7 +380,7 @@ Version 2017-11-01"
   ;; open a new empty buffer
   (current-global-map)
   (kbd "C-c n")
-  'xah-new-empty-buffer)
+  'my-new-empty-buffer)
 
 (define-key
   ;; drop into a shell (preserves path)
