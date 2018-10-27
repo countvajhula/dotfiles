@@ -6,6 +6,9 @@
 ;; convenient list- and functional-related macros
 (use-package dash)
 
+;; convenient dict-related macros
+(use-package ht)
+
 ;; used in some (third-party) custom themes
 ;; (not sure if there's a better way to indicate this dependency)
 (use-package autothemer)
