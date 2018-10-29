@@ -19,7 +19,7 @@
   ;; due to "scroll-conservatively" settings)
   (advice-add 'evil-goto-line :around #'my-recenter-view-advice)
   (advice-add 'evil-search :around #'my-recenter-view-advice)
-  (advice-add 'goto-char :around #'my-recenter-view-advice)
+  (advice-add 'evil-goto-mark :around #'my-recenter-view-advice)
 
   (defun my-autoindent (&rest args)
     "Auto-indent line"
