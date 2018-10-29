@@ -73,6 +73,11 @@
 (require 'my-system-mode)
 (require 'my-application-mode)
 
+;; define face for use in epistemic mode
+(make-face 'eem-face)
+(set-face-font 'eem-face "-*-Consolas-normal-normal-normal-*-*-*-*-*-m-0-iso10646-1")
+(set-face-foreground 'eem-face "tomato")
+
 (setq eem-levels (ht ('0 (ht ('name "insert")
                              ('mode-entry 'evil-insert-state)))
                      ('1 (ht ('name "char")
@@ -108,15 +113,17 @@
 initial epistemic tower."
   (interactive)
   (my-new-empty-buffer "EPISTEMIC")
+  (text-scale-set 5)
   (dolist (key (ht-keys eem-levels))
-    (insert "―――"
+    (insert "|―――"
             (number-to-string key)
-            "―――"
-            "(" (ht-get (ht-get eem-levels
+            "―――|"
+            " " (ht-get (ht-get eem-levels
                                 key)
-                        'name) ")" "\n"))
+                        'name) " " "\n"))
   (my-delete-line)
   (evil-mode-state)
+  (buffer-face-set 'eem-face)
   ;;(setq cursor-type nil))
   (hl-line-mode)
   (blink-cursor-mode -1)
@@ -149,8 +156,8 @@ initial epistemic tower."
 (defun eem--extract-selected-level ()
   "Extract the selected level from the current representation"
   (interactive)
-  (let* ((level-str (substring (thing-at-point 'line t) 0 4))
-         (level-number (string-to-number (substring level-str 3 4))))
+  (let* ((level-str (substring (thing-at-point 'line t) 0 5))
+         (level-number (string-to-number (substring level-str 4 5))))
     (setq eem-selected-level level-number)))
 
 (defun eem-select-previous-level ()
