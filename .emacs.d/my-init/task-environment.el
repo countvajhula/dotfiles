@@ -15,34 +15,11 @@
   ;; use "symbols" instead of simple words in point searches
   (defalias #'forward-evil-word #'forward-evil-symbol)
 
-  (defun my-recenter-view (orig-fn &rest args)
-    "Depending on context, recenter screen on cursor.
-
-Recenter if new jump location is not visible from any part of the
-initial screen (when centered) -- same behavior as Vim."
-    (save-excursion
-      (evil-window-top)
-      (setq initial-screen-top-line (line-number-at-pos))
-      (evil-window-bottom)
-      (setq initial-screen-bottom-line (line-number-at-pos)))
-    (let ((res (apply orig-fn args)))
-      (let* ((current-line-position (line-number-at-pos))
-             (distance-from-screen-top (abs (- current-line-position
-                                               initial-screen-top-line)))
-             (distance-from-screen-bottom (abs (- current-line-position
-                                                  initial-screen-bottom-line)))
-             (min-distance (min distance-from-screen-top
-                                distance-from-screen-bottom)))
-        (when (> min-distance
-                 (/ (window-text-height)
-                    2))
-          (recenter))
-      res)))
   ;; recenter page after goto line (like Vim; this is otherwise overridden
   ;; due to "scroll-conservatively" settings)
-  (advice-add 'evil-goto-line :around #'my-recenter-view)
-  (advice-add 'evil-search :around #'my-recenter-view)
-  (advice-add 'goto-char :around #'my-recenter-view)
+  (advice-add 'evil-goto-line :around #'my-recenter-view-advice)
+  (advice-add 'evil-search :around #'my-recenter-view-advice)
+  (advice-add 'goto-char :around #'my-recenter-view-advice)
 
   (defun my-autoindent (&rest args)
     "Auto-indent line"
