@@ -195,7 +195,7 @@ initial epistemic tower."
   (interactive)
   (dolist (tower eem-towers)
     (eem-render-tower tower))
-  (switch-to-buffer (eem--buffer-name (eem--current-tower)))
+  (eem--switch-to-tower current-tower-index)
   (evil-mode-state))
 
 (defun my-exit-mode-mode ()
