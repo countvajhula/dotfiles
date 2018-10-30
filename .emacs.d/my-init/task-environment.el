@@ -169,3 +169,6 @@
 
 (use-package my-navigation
   :after evil)
+
+;; highlight matching paren
+(show-paren-mode 1)
