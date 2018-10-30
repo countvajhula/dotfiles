@@ -172,6 +172,11 @@
     (with-current-buffer tower-buffer
       (buffer-face-set 'eem-face)
       (text-scale-set 5)
+      ;;(setq cursor-type nil))
+      (hl-line-mode)
+      (blink-cursor-mode -1)
+      (internal-show-cursor nil nil)
+      (display-line-numbers-mode 'toggle)
       (dolist (level-number
                (ht-keys tower-levels))
         (let ((level (ht-get tower-levels
@@ -181,11 +186,7 @@
                   "―――|"
                   " " (ht-get level
                               'name) " " "\n")))
-      (my-delete-line)
-      ;;(setq cursor-type nil))
-      (hl-line-mode)
-      (blink-cursor-mode -1)
-      (internal-show-cursor nil nil))
+      (my-delete-line))
     tower-buffer))
 
 (defun my-enter-mode-mode ()
