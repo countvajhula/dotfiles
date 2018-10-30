@@ -149,7 +149,8 @@
   (interactive)
   (let ((tower (eem--tower tower-id)))
     (switch-to-buffer (eem--buffer-name tower))
-    (setq current-tower-index tower-id)))
+    (setq current-tower-index tower-id)
+    (eem--extract-selected-level)))
 
 (defun enter-first-level ()
   "Enter epistemic modes at first level"
