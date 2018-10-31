@@ -163,6 +163,21 @@
   "Buffer name to use for a given tower."
   (concat eem-buffer-prefix "-" (ht-get tower 'name)))
 
+(defun eem--set-buffer-appearance ()
+  "Configure mode mode appearance."
+  (buffer-face-set 'eem-face)
+  (text-scale-set 5)
+  ;;(setq cursor-type nil))
+  (hl-line-mode)
+  (blink-cursor-mode -1)
+  (internal-show-cursor nil nil)
+  (display-line-numbers-mode 'toggle))
+
+(defun eem--revert-buffer-appearance ()
+  "Revert buffer appearance to settings prior to entering mode mode."
+  (hl-line-mode -1)
+  (blink-cursor-mode 1))
+
 (defun eem-render-tower (tower)
   "Render a text representation of an epistemic editing tower."
   (interactive)
@@ -170,13 +185,7 @@
                        (eem--buffer-name tower)))
         (tower-levels (ht-get tower 'levels)))
     (with-current-buffer tower-buffer
-      (buffer-face-set 'eem-face)
-      (text-scale-set 5)
-      ;;(setq cursor-type nil))
-      (hl-line-mode)
-      (blink-cursor-mode -1)
-      (internal-show-cursor nil nil)
-      (display-line-numbers-mode 'toggle)
+      (eem--set-buffer-appearance)
       (dolist (level-number
                (ht-keys tower-levels))
         (let ((level (ht-get tower-levels
@@ -185,7 +194,7 @@
                   (number-to-string level-number)
                   "―――|"
                   " " (ht-get level
-                              'name) " " "\n")))
+                              'name) "\n")))
       (my-delete-line))
     tower-buffer))
 
@@ -201,8 +210,7 @@ initial epistemic tower."
 (defun my-exit-mode-mode ()
   "Exit mode mode."
   (interactive)
-  (hl-line-mode -1)
-  (blink-cursor-mode 1)
+  (eem--revert-buffer-appearance)
   (evil-normal-state)
   (kill-matching-buffers (concat "^" eem-buffer-prefix) nil t))
 
