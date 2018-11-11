@@ -58,6 +58,10 @@
       scroll-conservatively  10000)
 
 ;; wrap lines visually, preserving indentation (like vim's breakindent)
-(global-visual-line-mode)
+(use-package adaptive-wrap
+  :config
+  (global-visual-line-mode)
+  ;; does this work globally?
+  (adaptive-wrap-prefix-mode))
 
 (provide 'my-general-behavior)

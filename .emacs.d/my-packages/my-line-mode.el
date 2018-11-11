@@ -85,10 +85,14 @@
 (defun my-delete-line ()
   "Delete line"
   (interactive)
-  (evil-delete-whole-line (line-beginning-position)
-                          (+ 1 (line-end-position))
-                          (quote line)
-                          nil))
+  (let* ((line-start-position (line-beginning-position))
+         (line-end-position (if (eobp)
+                                (line-end-position)
+                              (+ 1 (line-end-position)))))
+    (evil-delete-whole-line line-start-position
+                            line-end-position
+                            (quote line)
+                            nil)))
 
 (defun my-flashback ()
   "Flashback to prev line"
@@ -151,19 +155,40 @@ From: https://emacs.stackexchange.com/questions/17846/calculating-the-length-of-
                           (quote line)
                           nil))
 
+(defun my-indent-line-left ()
+  "Reduce line indent"
+  (interactive)
+  (indent-rigidly-left-to-tab-stop (line-beginning-position)
+                                   (line-end-position)))
+
+(defun my-indent-line-right ()
+  "Increase line indent"
+  (interactive)
+  (indent-rigidly-right-to-tab-stop (line-beginning-position)
+                                    (line-end-position)))
+
 (defhydra hydra-line (:idle 1.0
-                      :columns 4)
+                      :columns 4
+                      :body-pre (evil-line-state)
+                      :post (evil-normal-state))
   "Line mode"
-  ("h" my-move-line-left "left")
-  ("j" my-move-line-down "down")
-  ("k" my-move-line-up "up")
-  ("l" my-move-line-right "right")
+  ("h" evil-previous-line "previous")
+  ("j" evil-next-line "next")
+  ("k" evil-previous-line "previous")
+  ("l" evil-next-line "next")
+  ("C-h" my-move-line-left "move left")
+  ("C-j" my-move-line-down "move down")
+  ("C-k" my-move-line-up "move up")
+  ("C-l" my-move-line-right "move right")
+  ("C-." my-indent-line-right "indent right")
+  ("C-," my-indent-line-left "indent left")
   ("H" my-move-line-far-left "move to far left")
   ("J" my-move-line-very-bottom "move to bottom")
   ("K" my-move-line-very-top "move to top")
   ("L" my-move-line-far-right "move to far right")
   ("x" my-delete-line "delete")
   ("c" my-change-line "change")
+  ("s-l" indent-according-to-mode "autoindent")
   ("s-o" my-flashback "flashback")
   ("o" my-flashback)
   ("s-s" my-split-line "split by word")
@@ -172,7 +197,9 @@ From: https://emacs.stackexchange.com/questions/17846/calculating-the-length-of-
   ("y" my-yank-line "yank (copy)")
   (";" my-toggle-comment-line "toggle comment")
   ("i" my-line-info "info" :exit t)
-  ("<escape>" my-noop "exit" :exit t))
+  ("<escape>" nil "exit" :exit t)
+  ("s-<return>" hydra-word/body "enter lower level" :exit t)
+  ("s-<escape>" hydra-view/body "escape to higher level" :exit t))
 
 (global-set-key (kbd "s-l") 'hydra-line/body)
 

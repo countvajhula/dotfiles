@@ -47,7 +47,20 @@
   "Return to the buffer we were in at the time of entering
 buffer mode."
   (interactive)
-  (switch-to-buffer (gethash "0" my-buffer-marks-hash)))
+  (switch-to-buffer (my-original-buffer)))
+
+(defun flash-to-original-and-back ()
+  "Go momentarily to original buffer and return.
+
+This 'flash' allows the original buffer, rather than the previous one
+encountered while navigating to the present one, to be treated as the
+last buffer for 'flashback' ('Alt-tab') purposes. The flash should
+happen quickly enough not to be noticeable."
+  (interactive)
+  (unless (equal (current-buffer) (my-original-buffer))
+    (let ((inhibit-redisplay t)) ;; not sure if this is doing anything but FWIW
+      (return-to-original-buffer)
+      (evil-switch-to-windows-last-buffer))))
 
 (defun setup-buffer-marks-table ()
   "Initialize the buffer marks hashtable and add an entry for the
@@ -55,18 +68,30 @@ current ('original') buffer."
   (interactive)
   (defvar my-buffer-marks-hash
     (make-hash-table :test 'equal))
+  (save-original-buffer))
+
+(defun save-original-buffer ()
+  "Save current buffer as original buffer."
+  (interactive)
   (puthash "0" (current-buffer)
            my-buffer-marks-hash))
 
-(defhydra hydra-buffers (:idle 1.0
-                         :columns 3
-			             :body-pre (setup-buffer-marks-table))
+(defun my-original-buffer ()
+  "Get original buffer identifier"
+  (interactive)
+  (gethash "0" my-buffer-marks-hash))
+
+(defhydra hydra-buffer (:idle 1.0
+                        :columns 3
+                        :body-pre (progn (setup-buffer-marks-table)
+                                         (evil-buffer-state))
+                        :post (evil-normal-state))
   "Buffer mode"
   ("b" list-buffers "show all")
   ("s-b" evil-switch-to-windows-last-buffer "switch to last" :exit t)
   ("h" previous-buffer "previous")
   ("l" next-buffer "next")
-  ("n" xah-new-empty-buffer "new")
+  ("n" my-new-empty-buffer "new" :exit t)
   ("m" my-buffer-set-mark "set mark")
   ("'" my-buffer-return-to-mark "return to mark")
   ("`" my-buffer-return-to-mark "return to mark")
@@ -77,9 +102,11 @@ current ('original') buffer."
   ("x" kill-buffer "delete")
   ("?" my-buffer-info "info" :exit t)
   ("q" return-to-original-buffer "return to original" :exit t)
-  ("<escape>" my-noop "exit" :exit t))
+  ("<escape>" flash-to-original-and-back "exit" :exit t)
+  ("s-<return>" hydra-window/body "enter lower level" :exit t)
+  ("s-<escape>" hydra-application/body "escape to higher level" :exit t))
 
 ;; access the buffer menu via a "body" keybinding
-(global-set-key (kbd "s-b") 'hydra-buffers/body)
+(global-set-key (kbd "s-b") 'hydra-buffer/body)
 
 (provide 'my-buffer-mode)

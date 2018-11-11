@@ -84,16 +84,18 @@
   (evil-invert-char (point) (+ (point) 1) (quote exclusive)))
 
 (defhydra hydra-char (:idle 1.0
-                      :columns 4)
+                      :columns 4
+                      :body-pre (evil-char-state)
+                      :post (evil-normal-state))
   "Character mode"
   ("h" evil-backward-char "left")
   ("j" evil-next-line "down")
   ("k" evil-previous-line "up")
   ("l" evil-forward-char "right")
-  ("C-h" my-move-char-left "left")
-  ("C-j" my-move-char-down "down")
-  ("C-k" my-move-char-up "up")
-  ("C-l" my-move-char-right "right")
+  ("C-h" my-move-char-left "move left")
+  ("C-j" my-move-char-down "move down")
+  ("C-k" my-move-char-up "move up")
+  ("C-l" my-move-char-right "move right")
   ("H" my-move-char-far-left "move to far left")
   ("J" my-move-char-very-bottom "move to bottom")
   ("K" my-move-char-very-top "move to top")
@@ -103,7 +105,10 @@
   ("x" my-delete-char "delete")
   ("~" my-toggle-case-char "toggle case")
   ("i" my-char-info "info" :exit t)
-  ("<escape>" my-noop "exit" :exit t))
+  ("?" my-char-info "info" :exit t)
+  ("<escape>" nil "exit" :exit t)
+  ("s-<return>" evil-insert-state "enter lower level" :exit t)
+  ("s-<escape>" hydra-word/body "escape to higher level" :exit t))
 
 (global-set-key (kbd "s-x") 'hydra-char/body)
 

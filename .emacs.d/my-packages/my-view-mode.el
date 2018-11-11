@@ -16,9 +16,11 @@
   (interactive)
   (evil-scroll-line-down 9))
 
-(defhydra hydra-page (:idle 1.0
-                      :columns 6)
-  "Page mode"
+(defhydra hydra-view (:idle 1.0
+                      :columns 6
+                      :body-pre (evil-view-state)
+                      :post (evil-normal-state))
+  "View mode"
   ("j" my-scroll-down "down")
   ("k" my-scroll-up "up")
   ("J" evil-scroll-line-down "down fine")
@@ -27,13 +29,16 @@
   ("l" evil-scroll-page-down "page down")
   ("H" evil-goto-first-line "beginning")
   ("L" evil-goto-line "end")
+  ("s-v" recenter "recenter")
   ("C-k" my-scroll-skip-up "skip up")
   ("C-j" my-scroll-skip-down "skip down")
   ("u" my-scroll-half-page-up "leap up")
   ("d" my-scroll-half-page-down "leap down")
   ("i" my-noop "exit" :exit t)
-  ("<escape>" my-noop "exit" :exit t))
+  ("<escape>" nil "exit" :exit t)
+  ("s-<return>" hydra-line/body "enter lower level" :exit t)
+  ("s-<escape>" hydra-window/body "escape to higher level" :exit t))
 
-(global-set-key (kbd "s-g") 'hydra-page/body)
+(global-set-key (kbd "s-v") 'hydra-view/body)
 
-(provide 'my-page-mode)
+(provide 'my-view-mode)

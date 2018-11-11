@@ -15,16 +15,18 @@
   ;; use "symbols" instead of simple words in point searches
   (defalias #'forward-evil-word #'forward-evil-symbol)
 
-  ;; (defun my-goto-line (orig-fun &rest args)
-  ;;   "Recenter after going to a line"
-  ;;   (interactive)
-  ;;   (let ((res (apply orig-fun args)))
-  ;;     (recenter-top-bottom)
-  ;;     res))
-  ;; ;; recenter page after goto line (like Vim; this is otherwise overridden
-  ;; ;; due to "scroll-conservatively" settings)
-  ;; ;;(add-function :after #'evil-goto-line #'recenter-top-bottom)
-  ;; (advice-add 'my-goto-line :around #'evil-goto-line)
+  ;; recenter page after goto line (like Vim; this is otherwise overridden
+  ;; due to "scroll-conservatively" settings)
+  (advice-add 'evil-goto-line :around #'my-recenter-view-advice)
+  (advice-add 'evil-search :around #'my-recenter-view-advice)
+  (advice-add 'evil-goto-mark :around #'my-recenter-view-advice)
+
+  (defun my-autoindent (&rest args)
+    "Auto-indent line"
+    (indent-according-to-mode))
+
+  ;; preserve indentation when joining lines
+  (advice-add 'evil-join :after #'my-autoindent)
 
   ;; Vim C-x line completion emulation,
   ;; from https://stackoverflow.com/questions/17928467/full-line-completion-in-emacs
@@ -136,7 +138,7 @@
   ;; (global-set-key (kbd "s-d") 'hydra-cursors/body)
   (global-set-key (kbd "s-d") 'evil-mc-make-and-goto-next-match)
   ;; retain a convenient, non-hydra, escape hatch
-  (global-set-key (kbd "s-<escape>") 'evil-mc-undo-all-cursors))
+  (global-set-key (kbd "s-D") 'evil-mc-undo-all-cursors))
 
 (use-package yasnippet
   :config
@@ -171,5 +173,5 @@
 (use-package my-navigation
   :after evil)
 
-(use-package evil-epistemic-mode
-  :after evil)
+;; highlight matching paren
+(show-paren-mode 1)

@@ -6,6 +6,9 @@
 ;; convenient list- and functional-related macros
 (use-package dash)
 
+;; convenient dict-related macros
+(use-package ht)
+
 ;; used in some (third-party) custom themes
 ;; (not sure if there's a better way to indicate this dependency)
 (use-package autothemer)
@@ -21,7 +24,14 @@
 (use-package my-elisp
   :after general)
 
-(use-package php-mode)
+(use-package my-scheme
+  :after general)
+
+(use-package php-mode
+  :defer t)
+
+(use-package haskell-mode
+  :defer t)
 
 (use-package tex
   :defer t
@@ -176,7 +186,55 @@
   (setq sml/theme 'dark))
 
 (use-package telephone-line
+  :after evil-epistemic-mode
   :config
+  ;; define faces for epistemic modes
+  ;; (list-colors-display)
+  (defface telephone-line-evil-char
+    '((t (:background "forest green" :inherit telephone-line-evil)))
+    "Face used in evil color-coded segments when in Char state."
+    :group 'telephone-line-evil)
+
+  (defface telephone-line-evil-word
+    '((t (:background "lime green" :inherit telephone-line-evil)))
+    "Face used in evil color-coded segments when in Word state."
+    :group 'telephone-line-evil)
+
+  (defface telephone-line-evil-line
+    '((t (:background "sea green" :inherit telephone-line-evil)))
+    "Face used in evil color-coded segments when in Line state."
+    :group 'telephone-line-evil)
+
+  (defface telephone-line-evil-view
+    '((t (:background "light sea green" :inherit telephone-line-evil)))
+    "Face used in evil color-coded segments when in View state."
+    :group 'telephone-line-evil)
+
+  (defface telephone-line-evil-window
+    '((t (:background "medium aquamarine" :inherit telephone-line-evil)))
+    "Face used in evil color-coded segments when in Window state."
+    :group 'telephone-line-evil)
+
+  (defface telephone-line-evil-file
+    '((t (:background "dark turquoise" :inherit telephone-line-evil)))
+    "Face used in evil color-coded segments when in File state."
+    :group 'telephone-line-evil)
+
+  (defface telephone-line-evil-buffer
+    '((t (:background "turquoise" :inherit telephone-line-evil)))
+    "Face used in evil color-coded segments when in Buffer state."
+    :group 'telephone-line-evil)
+
+  (defface telephone-line-evil-application
+    '((t (:background "powder blue" :inherit telephone-line-evil)))
+    "Face used in evil color-coded segments when in Application state."
+    :group 'telephone-line-evil)
+
+  (defface telephone-line-evil-system
+    '((t (:background "light sky blue" :inherit telephone-line-evil)))
+    "Face used in evil color-coded segments when in System state."
+    :group 'telephone-line-evil)
+
   (telephone-line-mode t))
 
 ;; cozy time
@@ -232,21 +290,25 @@
 		 (buffer-file-name))
     (message "%s" (string-join bufinfo " "))))
 
-(defun xah-new-empty-buffer ()
+(defun my-new-empty-buffer (&optional buffer-name)
   "Create a new empty buffer.
-   New buffer will be named “untitled” or “untitled<2>”, “untitled<3>”, etc.
 
-   It returns the buffer (for elisp programing).
+If BUFFER-NAME is not provided, the new buffer will be named
+“untitled” or “untitled<2>”, “untitled<3>”, etc.  The buffer will be
+opened in the currently active (at the time of command execution)
+major mode.
 
-   URL `http://ergoemacs.org/emacs/emacs_new_empty_buffer.html'
-   Version 2017-11-01"
+Modified from:
+URL `http://ergoemacs.org/emacs/emacs_new_empty_buffer.html'
+Version 2017-11-01"
   (interactive)
-  (let (($buf (generate-new-buffer "untitled")))
+  (let* ((buffer-name (or buffer-name "untitled"))
+         (original-major-mode major-mode)
+         ($buf (generate-new-buffer buffer-name)))
     (switch-to-buffer $buf)
-    (funcall (default-value 'major-mode))
+    (funcall original-major-mode)
     (setq buffer-offer-save t)
     $buf))
-
 
 (use-package general
   ;; general is a package that provides various
@@ -269,6 +331,7 @@
     "Quick actions"
     ("a" org-agenda "Org agenda")
     ("d" dictionary-lookup-definition "lookup in dictionary")
+    ("f" my-current-dir "dir")
     ("g" magit-status "Magit (git)")
     ("l" my-lisp-repl "Lisp REPL")
     ("s" eshell "Shell")
@@ -322,7 +385,7 @@
   ;; open a new empty buffer
   (current-global-map)
   (kbd "C-c n")
-  'xah-new-empty-buffer)
+  'my-new-empty-buffer)
 
 (define-key
   ;; drop into a shell (preserves path)
@@ -353,77 +416,3 @@
   (current-global-map)
   (kbd "C-+")
   'calc)
-
-
-;;;;;;;;;;;;;;;;;
-;; HYDRA MENUS ;;
-;;;;;;;;;;;;;;;;;
-
-
-(defun current-transparency ()
-  (nth 0
-       (frame-parameter (selected-frame)
-			'alpha)))
-
-;; Set transparency of emacs
-(defun transparency (value)
- "Sets the transparency of the frame window. 0=transparent/100=opaque"
- (interactive "nTransparency Value 0 - 100 opaque:")
- (set-frame-parameter (selected-frame) 'alpha (cons value value)))
-
-(defun adjust-transparency (delta)
-  "Adjust the transparency of the frame window by the configured delta,
-   in the range: 0=transparent/100=opaque"
-  (interactive)
-  (transparency (+ (current-transparency)
-		   delta)))
-
-(defun increase-transparency ()
-  "Increase frame transparency."
-  (interactive)
-  (adjust-transparency -3))
-
-(defun decrease-transparency ()
-  "Decrease frame transparency."
-  (interactive)
-  (adjust-transparency 3))
-
-(defun maximize-transparency ()
-  "Maximize frame transparency (i.e. make transparent)"
-  (interactive)
-  (transparency 0))
-
-(defun minimize-transparency ()
-  "Minimize frame transparency (i.e. make opaque)"
-  (interactive)
-  (transparency 100))
-
-(defun return-to-original-transparency ()
-  "Return to original transparency prior to making changes."
-  (interactive)
-  (transparency original-transparency))
-
-(defhydra hydra-transparency (:columns 1
-                              :body-pre (setq original-transparency
-                                              (current-transparency)))
-  "Control frame transparency"
-  ("+" decrease-transparency "decrease transparency")
-  ("-" increase-transparency "increase transparency")
-  ("k" decrease-transparency "decrease transparency")
-  ("j" increase-transparency "increase transparency")
-  ("K" minimize-transparency "min transparency (opaque)")
-  ("J" maximize-transparency "max transparency (transparent)")
-  ("q" return-to-original-transparency  "return to original transparency" :exit t)
-  ("<escape>" my-noop "quit" :exit t))
-
-(defhydra hydra-application (:columns 1
-                             :exit t)
-  "Control application environment"
-  ("t" hydra-transparency/body "transparency")
-  ("n" display-line-numbers-mode "toggle line numbers")
-  ("l" hl-line-mode "toggle highlight line")
-  ("c" counsel-load-theme "change color scheme"))
-
-;; hydra to configure the application environment
-;; contains a nested hydra to modulate transparency
-(global-set-key (kbd "s-e") 'hydra-application/body)

@@ -11,7 +11,13 @@
 ;; these modules need to be on the load path so that these themes work
 (add-to-list 'load-path (concat user-emacs-directory
                                 "themes/"))
-(load-theme 'tango-dark t)
+
+;; set color scheme
+;; (load-theme 'tango-dark t)
+(use-package remember-last-theme
+  :config
+  (remember-last-theme-enable))
+
 (set-frame-font "Menlo 12" nil t)
 
 ;; line numbers on by default
