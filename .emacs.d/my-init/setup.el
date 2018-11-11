@@ -24,6 +24,8 @@
 (unless (package-installed-p 'use-package)
     (package-refresh-contents)
     (package-install 'use-package))
+;; always install packages if missing
+;;(setq use-package-always-ensure t)
 
 ;; set up el-get, e.g. for packages not on ELPA/MELPA
 (unless (require 'el-get nil t)
