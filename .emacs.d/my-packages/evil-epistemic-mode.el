@@ -214,8 +214,8 @@ initial epistemic tower."
   (evil-normal-state)
   (kill-matching-buffers (concat "^" eem-buffer-prefix) nil t))
 
-(define-key evil-insert-state-map [s-escape] 'enter-first-level)
-(define-key evil-normal-state-map [s-escape] 'hydra-window/body)
+;;(define-key evil-insert-state-map [s-escape] 'enter-first-level)
+;;(define-key evil-normal-state-map [s-escape] 'hydra-window/body)
 (define-key evil-normal-state-map [s-return] 'evil-insert-state)
 
 (defun eem--enter-level (level-number)
