@@ -29,7 +29,7 @@
   ("l" evil-scroll-page-down "page down")
   ("H" evil-goto-first-line "beginning")
   ("L" evil-goto-line "end")
-  ("s-v" recenter "recenter")
+  ("s-v" recenter "recenter" :exit t)
   ("C-k" my-scroll-skip-up "skip up")
   ("C-j" my-scroll-skip-down "skip down")
   ("u" my-scroll-half-page-up "leap up")
