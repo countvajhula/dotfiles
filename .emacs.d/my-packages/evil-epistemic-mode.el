@@ -21,6 +21,12 @@
   :message "-- LINE --"
   :enable (motion normal))
 
+(evil-define-state symex
+  "Symex state."
+  :tag " <λ> "
+  :message "-- SYMEX --"
+  :enable (motion normal))
+
 (evil-define-state view
   "View state."
   :tag " <V> "
@@ -66,6 +72,7 @@
 (require 'my-char-mode)
 (require 'my-word-mode)
 (require 'my-line-mode)
+(require 'my-symex-mode)
 (require 'my-view-mode)
 (require 'my-window-mode)
 (require 'my-file-mode)

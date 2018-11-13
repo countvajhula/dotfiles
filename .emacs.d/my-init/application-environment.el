@@ -205,6 +205,11 @@
     "Face used in evil color-coded segments when in Line state."
     :group 'telephone-line-evil)
 
+  (defface telephone-line-evil-symex
+    '((t (:background "SlateBlue3" :inherit telephone-line-evil)))
+    "Face used in evil color-coded segments when in Symex state."
+    :group 'telephone-line-evil)
+
   (defface telephone-line-evil-view
     '((t (:background "light sea green" :inherit telephone-line-evil)))
     "Face used in evil color-coded segments when in View state."
