@@ -1,13 +1,13 @@
 (defun my-evaluate-symex ()
   "Evaluate Symex"
   (interactive)
-  (eval-last-sexp nil))
+  (geiser-eval-last-sexp nil))
 
 (defhydra hydra-symex (:idle 1.0
                        :columns 2
                        :body-pre (evil-symex-state)
                        :post (evil-normal-state))
-  "SymEx mode"
+  "Symex mode"
   ("h" backward-sexp "left")
   ("j" evil-window-down "down")
   ("k" evil-window-up "up")
