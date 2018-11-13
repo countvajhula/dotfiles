@@ -1,13 +1,18 @@
+(defun my-evaluate-symex ()
+  "Evaluate Symex"
+  (interactive)
+  (eval-last-sexp nil))
 
 (defhydra hydra-symex (:idle 1.0
                        :columns 2
                        :body-pre (evil-symex-state)
                        :post (evil-normal-state))
   "SymEx mode"
-  ("h" evil-window-left "left")
+  ("h" backward-sexp "left")
   ("j" evil-window-down "down")
   ("k" evil-window-up "up")
-  ("l" evil-window-right "right")
+  ("l" forward-sexp "right")
+  ("e" my-evaluate-symex "evaluate")
   ("i" my-noop "exit" :exit t)
   ("<escape>" nil "exit" :exit t)
   ("s-<return>" hydra-word/body "enter lower level" :exit t)
