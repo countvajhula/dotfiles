@@ -1,3 +1,6 @@
+(defvar elisp-modes (list 'lisp-interaction-mode
+                          'emacs-lisp-mode))
+
 (defun my-elisp-describe-symbol ()
   "Describe symbol at point"
   (interactive)
@@ -51,14 +54,10 @@
                       my-local-leader 'hydra-elisp/body))
 
 ;; register elisp leader in all elisp modes
-(add-hook 'emacs-lisp-mode-hook 'register-elisp-leader)
-(add-hook 'lisp-interaction-mode-hook 'register-elisp-leader)
-
-(define-key
-  ;; handy navigation to jump up the file
-  evil-motion-state-map
-  (kbd "C-s-k")
-  'my-jump-up)
+(dolist (mode-name elisp-modes)
+  (setq mode-hook (intern (concat (symbol-name mode-name)
+                                  "-hook")))
+  (add-hook mode-hook 'register-elisp-leader))
 
 (use-package my-elisp-debugger)
 
