@@ -8,17 +8,29 @@
   (interactive)
   (racket-describe nil))
 
+(defun my-racket-eval-symex ()
+  "Eval last sexp.
+
+Accounts for different point location in evil vs emacs mode."
+  (interactive)
+  (save-excursion
+      (when (equal evil-state 'normal)
+        (forward-char))
+      (racket-send-last-sexp)))
+
+(defun my-racket-eval-region ()
+  "Eval region"
+  (interactive)
+  (racket-send-region (region-beginning) (region-end))
+  (deactivate-mark))
+
 (defun my-racket-eval-exp-or-region ()
   "Eval region or last sexp"
   (interactive)
   (if mark-active
-      (progn (racket-send-region (region-beginning) (region-end))
-             (deactivate-mark)
+      (progn (my-racket-eval-region)
              (message "Evaluated region."))
-    (save-excursion
-      (when (equal evil-state 'normal)
-        (forward-char))
-      (racket-send-last-sexp))))
+    (my-racket-eval-symex)))
 
 (defun my-racket-eval (what)
   "Evaluate something"
