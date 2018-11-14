@@ -1,7 +1,13 @@
 (defun my-evaluate-symex ()
   "Evaluate Symex"
   (interactive)
-  (geiser-eval-last-sexp nil))
+  (cond ((equal major-mode 'racket-mode)
+         (my-racket-eval-symex))
+        ((member major-mode elisp-modes)
+         (my-elisp-eval-symex))
+        ((equal major-mode 'scheme-mode)
+         (my-scheme-eval-symex))
+        (t (error "Symex mode: Lisp flavor not recognized!"))))
 
 (defhydra hydra-symex (:idle 1.0
                        :columns 2
