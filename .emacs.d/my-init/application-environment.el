@@ -27,6 +27,9 @@
 (use-package my-scheme
   :after general)
 
+(use-package my-racket
+  :after general)
+
 (use-package php-mode
   :defer t)
 
