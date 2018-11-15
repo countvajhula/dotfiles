@@ -39,7 +39,8 @@
 
 (defhydra hydra-symex (:idle 1.0
                        :columns 2
-                       :body-pre (progn (my-backward-symex)
+                       :body-pre (progn (my-forward-symex)
+                                        (my-backward-symex)
                                         (evil-symex-state))
                        :post (evil-normal-state))
   "Symex mode"
