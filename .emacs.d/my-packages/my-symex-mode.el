@@ -16,6 +16,17 @@
            (my-scheme-eval-symex))
           (t (error "Symex mode: Lisp flavor not recognized!")))))
 
+(defun my-evaluate-definition ()
+  "Evaluate top-level definition"
+  (interactive)
+  (cond ((equal major-mode 'racket-mode)
+         (racket-send-definition nil))
+        ((member major-mode elisp-modes)
+         (eval-defun nil))
+        ((equal major-mode 'scheme-mode)
+         (geiser-eval-definition nil))
+        (t (error "Symex mode: Lisp flavor not recognized!"))))
+
 (defun my-forward-symex ()
   "Forward symex"
   (interactive)
@@ -52,6 +63,7 @@
   ("C-l" lispy-move-down "move forward")
   ("C-j" lispy-raise "raise")
   ("e" my-evaluate-symex "evaluate")
+  ("E" my-evaluate-definition "evaluate definition")
   ("J" lispy-join "join")
   ("i" my-noop "exit" :exit t)
   ("<escape>" nil "exit" :exit t)
