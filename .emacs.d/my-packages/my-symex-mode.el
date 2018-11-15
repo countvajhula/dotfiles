@@ -48,10 +48,22 @@
   (interactive)
   (lispy--out-backward 1))
 
+(defun my-select-nearest-symex ()
+  "Select symex nearest to point"
+  (interactive)
+  (condition-case nil
+      (progn (my-forward-symex)
+             (my-backward-symex))
+    (error (condition-case nil
+               (progn (my-backward-symex)
+                      (my-forward-symex))
+             (error (condition-case nil
+                        (my-backward-symex)
+                      (error nil)))))))
+
 (defhydra hydra-symex (:idle 1.0
                        :columns 2
-                       :body-pre (progn (my-forward-symex)
-                                        (my-backward-symex)
+                       :body-pre (progn (my-select-nearest-symex)
                                         (evil-symex-state))
                        :post (evil-normal-state))
   "Symex mode"
