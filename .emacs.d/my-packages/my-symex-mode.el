@@ -50,6 +50,7 @@
   ("C-l" lispy-move-down "move forward")
   ("C-j" lispy-raise "raise")
   ("e" my-evaluate-symex "evaluate")
+  ("J" lispy-join "join")
   ("i" my-noop "exit" :exit t)
   ("<escape>" nil "exit" :exit t)
   ("s-<return>" hydra-word/body "enter lower level" :exit t)
