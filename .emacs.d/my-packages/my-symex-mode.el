@@ -106,6 +106,7 @@
   ("C-j" lispy-raise "raise")
   ("e" my-evaluate-symex "evaluate")
   ("E" my-evaluate-definition "evaluate definition")
+  ("f" my-evaluate-definition)
   ("J" lispy-join "join")
   ("0" my-first-symex "first symex")
   ("H" my-first-symex "first symex")
