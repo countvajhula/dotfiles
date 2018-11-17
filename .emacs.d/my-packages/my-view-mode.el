@@ -16,6 +16,11 @@
   (interactive)
   (evil-scroll-line-down 9))
 
+(defun my-reset-zoom ()
+  "Reset zoom level to default"
+  (interactive)
+  (text-scale-adjust 0))
+
 (defhydra hydra-view (:idle 1.0
                       :columns 6
                       :body-pre (evil-view-state)
@@ -32,6 +37,10 @@
   ("s-v" recenter "recenter" :exit t)
   ("C-k" my-scroll-skip-up "skip up")
   ("C-j" my-scroll-skip-down "skip down")
+  ("C-S-h" my-reset-zoom "reset zoom")
+  ("C-S-l" my-reset-zoom "reset zoom")
+  ("C-S-k" text-scale-increase "zoom in")
+  ("C-S-j" text-scale-decrease "zoom out")
   ("u" my-scroll-half-page-up "leap up")
   ("d" my-scroll-half-page-down "leap down")
   ("i" my-noop "exit" :exit t)
