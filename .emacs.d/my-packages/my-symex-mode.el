@@ -116,6 +116,7 @@
   ("s-<return>" hydra-word/body "enter lower level" :exit t)
   ("s-<escape>" hydra-view/body "escape to higher level" :exit t))
 
-(global-set-key (kbd "s-y") 'hydra-symex/body)
+(global-set-key (kbd "s-y") 'hydra-symex/body)  ;; since y looks like inverted lambda
+(global-set-key (kbd "s-;") 'hydra-symex/body)  ;; since y is hard to reach
 
 (provide 'my-symex-mode)
