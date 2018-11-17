@@ -2,6 +2,7 @@
 ;;; TODO: ideally, would be good to have a simple POC of the AST
 ;;; to operate on, via semantic?
 ;;; TODO: move f/b/out/in, info, yank
+(use-package lispy)
 
 (defun my-evaluate-symex ()
   "Evaluate Symex"
