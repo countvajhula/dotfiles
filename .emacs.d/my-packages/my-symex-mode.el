@@ -33,6 +33,13 @@
   (and (lispy-bolp)
        (looking-at ";")))
 
+(defun lispy-empty-list-p ()
+  "Checks if we're looking at an empty list."
+  (save-excursion
+    (and (lispy-left-p)
+         (progn (forward-char 2) ;; need to go forward by 2 for some reason
+                (lispy-right-p)))))
+
 (defun my-forward-symex ()
   "Forward symex"
   (interactive)
@@ -47,9 +54,13 @@
   (backward-sexp 1))
 
 (defun my-enter-symex ()
-  "Enter lower symex level"
+  "Enter lower symex level."
   (interactive)
-  (lispy-flow 1))
+  (cond ((lispy-comment-line-p)
+         (lispy-flow 1))
+        ((and (lispy-left-p)
+              (not (lispy-empty-list-p)))
+         (forward-char))))
 
 (defun my-exit-symex ()
   "Exit to higher symex level"
