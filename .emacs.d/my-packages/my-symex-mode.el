@@ -119,6 +119,7 @@
   ("j" my-forward-symex "next")
   ("l" my-forward-symex "next")
   ("f" lispy-flow "flow forward")
+  ("y" lispy-new-copy "yank (copy)")
   ("x" my-delete-symex "delete")
   ("c" my-change-symex "change" :exit t)
   ("C-h" lispy-move-up "move backward")
