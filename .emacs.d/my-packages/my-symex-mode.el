@@ -28,10 +28,17 @@
          (geiser-eval-definition nil))
         (t (error "Symex mode: Lisp flavor not recognized!"))))
 
+(defun lispy-comment-line-p ()
+  "Checks if we're currently at the start of a comment line."
+  (and (lispy-bolp)
+       (looking-at ";")))
+
 (defun my-forward-symex ()
   "Forward symex"
   (interactive)
-  (forward-sexp 2)
+  (if (lispy-comment-line-p)
+      (forward-sexp 1)
+    (forward-sexp 2))
   (backward-sexp 1))
 
 (defun my-backward-symex ()
