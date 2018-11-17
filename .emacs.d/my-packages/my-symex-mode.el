@@ -178,6 +178,7 @@
   ("e" my-evaluate-symex "evaluate")
   ("E" my-evaluate-definition "evaluate definition")
   ("d" my-evaluate-definition)
+  ("s" lispy-split "split")
   ("N" lispy-join "join")
   ("0" my-first-symex "first symex")
   ("H-h" my-first-symex "first symex")
