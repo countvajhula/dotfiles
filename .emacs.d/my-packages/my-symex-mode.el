@@ -69,6 +69,28 @@
     (forward-sexp)  ;; selected symexes will have the cursor on the starting paren
     (lispy-describe)))
 
+(defun my-first-symex ()
+  "Select first symex at present level"
+  (interactive)
+  (let ((previous-position (point)))
+    (my-backward-symex)
+    (setq current-position (point))
+    (while (not (= previous-position current-position))
+      (setq previous-position current-position)
+      (my-backward-symex)
+      (setq current-position (point)))))
+
+(defun my-last-symex ()
+  "Select last symex at present level"
+  (interactive)
+  (let ((previous-position (point)))
+    (my-forward-symex)
+    (setq current-position (point))
+    (while (not (= previous-position current-position))
+      (setq previous-position current-position)
+      (my-forward-symex)
+      (setq current-position (point)))))
+
 (defhydra hydra-symex (:idle 1.0
                        :columns 2
                        :body-pre (progn (my-select-nearest-symex)
@@ -85,7 +107,10 @@
   ("e" my-evaluate-symex "evaluate")
   ("E" my-evaluate-definition "evaluate definition")
   ("J" lispy-join "join")
-  ("i" my-noop "exit" :exit t)
+  ("0" my-first-symex "first symex")
+  ("H" my-first-symex "first symex")
+  ("$" my-last-symex "last symex")
+  ("L" my-last-symex "last symex")
   ("?" my-describe-symex "info")
   ("<escape>" nil "exit" :exit t)
   ("s-<return>" hydra-word/body "enter lower level" :exit t)
