@@ -91,6 +91,19 @@
       (my-forward-symex)
       (setq current-position (point)))))
 
+(defun my-delete-symex ()
+  "Delete symex"
+  (interactive)
+  (if (lispy-left-p)
+      (lispy-delete 1)
+    (kill-sexp 1)))
+
+(defun my-change-symex ()
+  "Change symex"
+  (interactive)
+  (kill-sexp 1)
+  (evil-insert-state))
+
 (defhydra hydra-symex (:idle 1.0
                        :columns 2
                        :body-pre (progn (my-select-nearest-symex)
@@ -105,6 +118,8 @@
   ("L" my-enter-symex "enter")
   ("j" my-forward-symex "next")
   ("l" my-forward-symex "next")
+  ("x" my-delete-symex "delete")
+  ("c" my-change-symex "change" :exit t)
   ("C-h" lispy-move-up "move backward")
   ("C-k" lispy-move-up "move backward")
   ("C-j" lispy-move-down "move forward")
