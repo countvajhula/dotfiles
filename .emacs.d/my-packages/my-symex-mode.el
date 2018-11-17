@@ -62,6 +62,13 @@
                         (my-backward-symex)
                       (error nil)))))))
 
+(defun my-describe-symex ()
+  "Lookup doc on symex."
+  (interactive)
+  (save-excursion
+    (forward-sexp)  ;; selected symexes will have the cursor on the starting paren
+    (lispy-describe)))
+
 (defhydra hydra-symex (:idle 1.0
                        :columns 2
                        :body-pre (progn (my-select-nearest-symex)
@@ -79,6 +86,7 @@
   ("E" my-evaluate-definition "evaluate definition")
   ("J" lispy-join "join")
   ("i" my-noop "exit" :exit t)
+  ("?" my-describe-symex "info")
   ("<escape>" nil "exit" :exit t)
   ("s-<return>" hydra-word/body "enter lower level" :exit t)
   ("s-<escape>" hydra-view/body "escape to higher level" :exit t))
