@@ -1,7 +1,5 @@
-;;; TODO: enter should visit numbers and symbols too
 ;;; TODO: ideally, would be good to have a simple POC of the AST
 ;;; to operate on, via semantic?
-;;; TODO: move f/b/out/in, info, yank
 (use-package lispy)
 
 (defun my-evaluate-symex ()
@@ -122,6 +120,34 @@
   (kill-sexp 1)
   (evil-insert-state))
 
+(defun my-barf-backward ()
+  "Barf backward"
+  (interactive)
+  (save-excursion
+    (my-enter-symex) ;; need to be inside the symex to barf and slurp
+    (lispy-backward-barf-sexp 1)))
+
+(defun my-barf-forward ()
+  "Barf forward"
+  (interactive)
+  (save-excursion
+    (my-enter-symex)  ;; need to be inside the symex to barf and slurp
+    (lispy-forward-barf-sexp 1)))
+
+(defun my-slurp-backward ()
+  "Slurp from behind"
+  (interactive)
+  (save-excursion
+    (my-enter-symex)  ;; need to be inside the symex to barf and slurp
+    (lispy-backward-slurp-sexp 1)))
+
+(defun my-slurp-forward ()
+  "Slurp from the front"
+  (interactive)
+  (save-excursion
+    (my-enter-symex)  ;; need to be inside the symex to barf and slurp
+    (lispy-forward-slurp-sexp 1)))
+
 (defhydra hydra-symex (:idle 1.0
                        :columns 2
                        :body-pre (progn (my-select-nearest-symex)
@@ -144,7 +170,11 @@
   ("C-k" lispy-move-up "move backward")
   ("C-j" lispy-move-down "move forward")
   ("C-l" lispy-move-down "move forward")
-  ("C-S-j" lispy-raise "raise")
+  ("C-S-s-j" lispy-raise "raise")
+  ("C-S-h" my-slurp-backward "slurp backward")
+  ("C-S-j" my-barf-backward "barf backward")
+  ("C-S-k" my-barf-forward "barf forward")
+  ("C-S-l" my-slurp-forward "slurp backward")
   ("e" my-evaluate-symex "evaluate")
   ("E" my-evaluate-definition "evaluate definition")
   ("d" my-evaluate-definition)
