@@ -1,7 +1,6 @@
 ;;; TODO: ideally, would be good to have a simple POC of the AST
 ;;; to operate on, via semantic?
 ;;; TODO: i to insert at start, I to insert before, a to insert at end, A to insert after symex
-;;; TODO: o to insert a newline after, O to insert a newline before symex
 ;;; TODO: consider using S for dragging and C for movement (and then across all modes)
 ;;; TODO: get rid of whitespace when deleting things
 ;;; TODO: f b for forward back using tree traversal
@@ -261,6 +260,21 @@
     (evil-paste-before nil nil))
   (my-forward-symex))
 
+(defun my-open-line-after-symex ()
+  "Open new line after symex"
+  (interactive)
+  (forward-sexp)
+  (newline-and-indent)
+  (evil-insert-state))
+
+(defun my-open-line-before-symex ()
+  "Open new line before symex"
+  (interactive)
+  (newline-and-indent)
+  (evil-previous-line)
+  (indent-according-to-mode)
+  (evil-append-line 1))
+
 (defhydra hydra-symex (:idle 1.0
                        :columns 5
                        :color pink
@@ -305,7 +319,9 @@
   ("}" paredit-wrap-curly "wrap with {}")
   ("<" paredit-wrap-angled "wrap with <>")
   (">" paredit-wrap-angled "wrap with <>")
-  ("n" newline "newline")
+  ("o" my-open-line-after-symex "newline after" :exit t)
+  ("O" my-open-line-before-symex "newline before" :exit t)
+  ("n" newline-and-indent "newline")
   ("N" my-symex-join-lines "merge (join) lines")
   ("0" my-goto-first-symex "go to first")
   ("H-h" my-goto-first-symex "go to first")
@@ -318,8 +334,6 @@
   ;; escape hatches
   ("a" evil-append nil :exit t)
   ("i" evil-insert nil :exit t)
-  ("o" evil-open-below nil :exit t)
-  ("O" evil-open-above nil :exit t)
   ("r" evil-replace nil :exit t)
   ("R" evil-replace-state nil :exit t)
   ("v" evil-visual-char nil :exit t)
