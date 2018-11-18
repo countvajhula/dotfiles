@@ -87,9 +87,15 @@
   (interactive)
   (save-excursion
     (forward-sexp)  ;; selected symexes will have the cursor on the starting paren
-    (lispy-describe)))
+    (cond ((equal major-mode 'racket-mode)
+           (my-racket-describe-symbol))
+          ((member major-mode elisp-modes)
+           (my-elisp-describe-symbol))
+          ((equal major-mode 'scheme-mode)
+           (my-scheme-describe-symbol))
+          (t (error "Symex mode: Lisp flavor not recognized!")))))
 
-(defun my-first-symex ()
+(defun my-goto-first-symex ()
   "Select first symex at present level"
   (interactive)
   (let ((previous-position (point)))
