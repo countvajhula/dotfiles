@@ -46,12 +46,14 @@
   (if (lispy-comment-line-p)
       (forward-sexp 1)
     (forward-sexp 2))
-  (backward-sexp 1))
+  (backward-sexp 1)
+  (recenter))
 
 (defun my-backward-symex ()
   "Backward symex"
   (interactive)
-  (backward-sexp 1))
+  (backward-sexp 1)
+  (recenter))
 
 (defun my-enter-symex ()
   "Enter lower symex level."
@@ -78,7 +80,8 @@
                       (my-forward-symex))
              (error (condition-case nil
                         (my-backward-symex)
-                      (error nil)))))))
+                      (error nil))))))
+  (recenter))
 
 (defun my-describe-symex ()
   "Lookup doc on symex."
@@ -96,7 +99,8 @@
     (while (not (= previous-position current-position))
       (setq previous-position current-position)
       (my-backward-symex)
-      (setq current-position (point)))))
+      (setq current-position (point))))
+  (recenter))
 
 (defun my-last-symex ()
   "Select last symex at present level"
@@ -107,7 +111,8 @@
     (while (not (= previous-position current-position))
       (setq previous-position current-position)
       (my-forward-symex)
-      (setq current-position (point)))))
+      (setq current-position (point))))
+  (recenter))
 
 (defun my-delete-symex ()
   "Delete symex"
