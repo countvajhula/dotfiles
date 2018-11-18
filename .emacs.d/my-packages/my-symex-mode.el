@@ -72,15 +72,14 @@
 (defun my-select-nearest-symex ()
   "Select symex nearest to point"
   (interactive)
-  (condition-case nil
-      (progn (my-forward-symex)
-             (my-backward-symex))
-    (error (condition-case nil
-               (progn (my-backward-symex)
-                      (my-forward-symex))
-             (error (condition-case nil
-                        (my-backward-symex)
-                      (error nil))))))
+  (if (thing-at-point 'sexp)
+      (beginning-of-thing 'sexp)
+    (condition-case nil
+        (progn (forward-sexp 1)
+               (beginning-of-thing 'sexp))
+      (error (condition-case nil
+                 (backward-sexp 1)
+               (error nil)))))
   (recenter))
 
 (defun my-describe-symex ()
