@@ -176,6 +176,7 @@
 
 (defhydra hydra-symex (:idle 1.0
                        :columns 2
+                       :color pink
                        :body-pre (progn (my-select-nearest-symex)
                                         (evil-symex-state))
                        :post (evil-normal-state))
@@ -222,9 +223,18 @@
   ("$" my-last-symex "last symex")
   ("H-l" my-last-symex "last symex")
   ("=" my-indent-symex "auto-indent")
-  ("u" undo-tree-undo "undo")
-  ("C-r" undo-tree-redo "redo")
   ("A" my-append-after-symex "append after symex" :exit t)
+  ;; escape hatches
+  ("a" evil-append nil :exit t)
+  ("i" evil-insert nil :exit t)
+  ("o" evil-open-below nil :exit t)
+  ("O" evil-open-above nil :exit t)
+  ("r" evil-replace nil :exit t)
+  ("R" evil-replace-state nil :exit t)
+  ("v" evil-visual-char nil :exit t)
+  ("V" evil-visual-line nil :exit t)
+  ("C-v" evil-visual-block nil :exit t)
+  ;; standard exits
   ("?" my-describe-symex "info")
   ("<escape>" nil "exit" :exit t)
   ("s-<return>" hydra-word/body "enter lower level" :exit t)
