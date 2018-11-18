@@ -64,7 +64,7 @@
 (defun my-exit-symex ()
   "Exit to higher symex level"
   (interactive)
-  (lispy--out-backward 1))
+  (paredit-backward-up 1))
 
 (defun my-select-nearest-symex ()
   "Select symex nearest to point"
