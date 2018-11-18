@@ -203,6 +203,8 @@
   ("$" my-last-symex "last symex")
   ("H-l" my-last-symex "last symex")
   ("=" my-indent-symex "auto-indent")
+  ("u" undo-tree-undo "undo")
+  ("C-r" undo-tree-redo "redo")
   ("?" my-describe-symex "info")
   ("<escape>" nil "exit" :exit t)
   ("s-<return>" hydra-word/body "enter lower level" :exit t)
