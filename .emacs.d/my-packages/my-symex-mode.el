@@ -123,8 +123,10 @@
   "Delete symex"
   (interactive)
   (if (lispy-left-p)
-      (lispy-delete 1)
-    (kill-sexp 1)))
+      (progn (sp-copy-sexp)
+             (lispy-delete 1))
+    (kill-sexp 1))
+  (my-select-nearest-symex))
 
 (defun my-change-symex ()
   "Change symex"
