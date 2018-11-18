@@ -125,9 +125,9 @@
 (defun my-barf-backward ()
   "Barf backward"
   (interactive)
-  (save-excursion
-    (my-enter-symex) ;; need to be inside the symex to barf and slurp
-    (lispy-backward-barf-sexp 1)))
+  (my-enter-symex) ;; need to be inside the symex to barf and slurp
+  (lispy-backward-barf-sexp 1)
+  (my-forward-symex))
 
 (defun my-barf-forward ()
   "Barf forward"
@@ -139,9 +139,9 @@
 (defun my-slurp-backward ()
   "Slurp from behind"
   (interactive)
-  (save-excursion
-    (my-enter-symex)  ;; need to be inside the symex to barf and slurp
-    (lispy-backward-slurp-sexp 1)))
+  (my-enter-symex)  ;; need to be inside the symex to barf and slurp
+  (lispy-backward-slurp-sexp 1)
+  (my-exit-symex))
 
 (defun my-slurp-forward ()
   "Slurp from the front"
