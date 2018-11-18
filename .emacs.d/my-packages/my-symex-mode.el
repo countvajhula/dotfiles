@@ -161,6 +161,19 @@
   (forward-sexp)  ;; selected symexes will have the cursor on the starting paren
   (evil-insert nil 1))
 
+(defun my-join-symexes ()
+  "Merge symexes at the same level."
+  (interactive)
+  (save-excursion
+    (my-forward-symex)
+    (paredit-join-sexps)))
+
+(defun my-symex-join-lines ()
+  "Join lines inside symex."
+  (interactive)
+  (save-excursion
+    (evil-join (line-beginning-position) (line-end-position))))
+
 (defhydra hydra-symex (:idle 1.0
                        :columns 2
                        :body-pre (progn (my-select-nearest-symex)
@@ -169,14 +182,12 @@
   "Symex mode"
   ("h" my-backward-symex "previous")
   ("k" my-backward-symex "previous")
-  ("p" my-backward-symex "previous")
   ("J" my-exit-symex "exit")
   ("H" my-exit-symex "exit")
   ("K" my-enter-symex "enter")
   ("L" my-enter-symex "enter")
   ("j" my-forward-symex "next")
   ("l" my-forward-symex "next")
-  ("n" my-forward-symex "next")
   ("f" lispy-flow "flow forward")
   ("y" lispy-new-copy "yank (copy)")
   ("x" my-delete-symex "delete")
@@ -194,7 +205,8 @@
   ("E" my-evaluate-definition "evaluate definition")
   ("d" my-evaluate-definition)
   ("s" lispy-split "split")
-  ("N" paredit-join-sexps "join")
+  ("m" my-join-symexes "merge (join)")
+  ("\\" lispy-splice "splice (join to higher level)")
   ("(" paredit-wrap-round "wrap with ()")
   (")" paredit-wrap-round "wrap with ()")
   ("[" paredit-wrap-square "wrap with []")
@@ -203,7 +215,8 @@
   ("}" paredit-wrap-curly "wrap with {}")
   ("<" paredit-wrap-angled "wrap with <>")
   (">" paredit-wrap-angled "wrap with <>")
-  ("\\" lispy-splice "splice")
+  ("n" newline "newline")
+  ("N" my-symex-join-lines "merge (join) lines")
   ("0" my-first-symex "first symex")
   ("H-h" my-first-symex "first symex")
   ("$" my-last-symex "last symex")
