@@ -107,7 +107,7 @@
       (setq current-position (point))))
   (recenter))
 
-(defun my-last-symex ()
+(defun my-goto-last-symex ()
   "Select last symex at present level"
   (interactive)
   (let ((previous-position (point)))
@@ -116,6 +116,30 @@
     (while (not (= previous-position current-position))
       (setq previous-position current-position)
       (my-forward-symex)
+      (setq current-position (point))))
+  (recenter))
+
+(defun my-goto-outermost-symex ()
+  "Select outermost symex."
+  (interactive)
+  (let ((previous-position (point)))
+    (my-exit-symex)
+    (setq current-position (point))
+    (while (not (= previous-position current-position))
+      (setq previous-position current-position)
+      (my-exit-symex)
+      (setq current-position (point))))
+  (recenter))
+
+(defun my-goto-innermost-symex ()
+  "Select innermost symex."
+  (interactive)
+  (let ((previous-position (point)))
+    (my-enter-symex)
+    (setq current-position (point))
+    (while (not (= previous-position current-position))
+      (setq previous-position current-position)
+      (my-enter-symex)
       (setq current-position (point))))
   (recenter))
 
@@ -230,10 +254,12 @@
   (">" paredit-wrap-angled "wrap with <>")
   ("n" newline "newline")
   ("N" my-symex-join-lines "merge (join) lines")
-  ("0" my-first-symex "first symex")
-  ("H-h" my-first-symex "first symex")
-  ("$" my-last-symex "last symex")
-  ("H-l" my-last-symex "last symex")
+  ("0" my-goto-first-symex "go to first")
+  ("H-h" my-goto-first-symex "go to first")
+  ("$" my-goto-last-symex "go to last")
+  ("H-l" my-goto-last-symex "go to last")
+  ("M-J" my-goto-outermost-symex "go to outermost")
+  ("M-K" my-goto-innermost-symex "go to innermost")
   ("=" my-indent-symex "auto-indent")
   ("A" my-append-after-symex "append after symex" :exit t)
   ;; escape hatches
