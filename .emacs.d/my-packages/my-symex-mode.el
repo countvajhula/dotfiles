@@ -48,7 +48,7 @@
 (defun my-forward-symex ()
   "Forward symex"
   (interactive)
-  (if (lispy-comment-line-p)
+  (if (not (thing-at-point 'sexp))
       (forward-sexp 1)
     (forward-sexp 2))
   (backward-sexp 1)
