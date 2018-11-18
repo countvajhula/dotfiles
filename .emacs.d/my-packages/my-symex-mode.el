@@ -155,6 +155,12 @@
   (interactive)
   (apply 'evil-indent (seq-take (evil-cp-a-form 1) 2)))
 
+(defun my-append-after-symex ()
+  "Append after symex (instead of vim's default of line)."
+  (interactive)
+  (forward-sexp)  ;; selected symexes will have the cursor on the starting paren
+  (evil-insert nil 1))
+
 (defhydra hydra-symex (:idle 1.0
                        :columns 2
                        :body-pre (progn (my-select-nearest-symex)
@@ -205,6 +211,7 @@
   ("=" my-indent-symex "auto-indent")
   ("u" undo-tree-undo "undo")
   ("C-r" undo-tree-redo "redo")
+  ("A" my-append-after-symex "append after symex" :exit t)
   ("?" my-describe-symex "info")
   ("<escape>" nil "exit" :exit t)
   ("s-<return>" hydra-word/body "enter lower level" :exit t)
