@@ -175,7 +175,7 @@
     (evil-join (line-beginning-position) (line-end-position))))
 
 (defhydra hydra-symex (:idle 1.0
-                       :columns 2
+                       :columns 5
                        :color pink
                        :body-pre (progn (my-select-nearest-symex)
                                         (evil-symex-state))
