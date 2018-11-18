@@ -2,6 +2,7 @@
 ;;; to operate on, via semantic?
 (use-package lispy)
 (use-package paredit)
+(use-package evil-cleverparens)  ;; really only need cp-textobjects here
 
 (defun my-evaluate-symex ()
   "Evaluate Symex"
@@ -149,6 +150,11 @@
     (my-enter-symex)  ;; need to be inside the symex to barf and slurp
     (lispy-forward-slurp-sexp 1)))
 
+(defun my-indent-symex ()
+  "Auto-indent symex"
+  (interactive)
+  (apply 'evil-indent (seq-take (evil-cp-a-form 1) 2)))
+
 (defhydra hydra-symex (:idle 1.0
                        :columns 2
                        :body-pre (progn (my-select-nearest-symex)
@@ -196,6 +202,7 @@
   ("H-h" my-first-symex "first symex")
   ("$" my-last-symex "last symex")
   ("H-l" my-last-symex "last symex")
+  ("=" my-indent-symex "auto-indent")
   ("?" my-describe-symex "info")
   ("<escape>" nil "exit" :exit t)
   ("s-<return>" hydra-word/body "enter lower level" :exit t)
