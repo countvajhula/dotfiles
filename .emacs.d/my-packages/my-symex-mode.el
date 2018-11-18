@@ -1,5 +1,11 @@
 ;;; TODO: ideally, would be good to have a simple POC of the AST
 ;;; to operate on, via semantic?
+;;; TODO: p should paste at the end of the symex
+;;; TODO: i to insert at start, I to insert before, a to insert at end, A to insert after symex
+;;; TODO: o to insert a newline after, O to insert a newline before symex
+;;; TODO: p and P should reselect symex when done
+;;; TODO: consider using S for dragging and C for movement (and then across all modes)
+;;; TODO: get rid of whitespace when deleting things
 (use-package lispy)
 (use-package paredit)
 (use-package evil-cleverparens)  ;; really only need cp-textobjects here
@@ -250,20 +256,20 @@
   "Symex mode"
   ("h" my-backward-symex "previous")
   ("k" my-backward-symex "previous")
-  ("J" my-exit-symex "exit")
-  ("H" my-exit-symex "exit")
-  ("K" my-enter-symex "enter")
-  ("L" my-enter-symex "enter")
+  ("C-k" my-exit-symex "exit")
+  ("C-h" my-exit-symex "exit")
+  ("C-j" my-enter-symex "enter")
+  ("C-l" my-enter-symex "enter")
   ("j" my-forward-symex "next")
   ("l" my-forward-symex "next")
   ("f" lispy-flow "flow forward")
   ("y" lispy-new-copy "yank (copy)")
   ("x" my-delete-symex "delete")
   ("c" my-change-symex "change" :exit t)
-  ("C-h" lispy-move-up "move backward")
-  ("C-k" lispy-move-up "move backward")
-  ("C-j" lispy-move-down "move forward")
-  ("C-l" lispy-move-down "move forward")
+  ("H" lispy-move-up "move backward")
+  ("K" lispy-move-up "move backward")
+  ("J" lispy-move-down "move forward")
+  ("L" lispy-move-down "move forward")
   ("C-S-s-j" paredit-raise-sexp "raise")
   ("C-S-h" my-slurp-backward "slurp backward")
   ("C-S-j" my-barf-backward "barf backward")
@@ -289,8 +295,8 @@
   ("H-h" my-goto-first-symex "go to first")
   ("$" my-goto-last-symex "go to last")
   ("H-l" my-goto-last-symex "go to last")
-  ("M-J" my-goto-outermost-symex "go to outermost")
-  ("M-K" my-goto-innermost-symex "go to innermost")
+  ("M-C-k" my-goto-outermost-symex "go to outermost")
+  ("M-C-j" my-goto-innermost-symex "go to innermost")
   ("=" my-indent-symex "auto-indent")
   ("A" my-append-after-symex "append after symex" :exit t)
   ;; escape hatches
