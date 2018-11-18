@@ -47,13 +47,15 @@
       (forward-sexp 1)
     (forward-sexp 2))
   (backward-sexp 1)
-  (recenter))
+  (recenter)
+  (point))
 
 (defun my-backward-symex ()
   "Backward symex"
   (interactive)
   (backward-sexp 1)
-  (recenter))
+  (recenter)
+  (point))
 
 (defun my-enter-symex ()
   "Enter lower symex level."
@@ -62,12 +64,14 @@
          (lispy-flow 1))
         ((and (lispy-left-p)
               (not (lispy-empty-list-p)))
-         (forward-char))))
+         (forward-char)))
+  (point))
 
 (defun my-exit-symex ()
   "Exit to higher symex level"
   (interactive)
-  (paredit-backward-up 1))
+  (paredit-backward-up 1)
+  (point))
 
 (defun my-select-nearest-symex ()
   "Select symex nearest to point"
@@ -80,7 +84,8 @@
       (error (condition-case nil
                  (backward-sexp 1)
                (error nil)))))
-  (recenter))
+  (recenter)
+  (point))
 
 (defun my-describe-symex ()
   "Lookup doc on symex."
@@ -105,19 +110,26 @@
       (setq previous-position current-position)
       (my-backward-symex)
       (setq current-position (point))))
-  (recenter))
+  (recenter)
+  (point))
 
-(defun my-goto-last-symex ()
-  "Select last symex at present level"
-  (interactive)
+(defun my--goto-last ()
+  "Helper function to go as far as possible."
   (let ((previous-position (point)))
     (my-forward-symex)
     (setq current-position (point))
     (while (not (= previous-position current-position))
       (setq previous-position current-position)
       (my-forward-symex)
-      (setq current-position (point))))
-  (recenter))
+      (setq current-position (point)))
+    current-position))
+
+(defun my-goto-last-symex ()
+  "Select last symex at present level"
+  (interactive)
+  (my--goto-last)
+  (recenter)
+  (point))
 
 (defun my-goto-outermost-symex ()
   "Select outermost symex."
@@ -129,19 +141,38 @@
       (setq previous-position current-position)
       (my-exit-symex)
       (setq current-position (point))))
-  (recenter))
+  (recenter)
+  (point))
 
-(defun my-goto-innermost-symex ()
-  "Select innermost symex."
-  (interactive)
+(defun my--go-deep ()
+  "Helper function to go as deep as possible."
   (let ((previous-position (point)))
     (my-enter-symex)
     (setq current-position (point))
     (while (not (= previous-position current-position))
       (setq previous-position current-position)
       (my-enter-symex)
-      (setq current-position (point))))
-  (recenter))
+      (setq current-position (point)))
+    current-position))
+
+(defun my--goto-innermost ()
+  "Helper function to traverse deep and forward until it reaches steady state."
+  (let* ((previous-position (point))
+         (current-position (my--go-deep)))
+    (if (= current-position previous-position)
+        (let ((current-position (my-forward-symex)))
+          (unless (= previous-position current-position)
+            (my--goto-innermost)))
+      (let ((current-position (my-forward-symex)))
+        (my--goto-innermost))))
+  (point))
+
+(defun my-goto-innermost-symex ()
+  "Select innermost symex."
+  (interactive)
+  (my--goto-innermost)
+  (recenter)
+  (point))
 
 (defun my-delete-symex ()
   "Delete symex"
