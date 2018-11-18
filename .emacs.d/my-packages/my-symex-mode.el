@@ -188,7 +188,7 @@
   ("E" my-evaluate-definition "evaluate definition")
   ("d" my-evaluate-definition)
   ("s" lispy-split "split")
-  ("N" lispy-join "join")
+  ("N" paredit-join-sexps "join")
   ("(" paredit-wrap-round "wrap with ()")
   (")" paredit-wrap-round "wrap with ()")
   ("[" paredit-wrap-square "wrap with []")
