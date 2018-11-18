@@ -1,11 +1,10 @@
 ;;; TODO: ideally, would be good to have a simple POC of the AST
 ;;; to operate on, via semantic?
-;;; TODO: p should paste at the end of the symex
 ;;; TODO: i to insert at start, I to insert before, a to insert at end, A to insert after symex
 ;;; TODO: o to insert a newline after, O to insert a newline before symex
-;;; TODO: p and P should reselect symex when done
 ;;; TODO: consider using S for dragging and C for movement (and then across all modes)
 ;;; TODO: get rid of whitespace when deleting things
+;;; TODO: f b for forward back using tree traversal
 (use-package lispy)
 (use-package paredit)
 (use-package evil-cleverparens)  ;; really only need cp-textobjects here
@@ -247,6 +246,21 @@
   (save-excursion
     (evil-join (line-beginning-position) (line-end-position))))
 
+(defun my-paste-before-symex ()
+  "Paste before symex"
+  (interactive)
+  (evil-paste-before nil nil)
+  (forward-char)
+  (my-backward-symex))
+
+(defun my-paste-after-symex ()
+  "Paste after symex"
+  (interactive)
+  (save-excursion
+    (forward-sexp)
+    (evil-paste-before nil nil))
+  (my-forward-symex))
+
 (defhydra hydra-symex (:idle 1.0
                        :columns 5
                        :color pink
@@ -264,6 +278,8 @@
   ("l" my-forward-symex "next")
   ("f" lispy-flow "flow forward")
   ("y" lispy-new-copy "yank (copy)")
+  ("p" my-paste-after-symex "paste after")
+  ("P" my-paste-before-symex "paste before")
   ("x" my-delete-symex "delete")
   ("c" my-change-symex "change" :exit t)
   ("H" lispy-move-up "move backward")
