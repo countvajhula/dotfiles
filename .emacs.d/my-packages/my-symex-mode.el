@@ -1,9 +1,11 @@
 ;;; TODO: ideally, would be good to have a simple POC of the AST
 ;;; to operate on, via semantic?
-;;; TODO: i to insert at start, I to insert before, a to insert at end, A to insert after symex
 ;;; TODO: consider using S for dragging and C for movement (and then across all modes)
 ;;; TODO: get rid of whitespace when deleting things
 ;;; TODO: f b for forward back using tree traversal
+;;; TODO: y should preserve newlines, and add a newline if the symex is a leaf
+;;; TODO: newlines should indent affected symexes
+;;; TODO: move back/forward through tree "at same level" without going up or down
 (use-package lispy)
 (use-package paredit)
 (use-package evil-cleverparens)  ;; really only need cp-textobjects here
@@ -312,6 +314,13 @@
           ((equal type 'angled)
            (insert "<>")))))
 
+(defun my-insert-symex-newline ()
+  "Insert newline and reindent symex."
+  (interactive)
+  (newline)
+  (my-indent-symex))
+
+
 (defhydra hydra-symex (:idle 1.0
                        :columns 5
                        :color pink
@@ -366,7 +375,7 @@
   (">" paredit-wrap-angled "wrap with <>")
   ("o" my-open-line-after-symex "newline after" :exit t)
   ("O" my-open-line-before-symex "newline before" :exit t)
-  ("n" newline-and-indent "newline")
+  ("n" my-insert-symex-newline "newline")
   ("N" my-symex-join-lines "merge (join) lines")
   ("0" my-goto-first-symex "go to first")
   ("H-h" my-goto-first-symex "go to first")
