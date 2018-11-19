@@ -224,13 +224,9 @@
 (defun my-indent-symex ()
   "Auto-indent symex"
   (interactive)
-  (apply 'evil-indent (seq-take (evil-cp-a-form 1) 2)))
-
-(defun my-append-after-symex ()
-  "Append after symex (instead of vim's default of line)."
-  (interactive)
-  (forward-sexp)  ;; selected symexes will have the cursor on the starting paren
-  (evil-insert nil 1))
+  (apply 'evil-indent
+         (seq-take (evil-cp-a-form 1)
+                   2)))
 
 (defun my-join-symexes ()
   "Merge symexes at the same level."
@@ -274,6 +270,34 @@
   (evil-previous-line)
   (indent-according-to-mode)
   (evil-append-line 1))
+
+(defun my-append-after-symex ()
+  "Append after symex (instead of vim's default of line)."
+  (interactive)
+  (forward-sexp)  ;; selected symexes will have the cursor on the starting paren
+  (evil-insert 1 nil nil))
+
+(defun my-insert-before-symex ()
+  "Insert before symex (instead of vim's default at the start of line)."
+  (interactive)
+  (evil-insert 1 nil nil))
+
+(defun my-insert-at-beginning-of-symex ()
+  "Insert at beginning of symex."
+  (interactive)
+  (if (lispy-left-p)
+      (evil-append 1 nil)
+    (evil-insert 1 nil nil)))
+
+(defun my-insert-at-end-of-symex ()
+  "Insert at end of symex."
+  (interactive)
+  (if (lispy-left-p)
+      (progn (forward-sexp)
+             (backward-char)
+             (evil-insert 1 nil nil))
+    (progn (forward-sexp)
+           (evil-insert 1 nil nil))))
 
 (defhydra hydra-symex (:idle 1.0
                        :columns 5
@@ -331,9 +355,10 @@
   ("M-C-j" my-goto-innermost-symex "go to innermost")
   ("=" my-indent-symex "auto-indent")
   ("A" my-append-after-symex "append after symex" :exit t)
+  ("a" my-insert-at-end-of-symex nil :exit t)
+  ("i" my-insert-at-beginning-of-symex nil :exit t)
+  ("I" my-insert-before-symex nil :exit t)
   ;; escape hatches
-  ("a" evil-append nil :exit t)
-  ("i" evil-insert nil :exit t)
   ("r" evil-replace nil :exit t)
   ("R" evil-replace-state nil :exit t)
   ("v" evil-visual-char nil :exit t)
