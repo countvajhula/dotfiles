@@ -299,6 +299,19 @@
     (progn (forward-sexp)
            (evil-insert 1 nil nil))))
 
+(defun my-create-symex (type)
+  "Create new symex (list)."
+  (interactive)
+  (save-excursion
+    (cond ((equal type 'round)
+           (insert "()"))
+          ((equal type 'square)
+           (insert "[]"))
+          ((equal type 'curly)
+           (insert "{}"))
+          ((equal type 'angled)
+           (insert "<>")))))
+
 (defhydra hydra-symex (:idle 1.0
                        :columns 5
                        :color pink
@@ -306,6 +319,18 @@
                                         (evil-symex-state))
                        :post (evil-normal-state))
   "Symex mode"
+  ("(" (lambda ()
+         (interactive)
+         (my-create-symex 'round)) "()")
+  ("[" (lambda ()
+         (interactive)
+         (my-create-symex 'square)) "[]")
+  ("{" (lambda ()
+         (interactive)
+         (my-create-symex 'curly)) "{}")
+  ("<" (lambda ()
+         (interactive)
+         (my-create-symex 'angled)) "<>")
   ("h" my-backward-symex "previous")
   ("k" my-backward-symex "previous")
   ("C-k" my-exit-symex "exit")
@@ -335,13 +360,9 @@
   ("s" lispy-split "split")
   ("m" my-join-symexes "merge (join)")
   ("\\" lispy-splice "splice (join to higher level)")
-  ("(" paredit-wrap-round "wrap with ()")
   (")" paredit-wrap-round "wrap with ()")
-  ("[" paredit-wrap-square "wrap with []")
   ("]" paredit-wrap-square "wrap with []")
-  ("{" paredit-wrap-curly "wrap with {}")
   ("}" paredit-wrap-curly "wrap with {}")
-  ("<" paredit-wrap-angled "wrap with <>")
   (">" paredit-wrap-angled "wrap with <>")
   ("o" my-open-line-after-symex "newline after" :exit t)
   ("O" my-open-line-before-symex "newline before" :exit t)
