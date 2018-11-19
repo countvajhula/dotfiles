@@ -3,7 +3,8 @@
 ;;; TODO: consider using S for dragging and C for movement (and then across all modes)
 ;;; TODO: get rid of whitespace when deleting things
 ;;; TODO: f b for forward back using tree traversal
-;;; TODO: y should preserve newlines, and add a newline if the symex is a leaf
+;;; TODO: y should preserve newlines if the symex defines an indent level, and add a newline if the symex is a leaf
+;;; TODO: p/P should always add a space before/after the pasted symex
 ;;; TODO: newlines should indent affected symexes
 ;;; TODO: move back/forward through tree "at same level" without going up or down
 (use-package lispy)
@@ -241,7 +242,17 @@
   "Join lines inside symex."
   (interactive)
   (save-excursion
-    (evil-join (line-beginning-position) (line-end-position))))
+    (evil-join (line-beginning-position)
+               (line-end-position))))
+
+(defun my-yank-symex ()
+  "Yank (copy) symex."
+  (interactive)
+  (lispy-new-copy)
+  (save-excursion
+    (forward-sexp)
+    (when (or (eolp))
+      (kill-append "\n" t))))
 
 (defun my-paste-before-symex ()
   "Paste before symex"
@@ -253,10 +264,12 @@
 (defun my-paste-after-symex ()
   "Paste after symex"
   (interactive)
-  (save-excursion
-    (forward-sexp)
-    (evil-paste-before nil nil))
-  (my-forward-symex))
+  (with-undo-collapse
+   (save-excursion
+     (forward-sexp)
+     (evil-paste-before nil nil))
+   (my-forward-symex)
+   (my-indent-symex)))
 
 (defun my-open-line-after-symex ()
   "Open new line after symex"
@@ -349,7 +362,7 @@
   ("j" my-forward-symex "next")
   ("l" my-forward-symex "next")
   ("f" lispy-flow "flow forward")
-  ("y" lispy-new-copy "yank (copy)")
+  ("y" my-yank-symex "yank (copy)")
   ("p" my-paste-after-symex "paste after")
   ("P" my-paste-before-symex "paste before")
   ("x" my-delete-symex "delete")
