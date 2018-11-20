@@ -9,6 +9,7 @@
 ;;; TODO: move back/forward through tree "at same level" without going up or down (i.e. switch branches, ideally preserving position index within branch)
 ;;; TODO: traverse tree with side effect (traversal-method, side-effect-fn), to use for "indent forward" on paste
 ;;; TODO: incorporate more clear tree-related terminology
+;;; TODO: replace barf with spit
 (use-package lispy)
 (use-package paredit)
 (use-package evil-cleverparens)  ;; really only need cp-textobjects here
@@ -420,9 +421,9 @@
   ("n" my-insert-symex-newline "newline")
   ("N" my-symex-join-lines "merge (join) lines")
   ("0" my-goto-first-symex "go to first")
-  ("H-h" my-goto-first-symex "go to first")
+  ("M-h" my-goto-first-symex "go to first")
   ("$" my-goto-last-symex "go to last")
-  ("H-l" my-goto-last-symex "go to last")
+  ("M-l" my-goto-last-symex "go to last")
   ("M-C-k" my-goto-outermost-symex "go to outermost")
   ("M-C-j" my-goto-innermost-symex "go to innermost")
   ("=" my-indent-symex "auto-indent")
