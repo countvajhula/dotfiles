@@ -6,7 +6,9 @@
 ;;; TODO: y should preserve newlines if the symex defines an indent level, and add a newline if the symex is a leaf
 ;;; TODO: p/P should always add a space before/after the pasted symex
 ;;; TODO: newlines should indent affected symexes
-;;; TODO: move back/forward through tree "at same level" without going up or down
+;;; TODO: move back/forward through tree "at same level" without going up or down (i.e. switch branches, ideally preserving position index within branch)
+;;; TODO: traverse tree with side effect (traversal-method, side-effect-fn), to use for "indent forward" on paste
+;;; TODO: incorporate more clear tree-related terminology
 (use-package lispy)
 (use-package paredit)
 (use-package evil-cleverparens)  ;; really only need cp-textobjects here
@@ -274,12 +276,22 @@
 (defun my-paste-after-symex ()
   "Paste after symex"
   (interactive)
+  (cond ((or (and (point-at-indentation-p)
+                  (not (bolp)))
+             (save-excursion (forward-sexp)
+                             (eolp)))
+         (setq extra-to-prepend "\n"))
+        (t (setq extra-to-prepend " ")))
   (with-undo-collapse
-   (save-excursion
-     (forward-sexp)
-     (evil-paste-before nil nil))
-   (my-forward-symex)
-   (my-indent-symex)))
+    (save-excursion
+      (save-excursion
+        (forward-sexp)
+        (insert extra-to-prepend)
+        (evil-paste-before nil nil)
+        (forward-char))
+      (my-forward-symex)
+      (my-indent-symex))
+    (my-forward-symex)))
 
 (defun my-open-line-after-symex ()
   "Open new line after symex"
