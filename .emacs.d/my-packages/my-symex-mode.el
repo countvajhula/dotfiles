@@ -253,22 +253,21 @@
   (interactive)
   (lispy-new-copy))
 
-;; kill-append
 (defun my-paste-before-symex ()
   "Paste before symex"
   (interactive)
-  ;; analyze the current symex for context
   (cond ((or (and (point-at-indentation-p)
                   (not (bolp)))
              (save-excursion (forward-sexp)
                              (eolp)))
-         (kill-append "\n" nil))
-        (t (kill-append " " nil)))
-  ;; TODO: improve
+         (setq extra-to-append "\n"))
+        (t (setq extra-to-append " ")))
   (with-undo-collapse
     (save-excursion
       (save-excursion
-        (evil-paste-before nil nil))
+        (evil-paste-before nil nil)
+        (forward-char)
+        (insert extra-to-append))
       (my-forward-symex)
       (my-indent-symex))))
 
