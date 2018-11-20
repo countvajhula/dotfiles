@@ -83,14 +83,17 @@
 (defun my-select-nearest-symex ()
   "Select symex nearest to point"
   (interactive)
-  (if (thing-at-point 'sexp)
-      (beginning-of-thing 'sexp)
-    (condition-case nil
-        (progn (forward-sexp 1)
-               (beginning-of-thing 'sexp))
-      (error (condition-case nil
-                 (backward-sexp 1)
-               (error nil)))))
+  (cond ((save-excursion (forward-char) (lispy-right-p))
+         (forward-char)
+         (lispy-different))
+        ((thing-at-point 'sexp)
+         (beginning-of-thing 'sexp))
+        (t (condition-case nil
+               (progn (forward-sexp 1)
+                      (beginning-of-thing 'sexp))
+             (error (condition-case nil
+                        (backward-sexp 1)
+                      (error nil))))))
   (recenter)
   (point))
 
