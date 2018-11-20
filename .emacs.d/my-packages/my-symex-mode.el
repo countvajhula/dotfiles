@@ -9,7 +9,6 @@
 ;;; TODO: move back/forward through tree "at same level" without going up or down (i.e. switch branches, ideally preserving position index within branch)
 ;;; TODO: traverse tree with side effect (traversal-method, side-effect-fn), to use for "indent forward" on paste
 ;;; TODO: incorporate more clear tree-related terminology
-;;; TODO: replace barf with spit
 (use-package lispy)
 (use-package paredit)
 (use-package evil-cleverparens)  ;; really only need cp-textobjects here
@@ -202,24 +201,24 @@
   (kill-sexp 1)
   (evil-insert-state))
 
-(defun my-barf-backward ()
-  "Barf backward"
+(defun my-spit-backward ()
+  "Spit backward"
   (interactive)
-  (my-enter-symex) ;; need to be inside the symex to barf and slurp
+  (my-enter-symex) ;; need to be inside the symex to spit and slurp
   (lispy-backward-barf-sexp 1)
   (my-forward-symex))
 
-(defun my-barf-forward ()
-  "Barf forward"
+(defun my-spit-forward ()
+  "Spit forward"
   (interactive)
   (save-excursion
-    (my-enter-symex)  ;; need to be inside the symex to barf and slurp
+    (my-enter-symex)  ;; need to be inside the symex to spit and slurp
     (lispy-forward-barf-sexp 1)))
 
 (defun my-slurp-backward ()
   "Slurp from behind"
   (interactive)
-  (my-enter-symex)  ;; need to be inside the symex to barf and slurp
+  (my-enter-symex)  ;; need to be inside the symex to spit and slurp
   (lispy-backward-slurp-sexp 1)
   (my-exit-symex))
 
@@ -227,7 +226,7 @@
   "Slurp from the front"
   (interactive)
   (save-excursion
-    (my-enter-symex)  ;; need to be inside the symex to barf and slurp
+    (my-enter-symex)  ;; need to be inside the symex to spit and slurp
     (lispy-forward-slurp-sexp 1)))
 
 (defun my-indent-symex ()
@@ -402,8 +401,8 @@
   ("L" lispy-move-down "move forward")
   ("C-S-s-k" paredit-raise-sexp "raise")
   ("C-S-j" my-slurp-backward "slurp backward")
-  ("C-S-h" my-barf-backward "barf backward")
-  ("C-S-l" my-barf-forward "barf forward")
+  ("C-S-h" my-spit-backward "spit backward")
+  ("C-S-l" my-spit-forward "spit forward")
   ("C-S-k" my-slurp-forward "slurp forward")
   ("z" my-swallow-symex "swallow")
   ("e" my-evaluate-symex "evaluate")
