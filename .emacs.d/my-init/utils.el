@@ -87,3 +87,12 @@ eq to this one."
              ,@body)
          (with-current-buffer ,buffer-var
            (undo-collapse-end ',marker))))))
+
+(defun point-at-indentation-p ()
+  "Check if point is at the point of indentation, i.e. if it's
+the first non-whitespace character.
+
+From: https://stackoverflow.com/a/13313091"
+  (= (save-excursion (back-to-indentation)
+                         (point))
+     (point)))
