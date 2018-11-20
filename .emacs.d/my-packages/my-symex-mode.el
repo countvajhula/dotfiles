@@ -336,6 +336,12 @@
   (newline)
   (my-indent-symex))
 
+(defun my-swallow-symex ()
+  "Swallow symex, putting its contents in the parent symex."
+  (interactive)
+  (lispy-flow 1)
+  (paredit-splice-sexp-killing-backward))
+
 
 (defhydra hydra-symex (:idle 1.0
                        :columns 5
@@ -379,6 +385,7 @@
   ("C-S-h" my-barf-backward "barf backward")
   ("C-S-l" my-barf-forward "barf forward")
   ("C-S-k" my-slurp-forward "slurp forward")
+  ("z" my-swallow-symex "swallow")
   ("e" my-evaluate-symex "evaluate")
   ("E" my-evaluate-definition "evaluate definition")
   ("d" my-evaluate-definition)
