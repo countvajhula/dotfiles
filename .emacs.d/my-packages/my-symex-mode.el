@@ -1,7 +1,6 @@
 ;;; TODO: ideally, would be good to have a simple POC of the AST
 ;;; to operate on, via semantic?
 ;;; TODO: consider using S for dragging and C for movement (and then across all modes)
-;;; TODO: get rid of whitespace when deleting things
 ;;; TODO: f b for forward back using tree traversal
 ;;; TODO: y should preserve newlines if the symex defines an indent level, and add a newline if the symex is a leaf
 ;;; TODO: newlines should indent affected symexes
@@ -195,10 +194,14 @@
 (defun my-delete-symex ()
   "Delete symex"
   (interactive)
-  (if (lispy-left-p)
-      (progn (sp-copy-sexp)
-             (lispy-delete 1))
-    (kill-sexp 1))
+  (sp-kill-sexp nil)
+  (if (or (current-line-empty-p)
+          (save-excursion (back-to-indentation)
+                          (forward-char)
+                          (lispy-right-p)))
+      (progn (evil-previous-line)
+             (my-symex-join-lines))
+    (fixup-whitespace))
   (my-select-nearest-symex))
 
 (defun my-change-symex ()
