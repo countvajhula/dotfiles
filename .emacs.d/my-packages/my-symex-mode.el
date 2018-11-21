@@ -370,6 +370,30 @@
   (lispy-flow 1)
   (paredit-splice-sexp-killing-backward))
 
+(defun my-symex-wrap-round ()
+  "Wrap with ()"
+  (interactive)
+  (paredit-wrap-round)
+  (my-exit-symex))
+
+(defun my-symex-wrap-square ()
+  "Wrap with []"
+  (interactive)
+  (paredit-wrap-square)
+  (my-exit-symex))
+
+(defun my-symex-wrap-curly ()
+  "Wrap with {}"
+  (interactive)
+  (paredit-wrap-curly)
+  (evil-find-char-backward nil 123))
+
+(defun my-symex-wrap-angled ()
+  "Wrap with <>"
+  (interactive)
+  (paredit-wrap-angled)
+  (evil-find-char-backward nil 60))
+
 
 (defhydra hydra-symex (:idle 1.0
                        :columns 5
@@ -420,10 +444,10 @@
   ("s" lispy-split "split")
   ("m" my-join-symexes "merge (join)")
   ("\\" lispy-splice "splice (join to higher level)")
-  (")" paredit-wrap-round "wrap with ()")
-  ("]" paredit-wrap-square "wrap with []")
-  ("}" paredit-wrap-curly "wrap with {}")
-  (">" paredit-wrap-angled "wrap with <>")
+  (")" my-symex-wrap-round "wrap with ()")
+  ("]" my-symex-wrap-square "wrap with []")
+  ("}" my-symex-wrap-curly "wrap with {}")
+  (">" my-symex-wrap-angled "wrap with <>")
   ("o" my-open-line-after-symex "newline after" :exit t)
   ("O" my-open-line-before-symex "newline before" :exit t)
   ("n" my-insert-symex-newline "newline")
