@@ -31,6 +31,23 @@
   (interactive)
   (scroll-left 3))
 
+(defun my-recenter-at-top ()
+  "Recenter view so that selected line is at the top"
+  (interactive)
+  (let ((this-scroll-margin
+         (min (max 0 scroll-margin)
+              (truncate (/ (window-body-height) 4.0)))))
+    (recenter this-scroll-margin)))
+
+(defun my-recenter-at-top ()
+  "Recenter view so that selected line is at the top"
+  (interactive)
+  (let ((this-scroll-margin
+         (min (max 0 scroll-margin)
+              (truncate (/ (window-body-height) 4.0)))))
+    (recenter (- -1 this-scroll-margin))))
+
+
 (defhydra hydra-view (:idle 1.0
                       :columns 6
                       :body-pre (evil-view-state)
@@ -49,8 +66,11 @@
   ("G" evil-goto-line "end")
   ("$" evil-goto-line "end")
   ("s-v" recenter "recenter" :exit t)
+  ("v" recenter "recenter")
   ("C-k" my-scroll-skip-up "skip up")
   ("C-j" my-scroll-skip-down "skip down")
+  ("C-h" my-recenter-at-top "recenter at top")
+  ("C-l" my-recenter-at-bottom "recenter at bottom")
   ("H" my-reset-zoom "reset zoom")
   ("L" my-reset-zoom "reset zoom")
   ("K" text-scale-increase "zoom in")
