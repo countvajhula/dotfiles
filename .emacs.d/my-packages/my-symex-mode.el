@@ -4,7 +4,6 @@
 ;;; TODO: get rid of whitespace when deleting things
 ;;; TODO: f b for forward back using tree traversal
 ;;; TODO: y should preserve newlines if the symex defines an indent level, and add a newline if the symex is a leaf
-;;; TODO: p/P should always add a space before/after the pasted symex
 ;;; TODO: newlines should indent affected symexes
 ;;; TODO: move back/forward through tree "at same level" without going up or down (i.e. switch branches, ideally preserving position index within branch)
 ;;; TODO: traverse tree with side effect (traversal-method, side-effect-fn), to use for "indent forward" on paste
@@ -49,6 +48,13 @@
          (progn (forward-char 2) ;; need to go forward by 2 for some reason
                 (lispy-right-p)))))
 
+(defun my-refocus-on-symex ()
+  "Move screen to put symex in convenient part of the view."
+  (interactive)
+  (let ((focus-line-number (/ (window-text-height)
+                               3)))
+    (recenter focus-line-number)))
+
 (defun my-forward-symex ()
   "Forward symex"
   (interactive)
@@ -56,14 +62,14 @@
       (forward-sexp 1)
     (forward-sexp 2))
   (backward-sexp 1)
-  (recenter)
+  (my-refocus-on-symex)
   (point))
 
 (defun my-backward-symex ()
   "Backward symex"
   (interactive)
   (backward-sexp 1)
-  (recenter)
+  (my-refocus-on-symex)
   (point))
 
 (defun my-enter-symex ()
@@ -96,7 +102,7 @@
              (error (condition-case nil
                         (backward-sexp 1)
                       (error nil))))))
-  (recenter)
+  (my-refocus-on-symex)
   (point))
 
 (defun my-describe-symex ()
@@ -122,7 +128,7 @@
       (setq previous-position current-position)
       (my-backward-symex)
       (setq current-position (point))))
-  (recenter)
+  (my-refocus-on-symex)
   (point))
 
 (defun my--goto-last ()
@@ -140,7 +146,7 @@
   "Select last symex at present level"
   (interactive)
   (my--goto-last)
-  (recenter)
+  (my-refocus-on-symex)
   (point))
 
 (defun my-goto-outermost-symex ()
@@ -153,7 +159,7 @@
       (setq previous-position current-position)
       (my-exit-symex)
       (setq current-position (point))))
-  (recenter)
+  (my-refocus-on-symex)
   (point))
 
 (defun my--go-deep ()
@@ -183,7 +189,7 @@
   "Select innermost symex."
   (interactive)
   (my--goto-innermost)
-  (recenter)
+  (my-refocus-on-symex)
   (point))
 
 (defun my-delete-symex ()
