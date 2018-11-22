@@ -60,6 +60,7 @@
 (use-package company
   :config
   ;; enable company mode autocompletion in all buffers
+  (setq company-idle-delay 0.2)
   (global-company-mode 1))
 
 (use-package company-jedi)
