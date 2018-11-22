@@ -65,15 +65,16 @@
                     window-upper-view-bound)
                  (< window-current-line-number
                     window-lower-view-bound))
-      (dotimes (i (/ (abs window-scroll-delta)
-                     3))
-        (evil-scroll-line-down (if (> window-scroll-delta 0)
-                                   3
-                                 -3))
-        (sit-for 0.0001)))))
+      (recenter window-focus-line-number))))
+      ;; (dotimes (i (/ (abs window-scroll-delta)
+      ;;                3))
+      ;;   (evil-scroll-line-down (if (> window-scroll-delta 0)
+      ;;                              3
+      ;;                            -3))
+      ;;   (sit-for 0.0001)))))
 
-(defun my-forward-symex ()
-  "Forward symex"
+(defun my--forward-one-symex ()
+  "Forward one symex"
   (interactive)
   (if (thing-at-point 'sexp)
       (condition-case nil
@@ -84,14 +85,23 @@
   (my-refocus-on-symex)
   (point))
 
-(defun my-backward-symex ()
+(defun my-forward-symex (&optional count)
+  "Forward symex"
+  (interactive)
+  (let ((count (or count 1)))
+    (dotimes (i count)
+      (my--forward-one-symex))
+    (point)))
+
+(defun my-backward-symex (&optional count)
   "Backward symex"
   (interactive)
-  (condition-case nil
-      (backward-sexp 1)
-    (error nil))
-  (my-refocus-on-symex)
-  (point))
+  (let ((count (or count 1)))
+    (condition-case nil
+        (backward-sexp count)
+      (error nil))
+    (my-refocus-on-symex)
+    (point)))
 
 (defun my-enter-symex ()
   "Enter lower symex level."
