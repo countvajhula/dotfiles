@@ -57,9 +57,11 @@
 (defun my-forward-symex ()
   "Forward symex"
   (interactive)
-  (if (not (thing-at-point 'sexp))
-      (forward-sexp 1)
-    (forward-sexp 2))
+  (if (thing-at-point 'sexp)
+      (condition-case nil
+          (forward-sexp 2)
+        (error (forward-sexp 1)))
+    (forward-sexp 1))
   (backward-sexp 1)
   (my-refocus-on-symex)
   (point))
@@ -67,7 +69,9 @@
 (defun my-backward-symex ()
   "Backward symex"
   (interactive)
-  (backward-sexp 1)
+  (condition-case nil
+      (backward-sexp 1)
+    (error nil))
   (my-refocus-on-symex)
   (point))
 
@@ -95,12 +99,10 @@
          (lispy-different))
         ((thing-at-point 'sexp)
          (beginning-of-thing 'sexp))
-        (t (condition-case nil
-               (progn (forward-sexp 1)
-                      (beginning-of-thing 'sexp))
-             (error (condition-case nil
-                        (backward-sexp 1)
-                      (error nil))))))
+        (t (let ((previous-position (point))
+                 (current-position (my-forward-symex)))
+             (when (= current-position previous-position)
+               (my-backward-symex)))))
   (my-refocus-on-symex)
   (point))
 
