@@ -50,9 +50,29 @@
 (defun my-refocus-on-symex ()
   "Move screen to put symex in convenient part of the view."
   (interactive)
-  (let ((focus-line-number (/ (window-text-height)
-                               3)))
-    (recenter focus-line-number)))
+  (let* ((window-focus-line-number (/ (window-text-height)
+                                       3))
+         (current-line-number (line-number-at-pos))
+         (top-line-number (save-excursion (evil-window-top)
+                                          (line-number-at-pos)))
+         (window-current-line-number (- current-line-number
+                                        top-line-number))
+         (window-scroll-delta (- window-current-line-number
+                                 window-focus-line-number))
+         (window-upper-view-bound (/ (window-text-height)
+                                     9))
+         (window-lower-view-bound (* (window-text-height)
+                                     (/ 4.0 6))))
+    (unless (and (> window-current-line-number
+                    window-upper-view-bound)
+                 (< window-current-line-number
+                    window-lower-view-bound))
+      (dotimes (i (/ (abs window-scroll-delta)
+                     3))
+        (evil-scroll-line-down (if (> window-scroll-delta 0)
+                                   3
+                                 -3))
+        (sit-for 0.0001)))))
 
 (defun my-forward-symex ()
   "Forward symex"
