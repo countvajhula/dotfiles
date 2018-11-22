@@ -215,30 +215,50 @@
 (defun my-spit-backward ()
   "Spit backward"
   (interactive)
-  (my-enter-symex) ;; need to be inside the symex to spit and slurp
-  (lispy-backward-barf-sexp 1)
-  (my-forward-symex))
+  (when (and (lispy-left-p)
+             (not (lispy-empty-list-p)))
+    (save-excursion
+      (my-enter-symex) ;; need to be inside the symex to spit and slurp
+      (lispy-backward-barf-sexp 1))
+    (my-forward-symex)
+    (when (lispy-empty-list-p)
+      (fixup-whitespace)
+      (re-search-forward lispy-left)
+      (my-exit-symex))))
 
 (defun my-spit-forward ()
   "Spit forward"
   (interactive)
-  (save-excursion
-    (my-enter-symex)  ;; need to be inside the symex to spit and slurp
-    (lispy-forward-barf-sexp 1)))
+  (when (and (lispy-left-p)
+             (not (lispy-empty-list-p)))
+    (save-excursion
+      (my-enter-symex) ;; need to be inside the symex to spit and slurp
+      (lispy-forward-barf-sexp 1))
+    (when (lispy-empty-list-p)
+      (my-forward-symex)
+      (fixup-whitespace)
+      (re-search-backward lispy-left))))
 
 (defun my-slurp-backward ()
   "Slurp from behind"
   (interactive)
-  (my-enter-symex)  ;; need to be inside the symex to spit and slurp
-  (lispy-backward-slurp-sexp 1)
-  (my-exit-symex))
+  (when (lispy-left-p)
+    (if (lispy-empty-list-p)
+        (forward-char)
+      (my-enter-symex)) ;; need to be inside the symex to spit and slurp
+    (lispy-backward-slurp-sexp 1)
+    (fixup-whitespace)
+    (my-exit-symex)))
 
 (defun my-slurp-forward ()
   "Slurp from the front"
   (interactive)
-  (save-excursion
-    (my-enter-symex)  ;; need to be inside the symex to spit and slurp
-    (lispy-forward-slurp-sexp 1)))
+  (when (lispy-left-p)
+    (save-excursion
+      (if (lispy-empty-list-p)
+          (forward-char)
+        (my-enter-symex))  ;; need to be inside the symex to spit and slurp
+      (lispy-forward-slurp-sexp 1))))
 
 (defun my-indent-symex ()
   "Auto-indent symex"
