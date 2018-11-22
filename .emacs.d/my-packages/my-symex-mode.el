@@ -2,8 +2,6 @@
 ;;; to operate on, via semantic?
 ;;; TODO: consider using S for dragging and C for movement (and then across all modes)
 ;;; TODO: f b for forward back using tree traversal
-;;; TODO: y should preserve newlines if the symex defines an indent level, and add a newline if the symex is a leaf
-;;; TODO: newlines should indent affected symexes
 ;;; TODO: move back/forward through tree "at same level" without going up or down (i.e. switch branches, ideally preserving position index within branch)
 ;;; TODO: traverse tree with side effect (traversal-method, side-effect-fn), to use for "indent forward" on paste
 ;;; TODO: incorporate more clear tree-related terminology
@@ -213,7 +211,7 @@
   (my-refocus-on-symex)
   (point))
 
-(defun my--preorder-traverse ()
+(defun my--preorder-traverse-forward ()
   "Lowlevel pre-order traversal operation."
   (let ((previous-location (point))
         (current-location (my-enter-symex)))
@@ -221,11 +219,11 @@
         (my-forward-symex)
       current-location)))
 
-(defun my-traverse-symex-preorder ()
+(defun my-preorder-traverse-symex-forward ()
   "Traverse symex as a tree, using pre-order traversal."
   (interactive)
   (let ((original-location (point)))
-    (my--preorder-traverse)
+    (my--preorder-traverse-forward)
     (let ((previous-location (point))
           (current-location (point)))
       (when (= current-location original-location)
@@ -235,6 +233,32 @@
             (unless (= current-location previous-location)
               (setq previous-location current-location)
               (setq current-location (my-forward-symex))
+              (when (not (= current-location previous-location))
+                (throw 'done t)))))))))
+
+(defun my--preorder-traverse-backward ()
+  "Lowlevel pre-order traversal operation."
+  (let ((previous-location (point))
+        (current-location (my-backward-symex)))
+    (if (= current-location previous-location)
+        (my-exit-symex)
+      current-location)))
+
+(defun my-preorder-traverse-symex-backward ()
+  "Traverse symex as a tree, using pre-order traversal."
+  (interactive)
+  (let ((original-location (point)))
+    (my--preorder-traverse-backward)
+    (let ((previous-location (point))
+          (current-location (point)))
+      (when (= current-location original-location)
+        (catch 'done
+          (while t
+            (setq current-location (my-exit-symex))
+            (unless (= current-location previous-location)
+              (setq previous-location current-location)
+              (my-backward-symex)
+              (setq current-location (my-goto-innermost-symex))
               (when (not (= current-location previous-location))
                 (throw 'done t)))))))))
 
@@ -490,6 +514,8 @@
   ("j" my-forward-symex "next")
   ("l" my-forward-symex "next")
   ("f" my-traverse-symex-preorder "flow forward")
+  ("f" my-preorder-traverse-symex-forward "flow forward")
+  ("b" my-preorder-traverse-symex-backward "flow backward")
   ("y" my-yank-symex "yank (copy)")
   ("p" my-paste-after-symex "paste after")
   ("P" my-paste-before-symex "paste before")
