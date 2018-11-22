@@ -45,6 +45,19 @@
          (progn (forward-char 2) ;; need to go forward by 2 for some reason
                 (lispy-right-p)))))
 
+(defun my-symex-index ()
+  "Get relative (from start of containing symex) index of current symex."
+  (interactive)
+  (save-excursion
+    (my-select-nearest-symex)
+    (let ((original-location (point)))
+      (let ((current-location (my-goto-first-symex))
+            (result 0))
+        (while (< current-location original-location)
+          (setq current-location (my-forward-symex))
+          (setq result (+ 1 result)))
+        result))))
+
 (defun my-refocus-on-symex ()
   "Move screen to put symex in convenient part of the view."
   (interactive)
@@ -271,6 +284,24 @@
               (setq current-location (my-goto-innermost-symex))
               (when (not (= current-location previous-location))
                 (throw 'done t)))))))))
+
+(defun my-switch-branch-backward ()
+  "Switch branch backward"
+  (interactive)
+  (let ((symex-index (my-symex-index)))
+    (my-exit-symex)
+    (my-backward-symex)
+    (my-enter-symex)
+    (my-forward-symex symex-index)))
+
+(defun my-switch-branch-forward ()
+  "Switch branch forward"
+  (interactive)
+  (let ((symex-index (my-symex-index)))
+    (my-exit-symex)
+    (my-forward-symex)
+    (my-enter-symex)
+    (my-forward-symex symex-index)))
 
 (defun my-delete-symex ()
   "Delete symex"
@@ -523,9 +554,10 @@
   ("C-l" my-enter-symex "enter")
   ("j" my-forward-symex "next")
   ("l" my-forward-symex "next")
-  ("f" my-traverse-symex-preorder "flow forward")
   ("f" my-preorder-traverse-symex-forward "flow forward")
   ("b" my-preorder-traverse-symex-backward "flow backward")
+  ("C-s-k" my-switch-branch-backward "switch branch backward")
+  ("C-s-j" my-switch-branch-forward "switch branch forward")
   ("y" my-yank-symex "yank (copy)")
   ("p" my-paste-after-symex "paste after")
   ("P" my-paste-before-symex "paste before")
