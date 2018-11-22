@@ -193,6 +193,31 @@
   (my-refocus-on-symex)
   (point))
 
+(defun my--preorder-traverse ()
+  "Lowlevel pre-order traversal operation."
+  (let ((previous-location (point))
+        (current-location (my-enter-symex)))
+    (if (= current-location previous-location)
+        (my-forward-symex)
+      current-location)))
+
+(defun my-traverse-symex-preorder ()
+  "Traverse symex as a tree, using pre-order traversal."
+  (interactive)
+  (let ((original-location (point)))
+    (my--preorder-traverse)
+    (let ((previous-location (point))
+          (current-location (point)))
+      (when (= current-location original-location)
+        (catch 'done
+          (while t
+            (setq current-location (my-exit-symex))
+            (unless (= current-location previous-location)
+              (setq previous-location current-location)
+              (setq current-location (my-forward-symex))
+              (when (not (= current-location previous-location))
+                (throw 'done t)))))))))
+
 (defun my-delete-symex ()
   "Delete symex"
   (interactive)
@@ -444,7 +469,7 @@
   ("C-l" my-enter-symex "enter")
   ("j" my-forward-symex "next")
   ("l" my-forward-symex "next")
-  ("f" lispy-flow "flow forward")
+  ("f" my-traverse-symex-preorder "flow forward")
   ("y" my-yank-symex "yank (copy)")
   ("p" my-paste-after-symex "paste after")
   ("P" my-paste-before-symex "paste before")
