@@ -298,6 +298,13 @@
               (when (not (= current-location previous-location))
                 (throw 'done t)))))))))
 
+(defmacro if-stuck (do-what operation &rest body)
+  `(let ((orig-pt (point)))
+     ,operation
+     (if (= orig-pt (point))
+         ,do-what
+       ,@body)))
+
 (defun my-switch-branch-backward ()
   "Switch branch backward"
   (interactive)
