@@ -88,12 +88,15 @@
 
 (defun my--forward-one-symex ()
   "Forward one symex"
-  (interactive)
   (if (thing-at-point 'sexp)
       (condition-case nil
           (forward-sexp 2)
-        (error (forward-sexp 1)))
-    (forward-sexp 1))
+        (error (condition-case nil
+                   (forward-sexp 1)
+                 (error nil))))
+    (condition-case nil
+        (forward-sexp 1)
+      (error nil)))
   (backward-sexp 1)
   (my-refocus-on-symex)
   (point))
