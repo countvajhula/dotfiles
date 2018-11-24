@@ -119,9 +119,8 @@
     (my-refocus-on-symex)
     (point)))
 
-(defun my-enter-symex ()
-  "Enter lower symex level."
-  (interactive)
+(defun my--enter-one-symex ()
+  "Enter one lower symex level."
   (cond ((lispy-comment-line-p)
          (lispy-flow 1))
         ((and (lispy-left-p)
@@ -129,10 +128,21 @@
          (forward-char)))
   (point))
 
-(defun my-exit-symex ()
+(defun my-enter-symex (&optional count)
+  "Enter lower symex level."
+  (interactive)
+  (let ((count (or count 1)))
+    (dotimes (i count)
+      (my--enter-one-symex)))
+  (point))
+
+(defun my-exit-symex (&optional count)
   "Exit to higher symex level"
   (interactive)
-  (paredit-backward-up 1)
+  (let ((count (or count 1)))
+    (condition-case nil
+        (paredit-backward-up count)
+      (error nil)))
   (point))
 
 (defun my-select-nearest-symex ()
