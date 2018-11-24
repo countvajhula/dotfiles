@@ -247,13 +247,14 @@
   (my-refocus-on-symex)
   (point))
 
+;; TODO: is there a way to "monadically" build the tree data structure
+;; (or ideally, do an arbitrary structural computation) as part of this traversal?
+;; key is, it has to be inferrable from inputs and outputs alone, i.e. specifically
+;; from the result of invocation of e.g. forward-symex
 (defun my--preorder-traverse-forward ()
   "Lowlevel pre-order traversal operation."
-  (let ((previous-location (point))
-        (current-location (my-enter-symex)))
-    (if (= current-location previous-location)
-        (my-forward-symex)
-      current-location)))
+  (if-stuck (my-forward-symex)
+            (my-enter-symex)))
 
 (defun my-preorder-traverse-symex-forward ()
   "Traverse symex as a tree, using pre-order traversal."
@@ -305,14 +306,37 @@
          ,do-what
        ,@body)))
 
+(defun point-at-root-symex-p ()
+  "Check if point is at a root symex."
+  (interactive)
+  (save-excursion
+    (if-stuck t
+              (my-exit-symex)
+              nil)))
+
 (defun my-switch-branch-backward ()
   "Switch branch backward"
   (interactive)
-  (let ((symex-index (my-symex-index)))
-    (my-exit-symex)
-    (my-backward-symex)
-    (my-enter-symex)
-    (my-forward-symex symex-index)))
+  (let ((symex-index (my-symex-index))
+        (closest-index -1)
+        (best-branch-position (point)))
+    (defun switch-backward ()
+      (if (point-at-root-symex-p)
+          (goto-char best-branch-position)
+        (my-exit-symex)
+        (if-stuck (switch-backward)
+                  (my-backward-symex)
+                  (if-stuck (switch-backward)
+                            (my-enter-symex)
+                            (my-forward-symex symex-index)
+                            (let ((current-index (my-symex-index)))
+                              (when (and (< current-index
+                                            symex-index)
+                                         (> current-index
+                                            closest-index))
+                                (setq closest-index current-index)
+                                (setq best-branch-position (point)))))))))
+    (switch-backward)))
 
 (defun my-switch-branch-forward ()
   "Switch branch forward"
