@@ -289,27 +289,31 @@
 ;; (or ideally, do an arbitrary structural computation) as part of this traversal?
 ;; key is, it has to be inferrable from inputs and outputs alone, i.e. specifically
 ;; from the result of invocation of e.g. forward-symex
-(defun my--preorder-traverse-forward ()
-  "Lowlevel pre-order traversal operation."
-  (if-stuck (my-forward-symex)
-            (my-enter-symex)))
+(defun my-preorder-traverse-symex-forward (&optional flow)
+  "Traverse symex as a tree, using pre-order traversal.
 
-(defun my-preorder-traverse-symex-forward ()
-  "Traverse symex as a tree, using pre-order traversal."
+If FLOW is true, continue from one tree to another. Otherwise, stop at end of
+current rooted tree."
   (interactive)
-  (let ((original-location (point)))
-    (my--preorder-traverse-forward)
-    (let ((previous-location (point))
-          (current-location (point)))
-      (when (= current-location original-location)
-        (catch 'done
-          (while t
-            (setq current-location (my-exit-symex))
-            (unless (= current-location previous-location)
-              (setq previous-location current-location)
-              (setq current-location (my-forward-symex))
-              (when (not (= current-location previous-location))
-                (throw 'done t)))))))))
+  (let ((original-location (point))
+        (previous-location (point))
+        (current-location (point))
+        (flow (or flow t)))
+    (if-stuck (my-forward-symex)
+              (my-enter-symex))
+    (setq current-location (point))
+    (catch 'done
+      (while (= current-location previous-location)
+        (my-exit-symex)
+        (setq previous-location (point))
+        (if (point-at-root-symex-p)
+            (if (or (not flow)
+                    (point-at-last-symex-p))
+                (progn (goto-char original-location)
+                       (throw 'done t))
+              (my-forward-symex))
+          (my-forward-symex))
+        (setq current-location (point))))))
 
 (defun my--preorder-traverse-backward ()
   "Lowlevel pre-order traversal operation."
@@ -350,6 +354,22 @@
   (save-excursion
     (if-stuck t
               (my-exit-symex)
+              nil)))
+
+(defun point-at-first-symex-p ()
+  "Check if point is at the first symex in the buffer."
+  (interactive)
+  (save-excursion
+    (if-stuck t
+              (my-backward-symex)
+              nil)))
+
+(defun point-at-last-symex-p ()
+  "Check if point is at the last symex in the buffer."
+  (interactive)
+  (save-excursion
+    (if-stuck t
+              (my-forward-symex)
               nil)))
 
 (defun my-switch-branch-backward ()
