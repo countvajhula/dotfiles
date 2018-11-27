@@ -73,7 +73,7 @@
           (setq result (+ 1 result)))
         result))))
 
-(defun my-refocus-on-symex ()
+(defun my-refocus-on-symex (&optional smooth-scroll)
   "Move screen to put symex in convenient part of the view."
   (interactive)
   (let* ((window-focus-line-number (/ (window-text-height)
@@ -93,13 +93,17 @@
                     window-upper-view-bound)
                  (< window-current-line-number
                     window-lower-view-bound))
-      (recenter window-focus-line-number))))
-      ;; (dotimes (i (/ (abs window-scroll-delta)
-      ;;                3))
-      ;;   (evil-scroll-line-down (if (> window-scroll-delta 0)
-      ;;                              3
-      ;;                            -3))
-      ;;   (sit-for 0.0001)))))
+      (let ((smooth-scroll (or smooth-scroll t)))
+        (if smooth-scroll
+            (dotimes (i (/ (abs window-scroll-delta)
+                           3))
+              (condition-case nil
+                  (evil-scroll-line-down (if (> window-scroll-delta 0)
+                                             3
+                                           -3))
+                (error nil))
+              (sit-for 0.0001))
+          (recenter window-focus-line-number))))))
 
 (defun my--forward-one-symex ()
   "Forward one symex"
