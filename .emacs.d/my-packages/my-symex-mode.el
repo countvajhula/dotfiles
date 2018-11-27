@@ -674,6 +674,8 @@
   ("a" my-insert-at-end-of-symex nil :exit t)
   ("i" my-insert-at-beginning-of-symex nil :exit t)
   ("I" my-insert-before-symex nil :exit t)
+  ;; canonical action
+  ("s-;" my-evaluate-symex "evaluate")
   ;; escape hatches
   ("r" evil-replace nil :exit t)
   ("R" evil-replace-state nil :exit t)
