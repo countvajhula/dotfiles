@@ -69,7 +69,8 @@
       (let ((current-location (my-goto-first-symex))
             (result 0))
         (while (< current-location original-location)
-          (setq current-location (my-forward-symex))
+          (my-forward-symex)
+          (setq current-location (point))
           (setq result (+ 1 result)))
         result))))
 
@@ -107,62 +108,79 @@
 
 (defun my--forward-one-symex ()
   "Forward one symex"
-  (if (thing-at-point 'sexp)
+  (let ((result 0))
+    (if (thing-at-point 'sexp)
+        (condition-case nil
+            (progn (forward-sexp 2)
+                   (setq result 2))
+          (error (condition-case nil
+                     (progn (forward-sexp 1)
+                            (setq result 1))
+                   (error (setq result 0)))))
       (condition-case nil
-          (forward-sexp 2)
-        (error (condition-case nil
-                   (forward-sexp 1)
-                 (error nil))))
+          (progn (forward-sexp 1)
+                 (setq result 1))
+        (error (setq result 0))))
     (condition-case nil
-        (forward-sexp 1)
-      (error nil)))
-  (backward-sexp 1)
-  (my-refocus-on-symex)
-  (point))
+        (progn (backward-sexp 1)
+               (setq result (- result 1)))
+      (error nil))
+    (my-refocus-on-symex)
+    result))
 
 (defun my-forward-symex (&optional count)
   "Forward symex"
   (interactive)
-  (let ((count (or count 1)))
+  (let ((count (or count 1))
+        (result 0))
     (dotimes (i count)
-      (my--forward-one-symex))
-    (point)))
+      (let ((res (my--forward-one-symex)))
+        (setq result (+ res result))))
+    (my-make-motion result 0)))
 
 (defun my-backward-symex (&optional count)
   "Backward symex"
   (interactive)
-  (let ((count (or count 1)))
+  (let ((count (or count 1))
+        (result 0))
     (condition-case nil
-        (backward-sexp count)
+        (progn (backward-sexp count)
+               (setq result (- 0 count)))
       (error nil))
     (my-refocus-on-symex)
-    (point)))
+    (my-make-motion result 0)))
 
 (defun my--enter-one-symex ()
   "Enter one lower symex level."
-  (cond ((lispy-comment-line-p)
-         (lispy-flow 1))
-        ((and (lispy-left-p)
-              (not (lispy-empty-list-p)))
-         (forward-char)))
-  (point))
+  (let ((result 1))
+    (cond ((lispy-comment-line-p)
+           (lispy-flow 1))
+          ((and (lispy-left-p)
+                (not (lispy-empty-list-p)))
+           (forward-char))
+          (t (setq result 0)))
+    result))
 
 (defun my-enter-symex (&optional count)
   "Enter lower symex level."
   (interactive)
-  (let ((count (or count 1)))
+  (let ((count (or count 1))
+        (result 0))
     (dotimes (i count)
-      (my--enter-one-symex)))
-  (point))
+      (let ((res (my--enter-one-symex)))
+        (setq result (+ res result))))
+    (my-make-motion 0 result)))
 
 (defun my-exit-symex (&optional count)
   "Exit to higher symex level"
   (interactive)
-  (let ((count (or count 1)))
+  (let ((count (or count 1))
+        (result 0))
     (condition-case nil
-        (paredit-backward-up count)
-      (error nil)))
-  (point))
+        (progn (paredit-backward-up count)
+               (setq result count)) ;; note: paredit moves as much as possible on failure, so this may be inaccurate
+      (error nil))
+    (my-make-motion 0 (- 0 result))))
 
 (defun my-select-nearest-symex ()
   "Select symex nearest to point"
@@ -173,7 +191,8 @@
         ((thing-at-point 'sexp)
          (beginning-of-thing 'sexp))
         (t (let ((previous-position (point))
-                 (current-position (my-forward-symex)))
+                 (my-forward-symex)
+                 (current-position))
              (when (= current-position previous-position)
                (my-backward-symex)))))
   (my-refocus-on-symex)
