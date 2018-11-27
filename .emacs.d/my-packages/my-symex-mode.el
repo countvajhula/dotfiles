@@ -7,7 +7,7 @@
 ;;; TODO: incorporate more clear tree-related terminology
 ;;; TODO: improve move backward / forward, H L
 ;;; TODO: fix: newline (or shift up/down) is retaining whitespace at the end of the line
-;;; TODO: (and ) in gap s-; gives an error. same with between functions on empty lines
+;;; TODO: innermost and others still assume navigations return point
 (use-package lispy)
 (use-package paredit)
 (use-package evil-cleverparens)  ;; really only need cp-textobjects here
@@ -190,9 +190,9 @@
          (lispy-different))
         ((thing-at-point 'sexp)
          (beginning-of-thing 'sexp))
-        (t (let ((previous-position (point))
-                 (my-forward-symex)
-                 (current-position))
+        (t (let ((previous-position (point)))
+             (my-forward-symex)
+             (setq current-position (point))
              (when (= current-position previous-position)
                (my-backward-symex)))))
   (my-refocus-on-symex)
