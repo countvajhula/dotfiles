@@ -63,6 +63,12 @@
   :message "-- SYSTEM --"
   :enable (motion normal))
 
+(evil-define-state activity
+  "Activity state."
+  :tag " <A> "
+  :message "-- ACTIVITY --"
+  :enable (motion normal))
+
 (evil-define-state mode
   "Mode state."
   :tag " <M> "
@@ -79,6 +85,7 @@
 (require 'my-buffer-mode)
 (require 'my-system-mode)
 (require 'my-application-mode)
+(require 'my-activity-mode)
 
 ;; define face for use in epistemic mode
 (make-face 'eem-face)

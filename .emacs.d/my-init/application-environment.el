@@ -243,6 +243,11 @@
     "Face used in evil color-coded segments when in System state."
     :group 'telephone-line-evil)
 
+  (defface telephone-line-evil-activity
+    '((t (:background "spring green" :inherit telephone-line-evil)))
+    "Face used in evil color-coded segments when in Activity state."
+    :group 'telephone-line-evil)
+
   (telephone-line-mode t))
 
 ;; cozy time
