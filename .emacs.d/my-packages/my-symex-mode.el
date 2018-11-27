@@ -5,9 +5,24 @@
 ;;; TODO: move back/forward through tree "at same level" without going up or down (i.e. switch branches, ideally preserving position index within branch)
 ;;; TODO: traverse tree with side effect (traversal-method, side-effect-fn), to use for "indent forward" on paste
 ;;; TODO: incorporate more clear tree-related terminology
+;;; TODO: improve move backward / forward, H L
+;;; TODO: fix: newline (or shift up/down) is retaining whitespace at the end of the line
+;;; TODO: (and ) in gap s-; gives an error. same with between functions on empty lines
 (use-package lispy)
 (use-package paredit)
 (use-package evil-cleverparens)  ;; really only need cp-textobjects here
+
+
+(defun my-make-motion (x y)
+  (cons x y))
+
+(defun my-motion-x (motion)
+  "X (horizontal) component of motion."
+  (car motion))
+
+(defun my-motion-y (motion)
+  "Y (vertical) component of motion."
+  (cdr motion))
 
 (defun my-evaluate-symex ()
   "Evaluate Symex"
