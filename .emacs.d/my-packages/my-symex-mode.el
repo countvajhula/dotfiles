@@ -195,6 +195,17 @@
           ((< motion-y 0)
            (my-exit-symex (abs motion-y))))))
 
+(defun explore-tree-greedy (itinerary)
+  "Given an ordered list of motions, attempt each one in turn
+until one succeeds."
+  (let ((executed-motion
+         (catch 'done
+           (dolist (motion itinerary)
+             (when (equal (execute-tree-motion motion)
+                          motion)
+               (throw 'done motion)))
+           (my-make-motion 0 0)))))))
+
 (defun my-select-nearest-symex ()
   "Select symex nearest to point"
   (interactive)
