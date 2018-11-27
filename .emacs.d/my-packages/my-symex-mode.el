@@ -182,6 +182,19 @@
       (error nil))
     (my-make-motion 0 (- 0 result))))
 
+(defun execute-tree-motion (motion)
+  "Execute the specified motion at the current point location in the tree."
+  (let ((motion-x (my-motion-x motion))
+        (motion-y (my-motion-y motion)))
+    (cond ((> motion-x 0)
+           (my-forward-symex motion-x))
+          ((< motion-x 0)
+           (my-backward-symex (abs motion-x)))
+          ((> motion-y 0)
+           (my-enter-symex motion-y))
+          ((< motion-y 0)
+           (my-exit-symex (abs motion-y))))))
+
 (defun my-select-nearest-symex ()
   "Select symex nearest to point"
   (interactive)
