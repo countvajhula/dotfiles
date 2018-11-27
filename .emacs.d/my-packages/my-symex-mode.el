@@ -206,6 +206,20 @@ until one succeeds."
                (throw 'done motion)))
            (my-make-motion 0 0)))))))
 
+(defun explore-tree-itinerary (itinerary)
+  "Attempt to execute a given itinerary of motions. If the entire
+sequence of motions is not possible from the current location,
+then do nothing."
+  (let ((original-location (point)))
+    (let ((executed-itinerary
+           (catch 'done
+             (dolist (motion itinerary)
+               (let ((executed-motion (execute-tree-motion motion)))
+                 (unless (equal executed-motion motion)
+                   (goto-char original-location)
+                   (throw 'done (list executed-motion)))))
+             itinerary))))))
+
 (defun my-select-nearest-symex ()
   "Select symex nearest to point"
   (interactive)
