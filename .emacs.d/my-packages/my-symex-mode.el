@@ -447,7 +447,7 @@ current rooted tree."
               nil)))
 
 (defun point-at-first-symex? ()
-  "Check if point is at the first symex in the buffer."
+  "Check if point is at the first symex at some level."
   (interactive)
   (save-excursion
     (if-stuck t
@@ -455,10 +455,20 @@ current rooted tree."
               nil)))
 
 (defun point-at-last-symex? ()
-  "Check if point is at the last symex in the buffer."
+  "Check if point is at the last symex at some level."
   (interactive)
   (save-excursion
     (if-stuck t
+              (my-forward-symex)
+              nil)))
+
+(defun point-at-final-symex? ()
+  "Check if point is at the last symex in the buffer."
+  (interactive)
+  (save-excursion
+    (if-stuck (progn (if-stuck t
+                               (my-exit-symex)
+                               nil))
               (my-forward-symex)
               nil)))
 
