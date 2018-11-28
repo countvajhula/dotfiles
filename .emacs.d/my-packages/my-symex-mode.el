@@ -544,7 +544,7 @@ current rooted tree."
              (not (lispy-empty-list-p)))
     (save-excursion
       (my-enter-symex) ;; need to be inside the symex to spit and slurp
-      (lispy-forward-barf-sexp 1))
+      (paredit-forward-barf-sexp 1))
     (when (lispy-empty-list-p)
       (my-forward-symex)
       (fixup-whitespace)
