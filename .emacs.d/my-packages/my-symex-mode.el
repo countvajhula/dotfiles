@@ -215,7 +215,8 @@ until one succeeds."
              (when (equal (execute-tree-motion motion)
                           motion)
                (throw 'done motion)))
-           (my-make-motion 0 0)))))))
+           motion-zero)))
+    executed-motion))
 
 (defun explore-tree-itinerary (itinerary)
   "Attempt to execute a given itinerary of motions. If the entire
@@ -229,7 +230,31 @@ then do nothing."
                  (unless (equal executed-motion motion)
                    (goto-char original-location)
                    (throw 'done (list executed-motion)))))
-             itinerary))))))
+             itinerary)))
+      executed-itinerary)))
+
+(defun execute-itinerary-taking-detours (itinerary detour)
+  "Execute the provided itinerary, taking detours until successful.
+
+This operation terminates either when the itinerary succeeds, or
+when the detour fails."
+  (let ((done nil)
+        (detour-successful t))
+    (while (and (not done)
+                detour-successful)
+      (let ((attempt (explore-tree-itinerary itinerary)))
+        (setq done (not (is-null-itinerary? attempt)))
+        (when (not done)
+            (setq detour-successful (funcall detour))
+            (message "detour? %s" detour-successful))))
+    done))
+
+(defun is-null-itinerary? (itinerary)
+  "Checks if the itinerary specifies no motion."
+  (and (= (length itinerary)
+          1)
+       (equal (car itinerary)
+              motion-zero)))
 
 (defun my-select-nearest-symex ()
   "Select symex nearest to point"
@@ -334,6 +359,27 @@ then do nothing."
   (my-refocus-on-symex)
   (point))
 
+(defvar preorder-explore (list motion-go-in motion-go-forward))
+(defvar preorder-backtrack (list motion-go-out motion-go-forward))
+
+(defun detour-exit-until-root ()
+  "Exit symex until it reaches root, considering the detour as invalid at that point."
+  (let ((original-location (point)))
+    (my-exit-symex)
+    (if (point-at-root-symex?)
+        (progn (goto-char original-location)
+               nil)
+      t)))
+
+(defun detour-exit-until-last ()
+  "Exit symex until point is at the last symex, considering the detour as invalid at that point."
+  (let ((original-location (point)))
+    (my-exit-symex)
+    (if (point-at-last-symex?)
+        (progn (goto-char original-location)
+               nil)
+      t)))
+
 ;; TODO: is there a way to "monadically" build the tree data structure
 ;; (or ideally, do an arbitrary structural computation) as part of this traversal?
 ;; key is, it has to be inferrable from inputs and outputs alone, i.e. specifically
@@ -344,25 +390,15 @@ then do nothing."
 If FLOW is true, continue from one tree to another. Otherwise, stop at end of
 current rooted tree."
   (interactive)
-  (let ((original-location (point))
-        (previous-location (point))
-        (current-location (point))
-        (flow (or flow t)))
-    (if-stuck (my-forward-symex)
-              (my-enter-symex))
-    (setq current-location (point))
-    (catch 'done
-      (while (= current-location previous-location)
-        (my-exit-symex)
-        (setq previous-location (point))
-        (if (point-at-root-symex-p)
-            (if (or (not flow)
-                    (point-at-last-symex-p))
-                (progn (goto-char original-location)
-                       (throw 'done t))
-              (my-forward-symex))
-          (my-forward-symex))
-        (setq current-location (point))))))
+  (let ((flow (or flow t))
+        (detour (if flow
+                    #'detour-exit-until-last
+                  #'detour-exit-until-root))
+        (motion (explore-tree-greedy preorder-explore)))
+    (if (equal motion motion-zero)
+        (execute-itinerary-taking-detours preorder-backtrack
+                                          detour)
+      motion)))
 
 (defun my--preorder-traverse-backward ()
   "Lowlevel pre-order traversal operation."
@@ -397,7 +433,7 @@ current rooted tree."
          ,do-what
        ,@body)))
 
-(defun point-at-root-symex-p ()
+(defun point-at-root-symex? ()
   "Check if point is at a root symex."
   (interactive)
   (save-excursion
@@ -405,7 +441,7 @@ current rooted tree."
               (my-exit-symex)
               nil)))
 
-(defun point-at-first-symex-p ()
+(defun point-at-first-symex? ()
   "Check if point is at the first symex in the buffer."
   (interactive)
   (save-excursion
@@ -413,7 +449,7 @@ current rooted tree."
               (my-backward-symex)
               nil)))
 
-(defun point-at-last-symex-p ()
+(defun point-at-last-symex? ()
   "Check if point is at the last symex in the buffer."
   (interactive)
   (save-excursion
@@ -428,7 +464,7 @@ current rooted tree."
         (closest-index -1)
         (best-branch-position (point)))
     (defun switch-backward ()
-      (if (point-at-root-symex-p)
+      (if (point-at-root-symex?)
           (goto-char best-branch-position)
         (my-exit-symex)
         (if-stuck (switch-backward)
