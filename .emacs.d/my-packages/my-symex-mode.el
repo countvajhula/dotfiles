@@ -7,6 +7,7 @@
 ;;; TODO: incorporate more clear tree-related terminology
 ;;; TODO: improve move backward / forward, H L
 ;;; TODO: innermost and others still assume navigations return point
+;;; TODO: C-j to move in greedily, going forward
 (use-package lispy)
 (use-package paredit)
 (use-package evil-cleverparens)  ;; really only need cp-textobjects here
@@ -107,7 +108,8 @@
 
 (defun my--forward-one-symex ()
   "Forward one symex"
-  (let ((result 0))
+  (let ((original-location (point))
+        (result 0))
     (if (thing-at-point 'sexp)
         (condition-case nil
             (progn (forward-sexp 2)
@@ -124,6 +126,10 @@
         (progn (backward-sexp 1)
                (setq result (- result 1)))
       (error nil))
+    (let ((current-location (point)))
+      (when (= original-location current-location)
+        ;; happens at end of buffer
+        (setq result 0)))
     (my-refocus-on-symex)
     result))
 
