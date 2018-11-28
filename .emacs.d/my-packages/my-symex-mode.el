@@ -376,11 +376,11 @@ when the detour fails."
                nil)
       t)))
 
-(defun detour-exit-until-last ()
-  "Exit symex until point is at the last symex, considering the detour as invalid at that point."
+(defun detour-exit-until-end-of-buffer ()
+  "Exit symex until point is at the last symex in the buffer, considering the detour as invalid at that point."
   (let ((original-location (point)))
     (my-exit-symex)
-    (if (point-at-last-symex?)
+    (if (point-at-final-symex?)
         (progn (goto-char original-location)
                nil)
       t)))
