@@ -735,8 +735,8 @@ current rooted tree."
   ("M-j" my-goto-innermost-symex "go to innermost")
   ("=" my-indent-symex "auto-indent")
   ("A" my-append-after-symex "append after symex" :exit t)
-  ("a" my-insert-at-end-of-symex nil :exit t)
-  ("i" my-insert-at-beginning-of-symex nil :exit t)
+  ("a" my-insert-at-end-of-symex "append inside symex" :exit t)
+  ("i" my-insert-at-beginning-of-symex "insert inside symex" :exit t)
   ("I" my-insert-before-symex nil :exit t)
   ;; canonical action
   ("s-;" my-evaluate-symex "evaluate")
