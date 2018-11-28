@@ -24,6 +24,12 @@
   "Y (vertical) component of motion."
   (cdr motion))
 
+(defvar motion-zero (my-make-motion 0 0))
+(defvar motion-go-forward (my-make-motion 1 0))
+(defvar motion-go-backward (my-make-motion -1 0))
+(defvar motion-go-in (my-make-motion 0 1))
+(defvar motion-go-out (my-make-motion 0 -1))
+
 (defun my-evaluate-symex ()
   "Evaluate Symex"
   (interactive)
