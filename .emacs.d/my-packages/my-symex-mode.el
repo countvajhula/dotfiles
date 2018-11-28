@@ -6,7 +6,6 @@
 ;;; TODO: traverse tree with side effect (traversal-method, side-effect-fn), to use for "indent forward" on paste
 ;;; TODO: incorporate more clear tree-related terminology
 ;;; TODO: improve move backward / forward, H L
-;;; TODO: fix: newline (or shift up/down) is retaining whitespace at the end of the line
 ;;; TODO: innermost and others still assume navigations return point
 (use-package lispy)
 (use-package paredit)
@@ -633,7 +632,7 @@ current rooted tree."
 (defun my-insert-symex-newline ()
   "Insert newline and reindent symex."
   (interactive)
-  (newline)
+  (newline-and-indent)
   (my-indent-symex))
 
 (defun my-swallow-symex ()
