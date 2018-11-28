@@ -395,15 +395,14 @@ when the detour fails."
 If FLOW is true, continue from one tree to another. Otherwise, stop at end of
 current rooted tree."
   (interactive)
-  (let ((flow (or flow t))
-        (detour (if flow
-                    #'detour-exit-until-last
-                  #'detour-exit-until-root))
-        (motion (explore-tree-greedy preorder-explore)))
-    (if (equal motion motion-zero)
-        (execute-itinerary-taking-detours preorder-backtrack
-                                          detour)
-      motion)))
+  (let ((detour (if flow
+                    #'detour-exit-until-end-of-buffer
+                  #'detour-exit-until-root)))
+    (let ((motion (explore-tree-greedy preorder-explore)))
+      (if (equal motion motion-zero)
+          (execute-itinerary-taking-detours preorder-backtrack
+                                            detour)
+        motion))))
 
 (defun my--preorder-traverse-backward ()
   "Lowlevel pre-order traversal operation."
@@ -756,7 +755,9 @@ current rooted tree."
   ("j" my-enter-symex "enter")
   ("k" my-exit-symex "exit")
   ("l" my-forward-symex "next")
-  ("f" my-preorder-traverse-symex-forward "flow forward")
+  ("f" (lambda ()
+         (interactive)
+         (my-preorder-traverse-symex-forward t)) "flow forward")
   ("b" my-preorder-traverse-symex-backward "flow backward")
   ("C-k" my-switch-branch-backward "switch branch backward")
   ("C-j" my-switch-branch-forward "switch branch forward")
