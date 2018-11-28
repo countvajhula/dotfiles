@@ -8,6 +8,8 @@
 ;;; TODO: improve move backward / forward, H L
 ;;; TODO: innermost and others still assume navigations return point
 ;;; TODO: C-j to move in greedily, going forward
+;;; TODO: fix: backward-symex moves to preamble comments
+;;; TODO: handle "contracts" of each abstraction level, and where conditions should go, rename functions for clarity. legitimate detours vs conditional itineraries, vs conditional motions
 (use-package lispy)
 (use-package paredit)
 (use-package evil-cleverparens)  ;; really only need cp-textobjects here
@@ -238,7 +240,8 @@ then do nothing."
 
 This operation terminates either when the itinerary succeeds, or
 when the detour fails."
-  (let ((done nil)
+  (let ((original-location (point))
+        (done nil)
         (detour-successful t))
     (while (and (not done)
                 detour-successful)
@@ -246,7 +249,9 @@ when the detour fails."
         (setq done (not (is-null-itinerary? attempt)))
         (when (not done)
             (setq detour-successful (funcall detour))
-            (message "detour? %s" detour-successful))))
+            (when (not detour-successful)
+              (goto-char original-location))
+            (message "%s succeeded? %s" detour detour-successful))))
     done))
 
 (defun is-null-itinerary? (itinerary)
