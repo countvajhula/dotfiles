@@ -523,12 +523,16 @@ current rooted tree."
     (my-forward-symex)
     (paredit-join-sexps)))
 
-(defun my-symex-join-lines ()
+(defun my-symex-join-lines (&optional backwards)
   "Join lines inside symex."
   (interactive)
   (save-excursion
+    (when backwards
+      (evil-previous-line))
     (evil-join (line-beginning-position)
-               (line-end-position))))
+               (line-end-position)))
+  (when backwards
+    (forward-char)))
 
 (defun my-yank-symex ()
   "Yank (copy) symex."
@@ -719,7 +723,10 @@ current rooted tree."
   ("o" my-open-line-after-symex "newline after" :exit t)
   ("O" my-open-line-before-symex "newline before" :exit t)
   ("n" my-insert-symex-newline "newline")
-  ("N" my-symex-join-lines "merge (join) lines")
+  ("J" my-symex-join-lines "join lines")
+  ("N" (lambda ()
+         (interactive)
+         (my-symex-join-lines t)) "join lines backwards")
   ("0" my-goto-first-symex "go to first")
   ("M-h" my-goto-first-symex "go to first")
   ("$" my-goto-last-symex "go to last")
