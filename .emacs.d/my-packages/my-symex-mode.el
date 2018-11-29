@@ -10,10 +10,11 @@
 ;;; TODO: C-j to move in greedily, going forward
 ;;; TODO: fix: backward-symex moves to preamble comments
 ;;; TODO: handle "contracts" of each abstraction level, and where conditions should go, rename functions for clarity. legitimate detours vs conditional itineraries, vs conditional motions
-;;; TODO: conditions of motion. treat all motions (like detours) as such conditioned motions. get it to work correctly.
+;;; TODO: detours should be itineraries. define a higher-level sequence of itineraries, where each is tried in sequence until all fail, beginning again from the first on success
 (use-package lispy)
 (use-package paredit)
 (use-package evil-cleverparens)  ;; really only need cp-textobjects here
+(require 'cl-lib)
 
 
 (defun my-make-motion (x y)
@@ -196,32 +197,56 @@
       (error nil))
     (my-make-motion 0 (- 0 result))))
 
-(defun execute-tree-motion (motion)
-  "Execute the specified motion at the current point location in the tree."
-  (let ((motion-x (my-motion-x motion))
-        (motion-y (my-motion-y motion)))
-    (cond ((> motion-x 0)
-           (my-forward-symex motion-x))
-          ((< motion-x 0)
-           (my-backward-symex (abs motion-x)))
-          ((> motion-y 0)
-           (my-enter-symex motion-y))
-          ((< motion-y 0)
-           (my-exit-symex (abs motion-y))))))
+(cl-defun execute-tree-motion (motion
+                               &key
+                               pre-condition
+                               post-condition)
+  "Execute the specified MOTION at the current point location in the tree.
 
-(defun explore-tree-greedy (itinerary)
+The motion is only executed if PRE-CONDITION holds, and is reversed if
+POST-CONDITION does not hold after the provisional execution of the motion."
+  (let ((original-location (point))
+        (motion-x (my-motion-x motion))
+        (motion-y (my-motion-y motion))
+        (pre-condition (or pre-condition
+                           (lambda () t)))
+        (post-condition (or post-condition
+                            (lambda () t))))
+    (if (not (funcall pre-condition))
+        motion-zero
+      (cond ((> motion-x 0)
+             (setq motion-magnitude motion-x)
+             (setq motion-function #'my-forward-symex))
+            ((< motion-x 0)
+             (setq motion-magnitude (abs motion-x))
+             (setq motion-function #'my-backward-symex))
+            ((> motion-y 0)
+             (setq motion-magnitude motion-y)
+             (setq motion-function #'my-enter-symex))
+            ((< motion-y 0)
+             (setq motion-magnitude (abs motion-y))
+             (setq motion-function #'my-exit-symex)))
+      (let ((result (funcall motion-function
+                             motion-magnitude)))
+        (if (not (funcall post-condition))
+            (progn (goto-char original-location)
+                   motion-zero)
+          result)))))
+
+(defun my--greedy-execute-from-itinerary (itinerary &optional condition)
   "Given an ordered list of motions, attempt each one in turn
 until one succeeds."
   (let ((executed-motion
          (catch 'done
            (dolist (motion itinerary)
-             (when (equal (execute-tree-motion motion)
+             (when (equal (execute-tree-motion motion
+                                               :post-condition condition)
                           motion)
                (throw 'done motion)))
            motion-zero)))
     executed-motion))
 
-(defun explore-tree-itinerary (itinerary)
+(defun my--execute-itinerary-full (itinerary &optional condition)
   "Attempt to execute a given itinerary of motions. If the entire
 sequence of motions is not possible from the current location,
 then do nothing."
@@ -229,14 +254,15 @@ then do nothing."
     (let ((executed-itinerary
            (catch 'done
              (dolist (motion itinerary)
-               (let ((executed-motion (execute-tree-motion motion)))
+               (let ((executed-motion (execute-tree-motion motion
+                                                           :post-condition condition)))
                  (unless (equal executed-motion motion)
                    (goto-char original-location)
                    (throw 'done (list executed-motion)))))
              itinerary)))
       executed-itinerary)))
 
-(defun execute-itinerary-taking-detours (itinerary detour)
+(defun execute-itinerary-taking-detours (itinerary detour &optional condition)
   "Execute the provided itinerary, taking detours until successful.
 
 This operation terminates either when the itinerary succeeds, or
@@ -246,13 +272,13 @@ when the detour fails."
         (detour-successful t))
     (while (and (not done)
                 detour-successful)
-      (let ((attempt (explore-tree-itinerary itinerary)))
+      (let ((attempt (my--execute-itinerary-full itinerary
+                                                 condition)))
         (setq done (not (is-null-itinerary? attempt)))
         (when (not done)
             (setq detour-successful (funcall detour))
             (when (not detour-successful)
-              (goto-char original-location))
-            (message "%s succeeded? %s" detour detour-successful))))
+              (goto-char original-location)))))
     done))
 
 (defun is-null-itinerary? (itinerary)
@@ -368,23 +394,30 @@ when the detour fails."
 (defvar preorder-explore (list motion-go-in motion-go-forward))
 (defvar preorder-backtrack (list motion-go-out motion-go-forward))
 
-(defun detour-exit-until-root ()
+(defun detour-exit-until-approaching-root ()
   "Exit symex until it reaches root, considering the detour as invalid at that point."
-  (let ((original-location (point)))
-    (my-exit-symex)
-    (if (point-at-root-symex?)
-        (progn (goto-char original-location)
-               nil)
-      t)))
+  (let ((executed-motion
+         (execute-tree-motion motion-go-out
+                              :post-condition (lambda ()
+                                                (not (point-at-root-symex?))))))
+    (when (not (equal executed-motion
+                      motion-zero))
+      (save-excursion
+        (let ((executed-motion
+               (execute-tree-motion motion-go-out
+                                    :post-condition (lambda ()
+                                                      (not (point-at-root-symex?))))))
+          (not (equal executed-motion
+                      motion-zero)))))))
 
 (defun detour-exit-until-end-of-buffer ()
   "Exit symex until point is at the last symex in the buffer, considering the detour as invalid at that point."
-  (let ((original-location (point)))
-    (my-exit-symex)
-    (if (point-at-final-symex?)
-        (progn (goto-char original-location)
-               nil)
-      t)))
+  (let ((executed-motion
+         (execute-tree-motion motion-go-out
+                              :post-condition (lambda ()
+                                                (not (point-at-final-symex?))))))
+    (not (equal executed-motion
+                motion-zero))))
 
 ;; TODO: is there a way to "monadically" build the tree data structure
 ;; (or ideally, do an arbitrary structural computation) as part of this traversal?
@@ -398,8 +431,8 @@ current rooted tree."
   (interactive)
   (let ((detour (if flow
                     #'detour-exit-until-end-of-buffer
-                  #'detour-exit-until-root)))
-    (let ((motion (explore-tree-greedy preorder-explore)))
+                  #'detour-exit-until-approaching-root)))
+    (let ((motion (my--greedy-execute-from-itinerary preorder-explore)))
       (if (equal motion motion-zero)
           (execute-itinerary-taking-detours preorder-backtrack
                                             detour)
