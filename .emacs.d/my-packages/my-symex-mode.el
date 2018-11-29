@@ -784,8 +784,8 @@ current rooted tree."
   ("]" my-symex-wrap-square "wrap with []")
   ("}" my-symex-wrap-curly "wrap with {}")
   (">" my-symex-wrap-angled "wrap with <>")
-  ("o" my-open-line-after-symex "newline after" :exit t)
-  ("O" my-open-line-before-symex "newline before" :exit t)
+  ("o" my-open-line-after-symex "open line after" :exit t)
+  ("O" my-open-line-before-symex "open line before" :exit t)
   ("n" my-insert-symex-newline "newline")
   ("J" my-symex-join-lines "join lines")
   ("N" (lambda ()
@@ -801,7 +801,7 @@ current rooted tree."
   ("A" my-append-after-symex "append after symex" :exit t)
   ("a" my-insert-at-end-of-symex "append inside symex" :exit t)
   ("i" my-insert-at-beginning-of-symex "insert inside symex" :exit t)
-  ("I" my-insert-before-symex nil :exit t)
+  ("I" my-insert-before-symex "insert before symex" :exit t)
   ;; canonical action
   ("s-;" my-evaluate-symex "evaluate")
   ;; escape hatches
