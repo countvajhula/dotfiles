@@ -557,7 +557,7 @@ current rooted tree."
     (if (lispy-empty-list-p)
         (forward-char)
       (my-enter-symex)) ;; need to be inside the symex to spit and slurp
-    (lispy-backward-slurp-sexp 1)
+    (paredit-backward-slurp-sexp 1)
     (fixup-whitespace)
     (my-exit-symex)))
 
