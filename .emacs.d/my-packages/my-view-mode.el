@@ -1,4 +1,6 @@
 ;; a mode for navigating pages
+;; TODO: region does not persist on entering mode, e.g. for
+;;       use in "narrow" functionality
 
 (defun my-scroll-half-page-up ()
   (interactive)
@@ -47,6 +49,13 @@
               (truncate (/ (window-body-height) 4.0)))))
     (recenter (- -1 this-scroll-margin))))
 
+(defun my-narrow-to-defun-or-region ()
+  "Narrow view to definition or region."
+  (interactive)
+  (if mark-active
+      (narrow-to-region (region-beginning) (region-end))
+    (narrow-to-defun)))
+
 
 (defhydra hydra-view (:idle 1.0
                       :columns 6
@@ -77,6 +86,8 @@
   ("J" text-scale-decrease "zoom out")
   ("u" my-scroll-half-page-up "leap up")
   ("d" my-scroll-half-page-down "leap down")
+  ("n" my-narrow-to-defun-or-region "narrow context")
+  ("w" widen "widen to full view")
   ("i" my-noop "exit" :exit t)
   ("<escape>" nil "exit" :exit t)
   ("s-<return>" hydra-line/body "enter lower level" :exit t)
