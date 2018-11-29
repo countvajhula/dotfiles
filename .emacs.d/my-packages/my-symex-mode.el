@@ -731,6 +731,12 @@ current rooted tree."
   (paredit-wrap-angled)
   (evil-find-char-backward nil 60))
 
+(defun my-wrap-symex ()
+  "Wrap with containing symex."
+  (interactive)
+  (my-symex-wrap-round)
+  (my-insert-at-beginning-of-symex))
+
 
 (defhydra hydra-symex (:idle 1.0
                        :columns 5
@@ -802,6 +808,7 @@ current rooted tree."
   ("a" my-insert-at-end-of-symex "append inside symex" :exit t)
   ("i" my-insert-at-beginning-of-symex "insert inside symex" :exit t)
   ("I" my-insert-before-symex "insert before symex" :exit t)
+  ("w" my-wrap-symex "wrap with symex" :exit t)
   ;; canonical action
   ("s-;" my-evaluate-symex "evaluate")
   ;; escape hatches
