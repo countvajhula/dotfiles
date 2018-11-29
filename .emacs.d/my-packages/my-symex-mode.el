@@ -10,6 +10,7 @@
 ;;; TODO: C-j to move in greedily, going forward
 ;;; TODO: fix: backward-symex moves to preamble comments
 ;;; TODO: handle "contracts" of each abstraction level, and where conditions should go, rename functions for clarity. legitimate detours vs conditional itineraries, vs conditional motions
+;;; TODO: conditions of motion. treat all motions (like detours) as such conditioned motions. get it to work correctly.
 (use-package lispy)
 (use-package paredit)
 (use-package evil-cleverparens)  ;; really only need cp-textobjects here
@@ -85,6 +86,7 @@
 (defun my-refocus-on-symex (&optional smooth-scroll)
   "Move screen to put symex in convenient part of the view."
   (interactive)
+  ;; Note: window-text-height is not robust to zooming
   (let* ((window-focus-line-number (/ (window-text-height)
                                        3))
          (current-line-number (line-number-at-pos))
@@ -102,17 +104,16 @@
                     window-upper-view-bound)
                  (< window-current-line-number
                     window-lower-view-bound))
-      (let ((smooth-scroll (or smooth-scroll t)))
-        (if smooth-scroll
-            (dotimes (i (/ (abs window-scroll-delta)
-                           3))
-              (condition-case nil
-                  (evil-scroll-line-down (if (> window-scroll-delta 0)
-                                             3
-                                           -3))
-                (error nil))
-              (sit-for 0.0001))
-          (recenter window-focus-line-number))))))
+      (if smooth-scroll
+          (dotimes (i (/ (abs window-scroll-delta)
+                         3))
+            (condition-case nil
+                (evil-scroll-line-down (if (> window-scroll-delta 0)
+                                           3
+                                         -3))
+              (error nil))
+            (sit-for 0.0001))
+        (recenter window-focus-line-number)))))
 
 (defun my--forward-one-symex ()
   "Forward one symex"
