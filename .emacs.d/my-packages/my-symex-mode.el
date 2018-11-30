@@ -556,6 +556,15 @@ current rooted tree."
   (kill-sexp 1)
   (evil-insert-state))
 
+(defun my-replace-symex ()
+  "Replace contents of symex"
+  (interactive)
+  (let ((move (my-enter-symex)))
+    (if (move-exists? move)
+        (apply 'evil-change (evil-inner-paren))  ;; TODO: dispatch on paren type
+      (sp-kill-sexp nil)
+      (evil-insert-state))))
+
 (defun my-spit-backward ()
   "Spit backward"
   (interactive)
@@ -805,6 +814,7 @@ current rooted tree."
   ("P" my-paste-before-symex "paste before")
   ("x" my-delete-symex "delete")
   ("c" my-change-symex "change" :exit t)
+  ("r" my-replace-symex "replace" :exit t)
   ("H" lispy-move-up "move backward")
   ("L" lispy-move-down "move forward")
   ("K" paredit-raise-sexp "raise")
@@ -845,7 +855,6 @@ current rooted tree."
   ;; canonical action
   ("s-;" my-evaluate-symex "evaluate")
   ;; escape hatches
-  ("r" evil-replace nil :exit t)
   ("R" evil-replace-state nil :exit t)
   ("v" evil-visual-char nil :exit t)
   ("V" evil-visual-line nil :exit t)
