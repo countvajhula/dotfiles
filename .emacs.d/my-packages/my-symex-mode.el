@@ -17,22 +17,22 @@
 (require 'cl-lib)
 
 
-(defun my-make-motion (x y)
+(defun my-make-move (x y)
   (cons x y))
 
-(defun my-motion-x (motion)
-  "X (horizontal) component of motion."
-  (car motion))
+(defun my-move-x (move)
+  "X (horizontal) component of move."
+  (car move))
 
-(defun my-motion-y (motion)
-  "Y (vertical) component of motion."
-  (cdr motion))
+(defun my-move-y (move)
+  "Y (vertical) component of move."
+  (cdr move))
 
-(defvar motion-zero (my-make-motion 0 0))
-(defvar motion-go-forward (my-make-motion 1 0))
-(defvar motion-go-backward (my-make-motion -1 0))
-(defvar motion-go-in (my-make-motion 0 1))
-(defvar motion-go-out (my-make-motion 0 -1))
+(defvar move-zero (my-make-move 0 0))
+(defvar move-go-forward (my-make-move 1 0))
+(defvar move-go-backward (my-make-move -1 0))
+(defvar move-go-in (my-make-move 0 1))
+(defvar move-go-out (my-make-move 0 -1))
 
 (defun my-evaluate-symex ()
   "Evaluate Symex"
@@ -151,7 +151,7 @@
     (dotimes (i count)
       (let ((res (my--forward-one-symex)))
         (setq result (+ res result))))
-    (my-make-motion result 0)))
+    (my-make-move result 0)))
 
 (defun my-backward-symex (&optional count)
   "Backward symex"
@@ -163,7 +163,7 @@
                (setq result (- 0 count)))
       (error nil))
     (my-refocus-on-symex)
-    (my-make-motion result 0)))
+    (my-make-move result 0)))
 
 (defun my--enter-one-symex ()
   "Enter one lower symex level."
@@ -184,7 +184,7 @@
     (dotimes (i count)
       (let ((res (my--enter-one-symex)))
         (setq result (+ res result))))
-    (my-make-motion 0 result)))
+    (my-make-move 0 result)))
 
 (defun my-exit-symex (&optional count)
   "Exit to higher symex level"
@@ -195,70 +195,70 @@
         (progn (paredit-backward-up count)
                (setq result count)) ;; note: paredit moves as much as possible on failure, so this may be inaccurate
       (error nil))
-    (my-make-motion 0 (- 0 result))))
+    (my-make-move 0 (- 0 result))))
 
-(cl-defun execute-tree-motion (motion
-                               &key
-                               pre-condition
-                               post-condition)
-  "Execute the specified MOTION at the current point location in the tree.
+(cl-defun execute-tree-move (move
+                             &key
+                             pre-condition
+                             post-condition)
+  "Execute the specified MOVE at the current point location in the tree.
 
-The motion is only executed if PRE-CONDITION holds, and is reversed if
-POST-CONDITION does not hold after the provisional execution of the motion."
+The move is only executed if PRE-CONDITION holds, and is reversed if
+POST-CONDITION does not hold after the provisional execution of the move."
   (let ((original-location (point))
-        (motion-x (my-motion-x motion))
-        (motion-y (my-motion-y motion))
+        (move-x (my-move-x move))
+        (move-y (my-move-y move))
         (pre-condition (or pre-condition
                            (lambda () t)))
         (post-condition (or post-condition
                             (lambda () t))))
     (if (not (funcall pre-condition))
-        motion-zero
-      (cond ((> motion-x 0)
-             (setq motion-magnitude motion-x)
-             (setq motion-function #'my-forward-symex))
-            ((< motion-x 0)
-             (setq motion-magnitude (abs motion-x))
-             (setq motion-function #'my-backward-symex))
-            ((> motion-y 0)
-             (setq motion-magnitude motion-y)
-             (setq motion-function #'my-enter-symex))
-            ((< motion-y 0)
-             (setq motion-magnitude (abs motion-y))
-             (setq motion-function #'my-exit-symex)))
-      (let ((result (funcall motion-function
-                             motion-magnitude)))
+        move-zero
+      (cond ((> move-x 0)
+             (setq move-magnitude move-x)
+             (setq move-function #'my-forward-symex))
+            ((< move-x 0)
+             (setq move-magnitude (abs move-x))
+             (setq move-function #'my-backward-symex))
+            ((> move-y 0)
+             (setq move-magnitude move-y)
+             (setq move-function #'my-enter-symex))
+            ((< move-y 0)
+             (setq move-magnitude (abs move-y))
+             (setq move-function #'my-exit-symex)))
+      (let ((result (funcall move-function
+                             move-magnitude)))
         (if (not (funcall post-condition))
             (progn (goto-char original-location)
-                   motion-zero)
+                   move-zero)
           result)))))
 
 (defun my--greedy-execute-from-itinerary (itinerary &optional condition)
-  "Given an ordered list of motions, attempt each one in turn
+  "Given an ordered list of moves, attempt each one in turn
 until one succeeds."
-  (let ((executed-motion
+  (let ((executed-move
          (catch 'done
-           (dolist (motion itinerary)
-             (when (equal (execute-tree-motion motion
-                                               :post-condition condition)
-                          motion)
-               (throw 'done motion)))
-           motion-zero)))
-    executed-motion))
+           (dolist (move itinerary)
+             (when (equal (execute-tree-move move
+                                             :post-condition condition)
+                          move)
+               (throw 'done move)))
+           move-zero)))
+    executed-move))
 
 (defun my--execute-itinerary-full (itinerary &optional condition)
-  "Attempt to execute a given itinerary of motions. If the entire
-sequence of motions is not possible from the current location,
+  "Attempt to execute a given itinerary of moves. If the entire
+sequence of moves is not possible from the current location,
 then do nothing."
   (let ((original-location (point)))
     (let ((executed-itinerary
            (catch 'done
-             (dolist (motion itinerary)
-               (let ((executed-motion (execute-tree-motion motion
-                                                           :post-condition condition)))
-                 (unless (equal executed-motion motion)
+             (dolist (move itinerary)
+               (let ((executed-move (execute-tree-move move
+                                                       :post-condition condition)))
+                 (unless (equal executed-move move)
                    (goto-char original-location)
-                   (throw 'done (list executed-motion)))))
+                   (throw 'done (list executed-move)))))
              itinerary)))
       executed-itinerary)))
 
@@ -282,11 +282,11 @@ when the detour fails."
     done))
 
 (defun is-null-itinerary? (itinerary)
-  "Checks if the itinerary specifies no motion."
+  "Checks if the itinerary specifies no movement."
   (and (= (length itinerary)
           1)
        (equal (car itinerary)
-              motion-zero)))
+              move-zero)))
 
 (defun my-select-nearest-symex ()
   "Select symex nearest to point"
@@ -391,33 +391,33 @@ when the detour fails."
   (my-refocus-on-symex)
   (point))
 
-(defvar preorder-explore (list motion-go-in motion-go-forward))
-(defvar preorder-backtrack (list motion-go-out motion-go-forward))
+(defvar preorder-explore (list move-go-in move-go-forward))
+(defvar preorder-backtrack (list move-go-out move-go-forward))
 
 (defun detour-exit-until-approaching-root ()
   "Exit symex until it reaches root, considering the detour as invalid at that point."
-  (let ((executed-motion
-         (execute-tree-motion motion-go-out
-                              :post-condition (lambda ()
-                                                (not (point-at-root-symex?))))))
-    (when (not (equal executed-motion
-                      motion-zero))
+  (let ((executed-move
+         (execute-tree-move move-go-out
+                            :post-condition (lambda ()
+                                              (not (point-at-root-symex?))))))
+    (when (not (equal executed-move
+                      move-zero))
       (save-excursion
-        (let ((executed-motion
-               (execute-tree-motion motion-go-out
-                                    :post-condition (lambda ()
-                                                      (not (point-at-root-symex?))))))
-          (not (equal executed-motion
-                      motion-zero)))))))
+        (let ((executed-move
+               (execute-tree-move move-go-out
+                                  :post-condition (lambda ()
+                                                    (not (point-at-root-symex?))))))
+          (not (equal executed-move
+                      move-zero)))))))
 
 (defun detour-exit-until-end-of-buffer ()
   "Exit symex until point is at the last symex in the buffer, considering the detour as invalid at that point."
-  (let ((executed-motion
-         (execute-tree-motion motion-go-out
-                              :post-condition (lambda ()
-                                                (not (point-at-final-symex?))))))
-    (not (equal executed-motion
-                motion-zero))))
+  (let ((executed-move
+         (execute-tree-move move-go-out
+                            :post-condition (lambda ()
+                                              (not (point-at-final-symex?))))))
+    (not (equal executed-move
+                move-zero))))
 
 ;; TODO: is there a way to "monadically" build the tree data structure
 ;; (or ideally, do an arbitrary structural computation) as part of this traversal?
@@ -432,11 +432,11 @@ current rooted tree."
   (let ((detour (if flow
                     #'detour-exit-until-end-of-buffer
                   #'detour-exit-until-approaching-root)))
-    (let ((motion (my--greedy-execute-from-itinerary preorder-explore)))
-      (if (equal motion motion-zero)
+    (let ((move (my--greedy-execute-from-itinerary preorder-explore)))
+      (if (equal move move-zero)
           (execute-itinerary-taking-detours preorder-backtrack
                                             detour)
-        motion))))
+        move))))
 
 (defun my--preorder-traverse-backward ()
   "Lowlevel pre-order traversal operation."
