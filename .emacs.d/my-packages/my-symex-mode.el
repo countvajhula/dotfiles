@@ -233,12 +233,12 @@ POST-CONDITION does not hold after the provisional execution of the move."
                    move-zero)
           result)))))
 
-(defun my--greedy-execute-from-itinerary (itinerary &optional condition)
+(defun my--greedy-execute-from-maneuver (maneuver &optional condition)
   "Given an ordered list of moves, attempt each one in turn
 until one succeeds."
   (let ((executed-move
          (catch 'done
-           (dolist (move itinerary)
+           (dolist (move maneuver)
              (when (equal (execute-tree-move move
                                              :post-condition condition)
                           move)
@@ -246,46 +246,45 @@ until one succeeds."
            move-zero)))
     executed-move))
 
-(defun my--execute-itinerary-full (itinerary &optional condition)
-  "Attempt to execute a given itinerary of moves. If the entire
-sequence of moves is not possible from the current location,
-then do nothing."
+(defun my--execute-maneuver-full (maneuver &optional condition)
+  "Attempt to execute a given MANEUVER. If the entire sequence of moves
+is not possible from the current location,then do nothing."
   (let ((original-location (point)))
-    (let ((executed-itinerary
+    (let ((executed-maneuver
            (catch 'done
-             (dolist (move itinerary)
+             (dolist (move maneuver)
                (let ((executed-move (execute-tree-move move
                                                        :post-condition condition)))
                  (unless (equal executed-move move)
                    (goto-char original-location)
                    (throw 'done (list executed-move)))))
-             itinerary)))
-      executed-itinerary)))
+             maneuver)))
+      executed-maneuver)))
 
-(defun execute-itinerary-taking-detours (itinerary detour &optional condition)
-  "Execute the provided itinerary, taking detours until successful.
+(defun execute-maneuver-taking-detours (maneuver detour &optional condition)
+  "Execute the provided maneuver, taking detours until successful.
 
-This operation terminates either when the itinerary succeeds, or
+This operation terminates either when the maneuver succeeds, or
 when the detour fails."
   (let ((original-location (point))
         (done nil)
         (detour-successful t))
     (while (and (not done)
                 detour-successful)
-      (let ((attempt (my--execute-itinerary-full itinerary
-                                                 condition)))
-        (setq done (not (is-null-itinerary? attempt)))
+      (let ((attempt (my--execute-maneuver-full maneuver
+                                                condition)))
+        (setq done (not (is-null-maneuver? attempt)))
         (when (not done)
             (setq detour-successful (funcall detour))
             (when (not detour-successful)
               (goto-char original-location)))))
     done))
 
-(defun is-null-itinerary? (itinerary)
-  "Checks if the itinerary specifies no movement."
-  (and (= (length itinerary)
+(defun is-null-maneuver? (maneuver)
+  "Checks if the maneuver specifies no movement."
+  (and (= (length maneuver)
           1)
-       (equal (car itinerary)
+       (equal (car maneuver)
               move-zero)))
 
 (defun my-select-nearest-symex ()
@@ -432,10 +431,10 @@ current rooted tree."
   (let ((detour (if flow
                     #'detour-exit-until-end-of-buffer
                   #'detour-exit-until-approaching-root)))
-    (let ((move (my--greedy-execute-from-itinerary preorder-explore)))
+    (let ((move (my--greedy-execute-from-maneuver preorder-explore)))
       (if (equal move move-zero)
-          (execute-itinerary-taking-detours preorder-backtrack
-                                            detour)
+          (execute-maneuver-taking-detours preorder-backtrack
+                                           detour)
         move))))
 
 (defun my--preorder-traverse-backward ()
