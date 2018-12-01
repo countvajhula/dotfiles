@@ -54,6 +54,8 @@
   "Construct a maneuver from the given moves."
   moves)
 
+(defvar maneuver-zero (my-make-maneuver move-zero))
+
 (defun my-make-strategy (&rest maneuvers)
   "Construct a strategy from the given maneuvers."
   maneuvers)
@@ -339,16 +341,14 @@ when the detour fails."
 
 (defun is-null-maneuver? (maneuver)
   "Checks if the maneuver specifies no movement."
-  (and (= (length maneuver)
-          1)
-       (are-moves-equivalent? (car maneuver)
-                              move-zero)))
+  (are-maneuvers-equivalent? maneuver
+                             maneuver-zero))
 
 (defun maneuver-exists? (maneuver)
   "Checks if the maneuver is non-zero."
   (not (is-null-maneuver? maneuver)))
 
-(defun are-maneuvers-equal (m1 m2)
+(defun are-maneuvers-equal? (m1 m2)
   "Check if two maneuvers are identical."
   (equal m1 m2))
 
@@ -356,10 +356,10 @@ when the detour fails."
   "A 'naive' version of the maneuver, not including any conditions."
   (seq-map 'naive-move maneuver))
 
-(defun are-maneuvers-equivalent (m1 m2)
+(defun are-maneuvers-equivalent? (m1 m2)
   "Check if two maneuvers are equal, disregarding any conditions."
-  (are-maneuvers-equal (naive-maneuver m1)
-                       (naive-maneuver m2)))
+  (are-maneuvers-equal? (naive-maneuver m1)
+                        (naive-maneuver m2)))
 
 (defun my-select-nearest-symex ()
   "Select symex nearest to point"
