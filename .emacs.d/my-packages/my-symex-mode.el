@@ -50,6 +50,10 @@
                                             (lambda ()
                                               (not (point-at-final-symex?)))))
 
+(defun my-make-maneuver (&rest moves)
+  "Construct a maneuver from the given moves."
+  moves)
+
 (defun my-make-strategy (&rest maneuvers)
   "Construct a strategy from the given maneuvers."
   maneuvers)
@@ -324,12 +328,14 @@ when the detour fails."
   "Check if two moves are identical, including any conditions."
   (equal m1 m2))
 
+(defun naive-move (move)
+  "A 'naive' version of the move, not including any conditions."
+  (apply 'my-make-move (seq-take move 2)))
+
 (defun are-moves-equivalent? (m1 m2)
   "Check if two moves are equal, disregarding any conditions."
-  (are-moves-equal? (apply 'my-make-move
-                           (seq-take m1 2))
-                    (apply 'my-make-move
-                           (seq-take m2 2))))
+  (are-moves-equal? (naive-move m1)
+                    (naive-move m2)))
 
 (defun is-null-maneuver? (maneuver)
   "Checks if the maneuver specifies no movement."
@@ -341,6 +347,19 @@ when the detour fails."
 (defun maneuver-exists? (maneuver)
   "Checks if the maneuver is non-zero."
   (not (is-null-maneuver? maneuver)))
+
+(defun are-maneuvers-equal (m1 m2)
+  "Check if two maneuvers are identical."
+  (equal m1 m2))
+
+(defun naive-maneuver (maneuver)
+  "A 'naive' version of the maneuver, not including any conditions."
+  (seq-map 'naive-move maneuver))
+
+(defun are-maneuvers-equivalent (m1 m2)
+  "Check if two maneuvers are equal, disregarding any conditions."
+  (are-maneuvers-equal (naive-maneuver m1)
+                       (naive-maneuver m2)))
 
 (defun my-select-nearest-symex ()
   "Select symex nearest to point"
