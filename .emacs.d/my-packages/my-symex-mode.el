@@ -449,10 +449,10 @@ current rooted tree."
                     detour-exit-until-end-of-buffer
                   detour-exit-until-root)))
     (let ((move (my--greedy-execute-from-maneuver preorder-explore)))
-      (if (equal move move-zero)
-          (execute-maneuver-taking-detours preorder-backtrack
-                                           detour)
-        move))))
+      (if (move-exists? move)
+          t
+        (my-execute-strategy (list preorder-forward
+                                   detour))))))
 
 (defun my--preorder-traverse-backward ()
   "Lowlevel pre-order traversal operation."
