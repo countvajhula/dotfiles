@@ -10,23 +10,31 @@
 ;;; TODO: C-j to move in greedily, going forward
 ;;; TODO: fix: backward-symex moves to preamble comments
 ;;; TODO: handle "contracts" of each abstraction level, and where conditions should go, rename functions for clarity. legitimate detours vs conditional itineraries, vs conditional motions
-;;; TODO: detours should be itineraries. define a higher-level sequence of itineraries, where each is tried in sequence until all fail, beginning again from the first on success
+;;; TODO: detours should be maneuvers. define a strategy as a higher-level sequence of maneuvers, where each is tried in sequence until all fail, beginning again from the first on success
 (use-package lispy)
 (use-package paredit)
 (use-package evil-cleverparens)  ;; really only need cp-textobjects here
 (require 'cl-lib)
 
 
-(defun my-make-move (x y)
-  (cons x y))
+(defun my-make-move (x y &optional pre-condition post-condition)
+  (list x y pre-condition post-condition))
 
 (defun my-move-x (move)
   "X (horizontal) component of move."
-  (car move))
+  (nth 0 move))
 
 (defun my-move-y (move)
   "Y (vertical) component of move."
-  (cdr move))
+  (nth 1 move))
+
+(defun my-move-pre-condition (move)
+  "Pre-condition of move."
+  (nth 2 move))
+
+(defun my-move-post-condition (move)
+  "Post-condition of move."
+  (nth 3 move))
 
 (defvar move-zero (my-make-move 0 0))
 (defvar move-go-forward (my-make-move 1 0))
@@ -197,10 +205,7 @@
       (error nil))
     (my-make-move 0 (- 0 result))))
 
-(cl-defun execute-tree-move (move
-                             &key
-                             pre-condition
-                             post-condition)
+(cl-defun execute-tree-move (move)
   "Execute the specified MOVE at the current point location in the tree.
 
 The move is only executed if PRE-CONDITION holds, and is reversed if
@@ -208,9 +213,9 @@ POST-CONDITION does not hold after the provisional execution of the move."
   (let ((original-location (point))
         (move-x (my-move-x move))
         (move-y (my-move-y move))
-        (pre-condition (or pre-condition
+        (pre-condition (or (my-move-pre-condition move)
                            (lambda () t)))
-        (post-condition (or post-condition
+        (post-condition (or (my-move-post-condition move)
                             (lambda () t))))
     (if (not (funcall pre-condition))
         move-zero
