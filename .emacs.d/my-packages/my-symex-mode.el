@@ -299,8 +299,7 @@ when the detour fails."
 
 (defun is-null-move? (move)
   "Checks if the move specifies no movement."
-  (equal (seq-take move 2)  ;; conditions are irrelevant for zero comparison
-         (seq-take move-zero 2)))
+  (are-moves-equivalent? move move-zero))
 
 (defun move-exists? (move)
   "Checks if the move specifies tangible movement."
@@ -312,8 +311,10 @@ when the detour fails."
 
 (defun are-moves-equivalent? (m1 m2)
   "Check if two moves are equal, disregarding any conditions."
-  (are-moves-equal? (apply 'my-make-move (seq-take m1 2))
-                    (apply 'my-make-move (seq-take m2 2))))
+  (are-moves-equal? (apply 'my-make-move
+                           (seq-take m1 2))
+                    (apply 'my-make-move
+                           (seq-take m2 2))))
 
 (defun is-null-maneuver? (maneuver)
   "Checks if the maneuver specifies no movement."
