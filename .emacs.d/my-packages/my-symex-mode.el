@@ -6,11 +6,11 @@
 ;;; TODO: traverse tree with side effect (traversal-method, side-effect-fn), to use for "indent forward" on paste
 ;;; TODO: incorporate more clear tree-related terminology
 ;;; TODO: improve move backward / forward, H L
-;;; TODO: innermost and others still assume navigations return point
 ;;; TODO: C-j to move in greedily, going forward
 ;;; TODO: fix: backward-symex moves to preamble comments
 ;;; TODO: handle "contracts" of each abstraction level, and where conditions should go, rename functions for clarity. legitimate detours vs conditional itineraries, vs conditional motions
 ;;; TODO: detours should be maneuvers. define a strategy as a higher-level sequence of maneuvers, where each is tried in sequence until all fail, beginning again from the first on success
+;;; TODO: take a symex and bring it out and before/after as a peer of the parent
 (use-package lispy)
 (use-package paredit)
 (use-package evil-cleverparens)  ;; really only need cp-textobjects here
@@ -450,11 +450,13 @@ when the detour fails."
   (let* ((previous-position (point))
          (current-position (my--go-deep)))
     (if (= current-position previous-position)
-        (let ((current-position (my-forward-symex)))
-          (unless (= previous-position current-position)
-            (my--goto-innermost)))
-      (let ((current-position (my-forward-symex)))
-        (my--goto-innermost))))
+        (progn (my-forward-symex)
+               (setq current-position (point))
+               (unless (= previous-position current-position)
+                 (my--goto-innermost)))
+      (progn (my-forward-symex)
+             (setq current-position (point))
+             (my--goto-innermost))))
   (point))
 
 (defun my-goto-innermost-symex ()
