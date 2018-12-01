@@ -50,6 +50,10 @@
                                             (lambda ()
                                               (not (point-at-final-symex?)))))
 
+(defun my-make-strategy (&rest maneuvers)
+  "Construct a strategy from the given maneuvers."
+  maneuvers)
+
 (defun my-evaluate-symex ()
   "Evaluate Symex"
   (interactive)
@@ -463,8 +467,8 @@ current rooted tree."
     (let ((move (my--greedy-execute-from-maneuver preorder-explore)))
       (if (move-exists? move)
           t
-        (my-execute-strategy (list preorder-forward
-                                   detour))))))
+        (my-execute-strategy (my-make-strategy preorder-forward
+                                               detour))))))
 
 (defun my--preorder-traverse-backward ()
   "Lowlevel pre-order traversal operation."
