@@ -798,6 +798,11 @@ current rooted tree."
   (my-symex-wrap-round)
   (my-insert-at-beginning-of-symex))
 
+(defun my-switch-to-scratch-buffer ()
+  "Switch to scratch buffer."
+  (interactive)
+  (switch-to-buffer-other-window "*scratch*"))  ;; TODO: create in lisp interaction mode if missing)
+
 
 (defhydra hydra-symex (:idle 1.0
                        :columns 5
@@ -846,6 +851,7 @@ current rooted tree."
   ("E" my-evaluate-definition "evaluate definition")
   ("d" my-evaluate-definition)
   ("s" lispy-split "split")
+  ("t" my-switch-to-scratch-buffer "scratch buffer" :exit t)
   ("m" my-join-symexes "merge (join)")
   ("\\" lispy-splice "splice (join to higher level)")
   (")" my-symex-wrap-round "wrap with ()")
