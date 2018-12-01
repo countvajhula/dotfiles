@@ -41,6 +41,14 @@
 (defvar move-go-backward (my-make-move -1 0))
 (defvar move-go-in (my-make-move 0 1))
 (defvar move-go-out (my-make-move 0 -1))
+(defvar move-go-out-avoid-root (my-make-move 0 -1
+                                             nil
+                                             (lambda ()
+                                               (not (point-at-root-symex?)))))
+(defvar move-go-out-avoid-eob (my-make-move 0 -1
+                                            nil
+                                            (lambda ()
+                                              (not (point-at-final-symex?)))))
 
 (defun my-evaluate-symex ()
   "Evaluate Symex"
@@ -413,31 +421,9 @@ when the detour fails."
 
 (defvar preorder-explore (list move-go-in move-go-forward))
 (defvar preorder-backtrack (list move-go-out move-go-forward))
-
-(defun detour-exit-until-approaching-root ()
-  "Exit symex until it reaches root, considering the detour as invalid at that point."
-  (let ((executed-move
-         (execute-tree-move move-go-out
-                            :post-condition (lambda ()
-                                              (not (point-at-root-symex?))))))
-    (when (not (equal executed-move
-                      move-zero))
-      (save-excursion
-        (let ((executed-move
-               (execute-tree-move move-go-out
-                                  :post-condition (lambda ()
-                                                    (not (point-at-root-symex?))))))
-          (not (equal executed-move
-                      move-zero)))))))
-
-(defun detour-exit-until-end-of-buffer ()
-  "Exit symex until point is at the last symex in the buffer, considering the detour as invalid at that point."
-  (let ((executed-move
-         (execute-tree-move move-go-out
-                            :post-condition (lambda ()
-                                              (not (point-at-final-symex?))))))
-    (not (equal executed-move
-                move-zero))))
+(defvar preorder-forward (list move-go-forward))
+(defvar detour-exit-until-root (list move-go-out-avoid-root))
+(defvar detour-exit-until-end-of-buffer (list move-go-out-avoid-eob))
 
 ;; TODO: is there a way to "monadically" build the tree data structure
 ;; (or ideally, do an arbitrary structural computation) as part of this traversal?
@@ -450,8 +436,8 @@ If FLOW is true, continue from one tree to another. Otherwise, stop at end of
 current rooted tree."
   (interactive)
   (let ((detour (if flow
-                    #'detour-exit-until-end-of-buffer
-                  #'detour-exit-until-approaching-root)))
+                    detour-exit-until-end-of-buffer
+                  detour-exit-until-root)))
     (let ((move (my--greedy-execute-from-maneuver preorder-explore)))
       (if (equal move move-zero)
           (execute-maneuver-taking-detours preorder-backtrack
