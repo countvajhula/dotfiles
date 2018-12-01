@@ -649,8 +649,9 @@ current rooted tree."
   "Join lines inside symex."
   (interactive)
   (save-excursion
-    (when backwards
-      (evil-previous-line))
+    (if backwards
+        (evil-previous-line)
+      (forward-sexp))
     (evil-join (line-beginning-position)
                (line-end-position)))
   (when backwards
