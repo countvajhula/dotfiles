@@ -272,24 +272,30 @@ is not possible from the current location, then do nothing."
              maneuver)))
       executed-maneuver)))
 
-(defun execute-maneuver-taking-detours (maneuver detour &optional condition)
+(defun my--execute-maneuver-with-detour (maneuver detour)
+  "Execute the maneuver, trying the indicated detour as needed.
+
+Continues trying until the detour fails."
+  (let ((attempt (my-execute-maneuver maneuver)))
+    (if (maneuver-exists? attempt)
+        t
+      (let ((detour-attempt (my-execute-maneuver detour)))
+        (if (maneuver-exists? detour-attempt)
+            (my--execute-maneuver-with-detour maneuver detour)
+          nil)))))
+
+(defun my-execute-strategy (strategy)
   "Execute the provided maneuver, taking detours until successful.
 
 This operation terminates either when the maneuver succeeds, or
 when the detour fails."
-  (let ((original-location (point))
-        (done nil)
-        (detour-successful t))
-    (while (and (not done)
-                detour-successful)
-      (let ((attempt (my--execute-maneuver-full maneuver
-                                                condition)))
-        (setq done (not (is-null-maneuver? attempt)))
-        (when (not done)
-            (setq detour-successful (funcall detour))
-            (when (not detour-successful)
-              (goto-char original-location)))))
-    done))
+  (let* ((original-location (point))
+         (maneuver (car strategy))
+         (detour (cadr strategy)))
+    (let ((result (my--execute-maneuver-with-detour maneuver detour)))
+      (unless result
+        (goto-char original-location))
+      result)))
 
 (defun is-null-move? (move)
   "Checks if the move specifies no movement."
@@ -315,6 +321,10 @@ when the detour fails."
           1)
        (equal (car maneuver)
               move-zero)))
+
+(defun maneuver-exists? (maneuver)
+  "Checks if the maneuver is non-zero."
+  (not (is-null-maneuver? maneuver)))
 
 (defun my-select-nearest-symex ()
   "Select symex nearest to point"
