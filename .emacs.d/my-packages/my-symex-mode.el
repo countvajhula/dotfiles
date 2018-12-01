@@ -238,29 +238,27 @@ POST-CONDITION does not hold after the provisional execution of the move."
                    move-zero)
           result)))))
 
-(defun my--greedy-execute-from-maneuver (maneuver &optional condition)
+(defun my--greedy-execute-from-maneuver (maneuver)
   "Given an ordered list of moves, attempt each one in turn
 until one succeeds."
   (let ((executed-move
          (catch 'done
            (dolist (move maneuver)
-             (when (equal (execute-tree-move move
-                                             :post-condition condition)
-                          move)
+             (when (are-moves-equivalent? (execute-tree-move move)
+                                          move)
                (throw 'done move)))
            move-zero)))
     executed-move))
 
-(defun my--execute-maneuver-full (maneuver &optional condition)
+(defun my-execute-maneuver (maneuver)
   "Attempt to execute a given MANEUVER. If the entire sequence of moves
-is not possible from the current location,then do nothing."
+is not possible from the current location, then do nothing."
   (let ((original-location (point)))
     (let ((executed-maneuver
            (catch 'done
              (dolist (move maneuver)
-               (let ((executed-move (execute-tree-move move
-                                                       :post-condition condition)))
-                 (unless (equal executed-move move)
+               (let ((executed-move (execute-tree-move move)))
+                 (unless (are-moves-equivalent? executed-move move)
                    (goto-char original-location)
                    (throw 'done (list executed-move)))))
              maneuver)))
