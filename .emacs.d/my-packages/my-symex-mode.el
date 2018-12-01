@@ -319,8 +319,8 @@ when the detour fails."
   "Checks if the maneuver specifies no movement."
   (and (= (length maneuver)
           1)
-       (equal (car maneuver)
-              move-zero)))
+       (are-moves-equivalent? (car maneuver)
+                              move-zero)))
 
 (defun maneuver-exists? (maneuver)
   "Checks if the maneuver is non-zero."
