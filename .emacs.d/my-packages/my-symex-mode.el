@@ -73,11 +73,19 @@
   (are-moves-equal? (naive-move m1)
                     (naive-move m2)))
 
-(defun my-make-maneuver (&rest moves)
+(cl-defun my-make-maneuver (moves &key repeating?)
   "Construct a maneuver from the given moves."
-  moves)
+  (list moves repeating?))
 
-(defvar maneuver-zero (my-make-maneuver move-zero))
+(defun my-maneuver-moves (maneuver)
+  "Get the moves for a maneuver"
+  (nth 0 maneuver))
+
+(defun my-maneuver-repeating? (maneuver)
+  "Whether the maneuver is repeating or not."
+  (nth 1 maneuver))
+
+(defvar maneuver-zero (my-make-maneuver (list move-zero)))
 
 (defun is-null-maneuver? (maneuver)
   "Checks if the maneuver specifies no movement."
