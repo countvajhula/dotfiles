@@ -827,7 +827,8 @@ current rooted tree."
 (defun my-swallow-symex ()
   "Swallow symex, putting its contents in the parent symex."
   (interactive)
-  (lispy-flow 1)
+  (my-enter-symex)
+  (my-forward-symex)
   (paredit-splice-sexp-killing-backward))
 
 (defun my-symex-wrap-round ()
