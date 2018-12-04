@@ -12,7 +12,6 @@
 ;;; TODO: handle "contracts" of each abstraction level, and where conditions should go, rename functions for clarity. legitimate detours vs conditional itineraries, vs conditional motions
 ;;; TODO: detours should be maneuvers. define a strategy as a higher-level sequence of maneuvers, where each is tried in sequence until all fail, beginning again from the first on success
 ;;; TODO: take a symex and bring it out and before/after as a peer of the parent
-;;; TODO: maneuver should be some abstraction that returns a sequence of moves, which could be implemented either as a list with state, or a stream
 (use-package lispy)
 (use-package paredit)
 (use-package evil-cleverparens)  ;; really only need cp-textobjects here
@@ -344,8 +343,7 @@ until one succeeds."
   (let ((executed-move
          (catch 'done
            (dolist (move moves)
-             (when (are-moves-equivalent? (execute-tree-move move)
-                                          move)
+             (when (move-exists? (execute-tree-move move))
                (throw 'done move)))
            move-zero)))
     executed-move))
