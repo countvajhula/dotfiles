@@ -337,16 +337,16 @@ POST-CONDITION does not hold after the provisional execution of the move."
                    move-zero)
           result)))))
 
-(defun my--greedy-execute-move (moves)
-  "Given an ordered list of moves, attempt each one in turn
+(defun my--greedy-execute-maneuver (maneuvers)
+  "Given an ordered list of maneuvers, attempt each one in turn
 until one succeeds."
-  (let ((executed-move
+  (let ((executed-maneuver
          (catch 'done
-           (dolist (move moves)
-             (when (move-exists? (execute-tree-move move))
-               (throw 'done move)))
-           move-zero)))
-    executed-move))
+           (dolist (maneuver maneuvers)
+             (when (maneuver-exists? (my-execute-maneuver maneuver))
+               (throw 'done maneuver)))
+           maneuver-zero)))
+    executed-maneuver))
 
 (defun my-execute-maneuver (maneuver)
   "Attempt to execute a given MANEUVER. If the entire sequence of moves
@@ -492,10 +492,11 @@ when the detour fails."
   (my-refocus-on-symex)
   (point))
 
-(defvar preorder-explore (list move-go-in move-go-forward))
-(defvar maneuver-preorder-forward (my-make-maneuver (list move-go-forward)))
-(defvar maneuver-detour-exit-until-root (my-make-maneuver (list move-go-out-avoid-root)))
-(defvar maneuver-detour-exit-until-end-of-buffer (my-make-maneuver (list move-go-out-avoid-eob)))
+(defvar preorder-in (my-make-maneuver (list move-go-in)))
+(defvar preorder-forward (my-make-maneuver (list move-go-forward)))
+(defvar preorder-explore (list preorder-in preorder-forward))
+(defvar detour-exit-until-root (my-make-maneuver (list move-go-out-avoid-root)))
+(defvar detour-exit-until-end-of-buffer (my-make-maneuver (list move-go-out-avoid-eob)))
 
 ;; TODO: is there a way to "monadically" build the tree data structure
 ;; (or ideally, do an arbitrary structural computation) as part of this traversal?
@@ -508,12 +509,12 @@ If FLOW is true, continue from one tree to another. Otherwise, stop at end of
 current rooted tree."
   (interactive)
   (let ((detour (if flow
-                    maneuver-detour-exit-until-end-of-buffer
-                  maneuver-detour-exit-until-root)))
-    (let ((move (my--greedy-execute-move preorder-explore)))
-      (if (move-exists? move)
+                    detour-exit-until-end-of-buffer
+                  detour-exit-until-root)))
+    (let ((maneuver (my--greedy-execute-maneuver preorder-explore)))
+      (if (maneuver-exists? maneuver)
           t
-        (my-execute-strategy (my-make-strategy maneuver-preorder-forward
+        (my-execute-strategy (my-make-strategy preorder-forward
                                                detour))))))
 
 (defun my--preorder-traverse-backward ()
