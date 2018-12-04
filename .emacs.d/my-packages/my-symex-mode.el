@@ -337,6 +337,18 @@ POST-CONDITION does not hold after the provisional execution of the move."
                    move-zero)
           result)))))
 
+(defun my-execute-maneuver (maneuver)
+  "Attempt to execute a given MANEUVER. If the entire sequence of moves
+is not possible from the current location, then do nothing."
+  (let ((executed-moves '()))
+    (catch 'done
+      (iter-do (move (my-maneuver-begin maneuver))
+        (let ((executed-move (execute-tree-move move)))
+          (push executed-move executed-moves)
+          (unless (are-moves-equivalent? executed-move move)
+            (throw 'done t)))))
+    (my-make-maneuver executed-moves)))
+
 (defun my--greedy-execute-maneuver (maneuvers)
   "Given an ordered list of maneuvers, attempt each one in turn
 until one succeeds."
@@ -347,20 +359,6 @@ until one succeeds."
                (throw 'done maneuver)))
            maneuver-zero)))
     executed-maneuver))
-
-(defun my-execute-maneuver (maneuver)
-  "Attempt to execute a given MANEUVER. If the entire sequence of moves
-is not possible from the current location, then do nothing."
-  (let ((original-location (point)))
-    (let ((executed-maneuver
-           (catch 'done
-             (iter-do (move (my-maneuver-begin maneuver))
-               (let ((executed-move (execute-tree-move move)))
-                 (unless (are-moves-equivalent? executed-move move)
-                   (goto-char original-location)
-                   (throw 'done maneuver-zero))))
-             maneuver)))
-      executed-maneuver)))
 
 (defun my--execute-maneuver-with-detour (maneuver detour)
   "Execute the maneuver, trying the indicated detour as needed.
