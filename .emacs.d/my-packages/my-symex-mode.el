@@ -356,7 +356,7 @@ is not possible from the current location, then do nothing."
   (let ((original-location (point)))
     (let ((executed-maneuver
            (catch 'done
-             (dolist (move (my-maneuver-moves maneuver))
+             (iter-do (move (my-maneuver-begin maneuver))
                (let ((executed-move (execute-tree-move move)))
                  (unless (are-moves-equivalent? executed-move move)
                    (goto-char original-location)
