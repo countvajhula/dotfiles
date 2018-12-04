@@ -503,19 +503,19 @@ when the detour fails."
 ;; (or ideally, do an arbitrary structural computation) as part of this traversal?
 ;; key is, it has to be inferrable from inputs and outputs alone, i.e. specifically
 ;; from the result of invocation of e.g. forward-symex
-(defun my-preorder-traverse-symex-forward (&optional flow)
+(defun my-traverse-symex-forward (&optional flow)
   "Traverse symex as a tree, using pre-order traversal.
 
 If FLOW is true, continue from one tree to another. Otherwise, stop at end of
 current rooted tree."
   (interactive)
   (let ((detour (if flow
-                    detour-exit-until-end-of-buffer
-                  detour-exit-until-root)))
-    (let ((move (my--greedy-execute-from-maneuver preorder-explore)))
+                    maneuver-detour-exit-until-end-of-buffer
+                  maneuver-detour-exit-until-root)))
+    (let ((move (my--greedy-execute-move preorder-explore)))
       (if (move-exists? move)
           t
-        (my-execute-strategy (my-make-strategy preorder-forward
+        (my-execute-strategy (my-make-strategy maneuver-preorder-forward
                                                detour))))))
 
 (defun my--preorder-traverse-backward ()
@@ -892,7 +892,7 @@ current rooted tree."
   ("l" my-forward-symex "next")
   ("f" (lambda ()
          (interactive)
-         (my-preorder-traverse-symex-forward t)) "flow forward")
+         (my-traverse-symex-forward t)) "flow forward")
   ("b" my-preorder-traverse-symex-backward "flow backward")
   ("C-k" my-switch-branch-backward "switch branch backward")
   ("C-j" my-switch-branch-forward "switch branch forward")
