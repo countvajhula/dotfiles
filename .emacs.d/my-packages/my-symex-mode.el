@@ -364,13 +364,13 @@ until one succeeds."
   "Execute the maneuver, trying the indicated detour as needed.
 
 Continues trying until the detour fails."
-  (let ((attempt (my-execute-maneuver maneuver)))
-    (if (maneuver-exists? attempt)
-        t
-      (let ((detour-attempt (my-execute-maneuver detour)))
-        (if (maneuver-exists? detour-attempt)
-            (my--execute-maneuver-with-detour maneuver detour)
-          nil)))))
+  (let ((detour-attempt (my-execute-maneuver detour)))
+    (if (maneuver-exists? detour-attempt)
+      (let ((attempt (my-execute-maneuver maneuver)))
+        (if (maneuver-exists? attempt)
+            t
+          (my--execute-maneuver-with-detour maneuver detour)))
+      nil)))
 
 (defun my-execute-strategy (strategy)
   "Execute the provided maneuver, taking detours until successful.
