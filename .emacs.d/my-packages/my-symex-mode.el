@@ -1,3 +1,4 @@
+;;; -*- lexical-binding: t -*-
 ;;; TODO: ideally, would be good to have a simple POC of the AST
 ;;; to operate on, via semantic?
 ;;; TODO: consider using S for dragging and C for movement (and then across all modes)
@@ -11,6 +12,7 @@
 ;;; TODO: handle "contracts" of each abstraction level, and where conditions should go, rename functions for clarity. legitimate detours vs conditional itineraries, vs conditional motions
 ;;; TODO: detours should be maneuvers. define a strategy as a higher-level sequence of maneuvers, where each is tried in sequence until all fail, beginning again from the first on success
 ;;; TODO: take a symex and bring it out and before/after as a peer of the parent
+;;; TODO: maneuver should be some abstraction that returns a sequence of moves, which could be implemented either as a list with state, or a stream
 (use-package lispy)
 (use-package paredit)
 (use-package evil-cleverparens)  ;; really only need cp-textobjects here
