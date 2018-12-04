@@ -101,8 +101,11 @@
   (equal m1 m2))
 
 (defun naive-maneuver (maneuver)
-  "A 'naive' version of the maneuver, not including any conditions."
-  (seq-map 'naive-move maneuver))
+  "A 'naive' version of the maneuver, not including any conditions, and
+with no repetition."
+  (my-make-maneuver (seq-map 'naive-move
+                             (my-maneuver-moves maneuver))
+                    :repeating? nil))
 
 (defun are-maneuvers-equivalent? (m1 m2)
   "Check if two maneuvers are equal, disregarding any conditions."
@@ -287,7 +290,7 @@
       (error nil))
     (my-make-move 0 (- 0 result))))
 
-(cl-defun execute-tree-move (move)
+(defun execute-tree-move (move)
   "Execute the specified MOVE at the current point location in the tree.
 
 The move is only executed if PRE-CONDITION holds, and is reversed if
