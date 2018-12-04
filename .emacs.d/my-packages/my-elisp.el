@@ -1,5 +1,6 @@
 (defvar elisp-modes (list 'lisp-interaction-mode
-                          'emacs-lisp-mode))
+                          'emacs-lisp-mode
+                          'inferior-emacs-lisp-mode))
 
 (defun my-elisp-describe-symbol ()
   "Describe symbol at point"
