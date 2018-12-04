@@ -338,12 +338,12 @@ POST-CONDITION does not hold after the provisional execution of the move."
                    move-zero)
           result)))))
 
-(defun my--greedy-execute-from-maneuver (maneuver)
+(defun my--greedy-execute-move (moves)
   "Given an ordered list of moves, attempt each one in turn
 until one succeeds."
   (let ((executed-move
          (catch 'done
-           (dolist (move maneuver)
+           (dolist (move moves)
              (when (are-moves-equivalent? (execute-tree-move move)
                                           move)
                (throw 'done move)))
@@ -356,11 +356,11 @@ is not possible from the current location, then do nothing."
   (let ((original-location (point)))
     (let ((executed-maneuver
            (catch 'done
-             (dolist (move maneuver)
+             (dolist (move (my-maneuver-moves maneuver))
                (let ((executed-move (execute-tree-move move)))
                  (unless (are-moves-equivalent? executed-move move)
                    (goto-char original-location)
-                   (throw 'done (list executed-move)))))
+                   (throw 'done maneuver-zero))))
              maneuver)))
       executed-maneuver)))
 
@@ -495,10 +495,9 @@ when the detour fails."
   (point))
 
 (defvar preorder-explore (list move-go-in move-go-forward))
-(defvar preorder-backtrack (list move-go-out move-go-forward))
-(defvar preorder-forward (list move-go-forward))
-(defvar detour-exit-until-root (list move-go-out-avoid-root))
-(defvar detour-exit-until-end-of-buffer (list move-go-out-avoid-eob))
+(defvar maneuver-preorder-forward (my-make-maneuver (list move-go-forward)))
+(defvar maneuver-detour-exit-until-root (my-make-maneuver (list move-go-out-avoid-root)))
+(defvar maneuver-detour-exit-until-end-of-buffer (my-make-maneuver (list move-go-out-avoid-eob)))
 
 ;; TODO: is there a way to "monadically" build the tree data structure
 ;; (or ideally, do an arbitrary structural computation) as part of this traversal?
