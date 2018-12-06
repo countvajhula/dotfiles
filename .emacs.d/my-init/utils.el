@@ -1,4 +1,4 @@
-(defun my-noop ()
+(defun my-noop (&rest args)
   "A function that does nothing."
   (interactive))
 
