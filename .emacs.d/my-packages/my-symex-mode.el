@@ -168,7 +168,7 @@ with no repetition."
 (defun lispy-comment-line-p ()
   "Checks if we're currently at the start of a comment line."
   (and (lispy-bolp)
-       (looking-at ";")))
+       (looking-at-p ";")))
 
 (defun lispy-empty-list-p ()
   "Checks if we're looking at an empty list."
@@ -391,6 +391,9 @@ when the detour fails."
   (cond ((save-excursion (forward-char) (lispy-right-p))
          (forward-char)
          (lispy-different))
+        ((looking-at-p "[[:space:]]")
+         (re-search-forward "[^[:space:]\n]")
+         (backward-char))
         ((thing-at-point 'sexp)
          (beginning-of-thing 'sexp))
         (t (let ((previous-position (point)))
