@@ -875,6 +875,23 @@ current rooted tree."
   (interactive)
   (switch-to-buffer-other-window "*scratch*"))  ;; TODO: create in lisp interaction mode if missing)
 
+(defun my-move-symex-forward ()
+  "Move symex forward in current tree level."
+  (interactive)
+  (forward-sexp)
+  (condition-case nil
+      (progn (transpose-sexps 1)
+             (backward-sexp))
+    (error (backward-sexp))))
+
+(defun my-move-symex-backward ()
+  "Move symex backward in current tree level."
+  (interactive)
+  (let ((move (my-backward-symex)))
+    (when (move-exists? move)
+      (my-move-symex-forward)
+      (my-backward-symex))))
+
 
 (defhydra hydra-symex (:idle 1.0
                        :columns 5
@@ -911,8 +928,8 @@ current rooted tree."
   ("x" my-delete-symex "delete")
   ("c" my-change-symex "change" :exit t)
   ("s" my-replace-symex "replace" :exit t)
-  ("H" lispy-move-up "move backward")
-  ("L" lispy-move-down "move forward")
+  ("H" my-move-symex-backward "move backward")
+  ("L" my-move-symex-forward "move forward")
   ("K" paredit-raise-sexp "raise")
   ("s-J" my-slurp-backward "slurp backward")
   ("s-H" my-spit-backward "spit backward")
