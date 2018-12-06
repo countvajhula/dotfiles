@@ -694,12 +694,20 @@ current rooted tree."
         (my-enter-symex))  ;; need to be inside the symex to spit and slurp
       (lispy-forward-slurp-sexp 1))))
 
-(defun my-indent-symex ()
-  "Auto-indent symex"
+(defun my-tidy-symex ()
+  "Auto-indent symex and fix any whitespace."
   (interactive)
-  (apply 'evil-indent
-         (seq-take (evil-cp-a-form 1)
-                   2)))
+  (fixup-whitespace)
+  (when (save-excursion (looking-at-p "[[:space:]]"))
+      (forward-char))
+  (save-excursion
+    (forward-sexp)
+    (fixup-whitespace))
+  (save-excursion
+    (apply 'evil-indent
+           (seq-take (evil-cp-a-form 1)
+                     2)))
+  (my-select-nearest-symex))
 
 (defun my-join-symexes ()
   "Merge symexes at the same level."
@@ -741,7 +749,7 @@ current rooted tree."
         (forward-char)
         (insert extra-to-append))
       (my-forward-symex)
-      (my-indent-symex))))
+      (my-tidy-symex))))
 
 (defun my-paste-after-symex ()
   "Paste after symex"
@@ -760,7 +768,7 @@ current rooted tree."
         (evil-paste-before nil nil)
         (forward-char))
       (my-forward-symex)
-      (my-indent-symex))
+      (my-tidy-symex))
     (my-forward-symex)))
 
 (defun my-open-line-after-symex ()
@@ -823,7 +831,7 @@ current rooted tree."
   "Insert newline and reindent symex."
   (interactive)
   (newline-and-indent)
-  (my-indent-symex))
+  (my-tidy-symex))
 
 (defun my-swallow-symex ()
   "Swallow symex, putting its contents in the parent symex."
@@ -936,7 +944,7 @@ current rooted tree."
   ("M-l" my-goto-last-symex "go to last")
   ("M-k" my-goto-outermost-symex "go to outermost")
   ("M-j" my-goto-innermost-symex "go to innermost")
-  ("=" my-indent-symex "auto-indent")
+  ("=" my-tidy-symex "tidy/indent")
   ("A" my-append-after-symex "append after symex" :exit t)
   ("a" my-insert-at-end-of-symex "append inside symex" :exit t)
   ("i" my-insert-at-beginning-of-symex "insert inside symex" :exit t)
