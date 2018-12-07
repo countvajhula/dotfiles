@@ -6,7 +6,6 @@
 ;;; TODO: move back/forward through tree "at same level" without going up or down (i.e. switch branches, ideally preserving position index within branch)
 ;;; TODO: traverse tree with side effect (traversal-method, side-effect-fn), to use for "indent forward" on paste
 ;;; TODO: incorporate more clear tree-related terminology
-;;; TODO: improve move backward / forward, H L
 ;;; TODO: C-j to move in greedily, going forward
 ;;; TODO: fix: backward-symex moves to preamble comments
 ;;; TODO: handle "contracts" of each abstraction level, and where conditions should go, rename functions for clarity. legitimate detours vs conditional itineraries, vs conditional motions
@@ -653,7 +652,7 @@ current rooted tree."
              (not (lispy-empty-list-p)))
     (save-excursion
       (my-enter-symex) ;; need to be inside the symex to spit and slurp
-      (lispy-backward-barf-sexp 1))
+      (paredit-backward-barf-sexp 1))
     (my-forward-symex)
     (when (lispy-empty-list-p)
       (fixup-whitespace)
