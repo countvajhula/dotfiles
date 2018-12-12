@@ -18,8 +18,8 @@
 (require 'cl-lib)
 
 
-(defun my-make-move (x y &optional pre-condition post-condition)
-  (list x y pre-condition post-condition))
+(defun my-make-move (x y)
+  (list x y))
 
 (defun my-move-x (move)
   "X (horizontal) component of move."
@@ -29,31 +29,15 @@
   "Y (vertical) component of move."
   (nth 1 move))
 
-(defun my-move-pre-condition (move)
-  "Pre-condition of move."
-  (nth 2 move))
-
-(defun my-move-post-condition (move)
-  "Post-condition of move."
-  (nth 3 move))
-
 (defvar move-zero (my-make-move 0 0))
 (defvar move-go-forward (my-make-move 1 0))
 (defvar move-go-backward (my-make-move -1 0))
 (defvar move-go-in (my-make-move 0 1))
 (defvar move-go-out (my-make-move 0 -1))
-(defvar move-go-out-avoid-root (my-make-move 0 -1
-                                             nil
-                                             (lambda ()
-                                               (not (point-at-root-symex?)))))
-(defvar move-go-out-avoid-eob (my-make-move 0 -1
-                                            nil
-                                            (lambda ()
-                                              (not (point-at-final-symex?)))))
 
 (defun is-null-move? (move)
   "Checks if the move specifies no movement."
-  (are-moves-equivalent? move move-zero))
+  (are-moves-equal? move move-zero))
 
 (defun move-exists? (move)
   "Checks if the move specifies tangible movement."
@@ -62,15 +46,6 @@
 (defun are-moves-equal? (m1 m2)
   "Check if two moves are identical, including any conditions."
   (equal m1 m2))
-
-(defun naive-move (move)
-  "A 'naive' version of the move, not including any conditions."
-  (apply 'my-make-move (seq-take move 2)))
-
-(defun are-moves-equivalent? (m1 m2)
-  "Check if two moves are equal, disregarding any conditions."
-  (are-moves-equal? (naive-move m1)
-                    (naive-move m2)))
 
 (cl-defun my-make-maneuver (moves &key repeating?)
   "Construct a maneuver from the given moves."
