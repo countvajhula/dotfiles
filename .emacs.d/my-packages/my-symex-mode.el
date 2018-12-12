@@ -47,17 +47,35 @@
   "Check if two moves are identical, including any conditions."
   (equal m1 m2))
 
-(cl-defun my-make-maneuver (moves &key repeating?)
+(cl-defun my-make-maneuver (phases
+                            &key
+                            repeating?
+                            pre-condition
+                            post-condition)
   "Construct a maneuver from the given moves."
-  (list moves repeating?))
+  (let ((pre-condition (or pre-condition (lambda () t)))
+        (post-condition (or post-condition (lambda () t))))
+    (list 'maneuver
+          phases
+          repeating?
+          pre-condition
+          post-condition)))
 
-(defun my-maneuver-moves (maneuver)
-  "Get the moves for a maneuver"
-  (nth 0 maneuver))
+(defun my-maneuver-phases (maneuver)
+  "Get the phases of a maneuver (which are themselves maneuvers or moves)."
+  (nth 1 maneuver))
 
 (defun my-maneuver-repeating? (maneuver)
   "Whether the maneuver is repeating or not."
-  (nth 1 maneuver))
+  (nth 2 maneuver))
+
+(defun my-maneuver-pre-condition (maneuver)
+  "Pre-condition of maneuver"
+  (nth 3 maneuver))
+
+(defun my-maneuver-post-condition (maneuver)
+  "Post-condition of maneuver"
+  (nth 4 maneuver))
 
 (iter-defun my-maneuver-begin (maneuver)
   "Begin maneuver."
@@ -99,12 +117,10 @@
 (defun naive-maneuver (maneuver)
   "A 'naive' version of the maneuver, not including any conditions, and
 with no repetition."
-  (my-make-maneuver (seq-map 'naive-move
-                             (my-maneuver-moves maneuver))
-                    :repeating? nil))
+  (my-make-maneuver (my-maneuver-phases maneuver)))  ;; TODO: should recursively transform nested maneuvers to naive ones, leaving moves alone
 
 (defun are-maneuvers-equivalent? (m1 m2)
-  "Check if two maneuvers are equal, disregarding any conditions."
+  "Check if two maneuvers are equal, disregarding any conditions and repetition."
   (are-maneuvers-equal? (naive-maneuver m1)
                         (naive-maneuver m2)))
 
@@ -289,47 +305,82 @@ with no repetition."
 (defun execute-tree-move (move)
   "Execute the specified MOVE at the current point location in the tree.
 
-The move is only executed if PRE-CONDITION holds, and is reversed if
-POST-CONDITION does not hold after the provisional execution of the move."
+Evaluates to the actual move executed."
   (let ((original-location (point))
         (move-x (my-move-x move))
-        (move-y (my-move-y move))
-        (pre-condition (or (my-move-pre-condition move)
-                           (lambda () t)))
-        (post-condition (or (my-move-post-condition move)
-                            (lambda () t))))
+        (move-y (my-move-y move)))
+    (cond ((> move-x 0)
+           (setq move-magnitude move-x)
+           (setq move-function #'my-forward-symex))
+          ((< move-x 0)
+           (setq move-magnitude (abs move-x))
+           (setq move-function #'my-backward-symex))
+          ((> move-y 0)
+           (setq move-magnitude move-y)
+           (setq move-function #'my-enter-symex))
+          ((< move-y 0)
+           (setq move-magnitude (abs move-y))
+           (setq move-function #'my-exit-symex))
+          (t  ;; zero move
+           (setq move-magnitude 0)
+           (setq move-function #'my-forward-symex)))
+    (funcall move-function move-magnitude)))
+
+(defun my--execute-maneuver (maneuver)
+  "Execute a maneuver specification without regard to repetition."
+  (let ((original-location (point))
+        (phases (my-maneuver-phases maneuver))
+        (pre-condition (my-maneuver-pre-condition maneuver))
+        (post-condition (my-maneuver-post-condition maneuver)))
     (if (not (funcall pre-condition))
-        move-zero
-      (cond ((> move-x 0)
-             (setq move-magnitude move-x)
-             (setq move-function #'my-forward-symex))
-            ((< move-x 0)
-             (setq move-magnitude (abs move-x))
-             (setq move-function #'my-backward-symex))
-            ((> move-y 0)
-             (setq move-magnitude move-y)
-             (setq move-function #'my-enter-symex))
-            ((< move-y 0)
-             (setq move-magnitude (abs move-y))
-             (setq move-function #'my-exit-symex)))
-      (let ((result (funcall move-function
-                             move-magnitude)))
+        maneuver-zero
+      (let ((executed-phases '()))
+        (catch 'done
+          (dolist (phase phases)
+            (if (is-maneuver? phase)
+                (let ((executed-phase (my-execute-maneuver phase)))
+                  (if (maneuver-exists? executed-phase)
+                      (setq executed-phases
+                            (append executed-phases
+                                    (list executed-phase)))
+                    (throw 'done t)))
+              (let ((executed-phase (execute-tree-move phase)))
+                (if (move-exists? executed-phase)
+                    (setq executed-phases
+                          (append executed-phases
+                                  (list executed-phase)))
+                  (throw 'done t))))))
         (if (not (funcall post-condition))
             (progn (goto-char original-location)
-                   move-zero)
-          result)))))
+                   maneuver-zero)
+          (my-make-maneuver executed-phases))))))
 
 (defun my-execute-maneuver (maneuver)
-  "Attempt to execute a given MANEUVER. If the entire sequence of moves
-is not possible from the current location, then do nothing."
-  (let ((executed-moves '()))
+  "Attempt to execute a given MANEUVER.
+
+Attempts the maneuver in the order of its phases, accepting partial completion
+of phases. If any phase fails entirely, then the maneuver it is part of is
+terminated at that step.
+
+The maneuver is only executed if PRE-CONDITION holds, and is reversed if
+POST-CONDITION does not hold after the provisional execution of the maneuver.
+
+If the maneuver is REPEATING, it will be repeated until it fails.
+
+Evaluates to the maneuver actually executed."
+  (let ((repeating? (my-maneuver-repeating? maneuver))
+        (executed-phases '()))  ;; TODO: currently evalutes to "unrolled" phases; add support for "args" later to return rolled ones
     (catch 'done
-      (iter-do (move (my-maneuver-begin maneuver))
-        (let ((executed-move (execute-tree-move move)))
-          (push executed-move executed-moves)
-          (unless (are-moves-equivalent? executed-move move)
-            (throw 'done t)))))
-    (my-make-maneuver executed-moves)))
+      (while t
+        (let ((phase (my--execute-maneuver maneuver)))
+          (if (maneuver-exists? phase)
+              (setq executed-phases
+                    (append executed-phases
+                            (list phase)))
+            (throw 'done t)))
+        (unless repeating?
+          (throw 'done t))))
+    (my-make-maneuver executed-phases)))
 
 (defun my--greedy-execute-maneuver (maneuvers)
   "Given an ordered list of maneuvers, attempt each one in turn
