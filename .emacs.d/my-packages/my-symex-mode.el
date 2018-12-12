@@ -77,21 +77,6 @@
   "Post-condition of maneuver"
   (nth 4 maneuver))
 
-(iter-defun my-maneuver-begin (maneuver)
-  "Begin maneuver."
-  (let* ((moves (apply 'vector (my-maneuver-moves maneuver)))
-         (n (length moves))
-         (i 0))
-    (catch 'done
-      (while t
-        (iter-yield (elt moves i))
-        (if (my-maneuver-repeating? maneuver)
-            (setq i (% (+ i 1)
-                       n))
-          (setq i (+ i 1))
-          (when (= i n)
-            (throw 'done t)))))))
-
 (defvar maneuver-zero (my-make-maneuver nil))
 
 (defun is-maneuver? (obj)
