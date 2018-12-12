@@ -11,6 +11,7 @@
 ;;; TODO: handle "contracts" of each abstraction level, and where conditions should go, rename functions for clarity. legitimate detours vs conditional itineraries, vs conditional motions
 ;;; TODO: detours should be maneuvers. define a strategy as a higher-level sequence of maneuvers, where each is tried in sequence until all fail, beginning again from the first on success
 ;;; TODO: take a symex and bring it out and before/after as a peer of the parent
+;;; TODO: my-tidy-symex has edge cases in indenting from evil-cp-a-form, where symex begins with : (keyword arg) or #'
 (use-package lispy)
 (use-package paredit)
 (use-package evil-cleverparens)  ;; really only need cp-textobjects here
@@ -387,13 +388,13 @@ when the detour fails."
 (defun my-select-nearest-symex ()
   "Select symex nearest to point"
   (interactive)
-  (cond ((save-excursion (forward-char) (lispy-right-p))
+  (cond ((save-excursion (forward-char) (lispy-right-p))  ;; |)
          (forward-char)
          (lispy-different))
-        ((looking-at-p "[[:space:]]")
+        ((looking-at-p "[[:space:]\n]")  ;; <> |<> or <> |$
          (re-search-forward "[^[:space:]\n]")
          (backward-char))
-        ((thing-at-point 'sexp)
+        ((thing-at-point 'sexp)  ;; som|ething
          (beginning-of-thing 'sexp))
         (t (let ((previous-position (point)))
              (my-forward-symex)
