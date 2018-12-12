@@ -900,6 +900,13 @@ current rooted tree."
       (my-move-symex-forward)
       (my-backward-symex))))
 
+(defun my-eval-print-symex ()
+  "Eval symex and print result in buffer."
+  (interactive)
+  (save-excursion
+    (forward-sexp)
+    (eval-print-last-sexp)))
+
 
 (defhydra hydra-symex (:idle 1.0
                        :columns 5
@@ -975,6 +982,7 @@ current rooted tree."
   ("i" my-insert-at-beginning-of-symex "insert inside symex" :exit t)
   ("I" my-insert-before-symex "insert before symex" :exit t)
   ("w" my-wrap-symex "wrap with symex" :exit t)
+  (";" my-eval-print-symex "eval + print")
   ;; canonical action
   ("s-;" my-evaluate-symex "evaluate")
   ;; escape hatches
