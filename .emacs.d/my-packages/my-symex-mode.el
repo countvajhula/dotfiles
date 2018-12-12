@@ -74,7 +74,14 @@
           (when (= i n)
             (throw 'done t)))))))
 
-(defvar maneuver-zero (my-make-maneuver (list move-zero)))
+(defvar maneuver-zero (my-make-maneuver nil))
+
+(defun is-maneuver? (obj)
+  "Checks if the data specifies a maneuver."
+  (condition-case nil
+      (equal 'maneuver
+             (nth 0 obj))
+    (error nil)))
 
 (defun is-null-maneuver? (maneuver)
   "Checks if the maneuver specifies no movement."
