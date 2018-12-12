@@ -319,30 +319,35 @@ Evaluates to the actual move executed."
            (setq move-function #'my-forward-symex)))
     (funcall move-function move-magnitude)))
 
-(defun my--execute-maneuver (maneuver)
-  "Execute a maneuver specification without regard to repetition."
+(defun my--execute-maneuver-phases (phases)
+  "Execute the phases of a maneuver, stopping if a phase fails.
+
+Evalutes to a list of phases actually executed."
+  (let ((current-phase (car phases))
+        (remaining-phases (cdr phases)))
+    (if (is-maneuver? current-phase)
+        (progn (fset 'phase-executor #'my-execute-maneuver)
+               (fset 'phase-verifier #'maneuver-exists?))
+      ;; base case -- execute in terms of primitives, i.e. moves
+      (fset 'phase-executor #'execute-tree-move)
+      (fset 'phase-verifier #'move-exists?))
+    (let ((executed-phase (phase-executor current-phase)))
+      (when (phase-verifier executed-phase)
+        (let ((result (list executed-phase)))
+          (if remaining-phases
+              (append result
+                      (my--execute-maneuver-phases remaining-phases))
+            result))))))
+
+(defun my--execute-a-maneuver (maneuver)
+  "Execute a MANEUVER specification once (disregarding any repetition)."
   (let ((original-location (point))
         (phases (my-maneuver-phases maneuver))
         (pre-condition (my-maneuver-pre-condition maneuver))
         (post-condition (my-maneuver-post-condition maneuver)))
     (if (not (funcall pre-condition))
         maneuver-zero
-      (let ((executed-phases '()))
-        (catch 'done
-          (dolist (phase phases)
-            (if (is-maneuver? phase)
-                (let ((executed-phase (my-execute-maneuver phase)))
-                  (if (maneuver-exists? executed-phase)
-                      (setq executed-phases
-                            (append executed-phases
-                                    (list executed-phase)))
-                    (throw 'done t)))
-              (let ((executed-phase (execute-tree-move phase)))
-                (if (move-exists? executed-phase)
-                    (setq executed-phases
-                          (append executed-phases
-                                  (list executed-phase)))
-                  (throw 'done t))))))
+      (let ((executed-phases (my--execute-maneuver-phases phases)))
         (if (not (funcall post-condition))
             (progn (goto-char original-location)
                    maneuver-zero)
@@ -365,11 +370,11 @@ Evaluates to the maneuver actually executed."
         (executed-phases '()))  ;; TODO: currently evalutes to "unrolled" phases; add support for "args" later to return rolled ones
     (catch 'done
       (while t
-        (let ((phase (my--execute-maneuver maneuver)))
-          (if (maneuver-exists? phase)
+        (let ((executed-maneuver (my--execute-a-maneuver maneuver)))
+          (if (maneuver-exists? executed-maneuver)
               (setq executed-phases
                     (append executed-phases
-                            (list phase)))
+                            (list executed-maneuver)))
             (throw 'done t)))
         (unless repeating?
           (throw 'done t))))
