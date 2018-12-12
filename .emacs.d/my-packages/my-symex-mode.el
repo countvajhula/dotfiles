@@ -528,18 +528,22 @@ when the detour fails."
 
 (defvar preorder-in (my-make-maneuver (list move-go-in)))
 (defvar preorder-forward (my-make-maneuver (list move-go-forward)))
-(defvar detour-exit-until-root (my-make-maneuver (list move-go-out)
-                                                 :post-condition #'(lambda ()
-                                                                     (not (point-at-root-symex?)))))
-(defvar detour-exit-until-end-of-buffer (my-make-maneuver (list move-go-out)
-                                                          :post-condition #'(lambda ()
-                                                                              (not (point-at-final-symex?)))))
+(defvar detour-exit-until-root
+  (my-make-maneuver (list move-go-out)
+                    :post-condition #'(lambda ()
+                                        (not (point-at-root-symex?)))))
+(defvar detour-exit-until-end-of-buffer
+  (my-make-maneuver (list move-go-out)
+                    :post-condition #'(lambda ()
+                                        (not (point-at-final-symex?)))))
 
-(defvar postorder-in (my-make-maneuver (list move-go-in
-                                             (my-make-maneuver (list move-go-forward)
-                                                               :repeating? t))
-                                       :repeating? t))
-(defvar postorder-backwards-in (my-make-maneuver (list move-go-backward postorder-in)))
+(defvar postorder-in
+  (my-make-maneuver (list move-go-in
+                          (my-make-maneuver (list move-go-forward)
+                                            :repeating? t))
+                    :repeating? t))
+(defvar postorder-backwards-in
+  (my-make-maneuver (list move-go-backward postorder-in)))
 (defvar postorder-out (my-make-maneuver (list move-go-out)))
 
 (defvar preorder-explore (list preorder-in preorder-forward))
