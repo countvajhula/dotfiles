@@ -7,7 +7,6 @@
 ;;; TODO: traverse tree with side effect (traversal-method, side-effect-fn), to use for "indent forward" on paste
 ;;; TODO: incorporate more clear tree-related terminology
 ;;; TODO: C-j to move in greedily, going forward
-;;; TODO: fix: backward-symex moves to preamble comments
 ;;; TODO: handle "contracts" of each abstraction level, and where conditions should go, rename functions for clarity. legitimate detours vs conditional itineraries, vs conditional motions
 ;;; TODO: detours should be maneuvers. define a strategy as a higher-level sequence of maneuvers, where each is tried in sequence until all fail, beginning again from the first on success
 ;;; TODO: take a symex and bring it out and before/after as a peer of the parent
@@ -243,17 +242,26 @@ with no repetition."
         (setq result (+ res result))))
     (my-make-move result 0)))
 
+(defun my--backward-one-symex ()
+  "Backward one symex."
+  (let ((result 0))
+    (when (not (point-at-initial-symex?))
+      (condition-case nil
+          (progn (backward-sexp 1)
+                 (setq result (+ 1 result)))
+        (error nil)))
+    result))
+
 (defun my-backward-symex (&optional count)
   "Backward symex"
   (interactive)
   (let ((count (or count 1))
         (result 0))
-    (condition-case nil
-        (progn (backward-sexp count)
-               (setq result (- 0 count)))
-      (error nil))
+    (dotimes (i count)
+      (let ((res (my--backward-one-symex)))
+        (setq result (+ res result))))
     (my-refocus-on-symex)
-    (my-make-move result 0)))
+    (my-make-move (- 0 result) 0)))
 
 (defun my--enter-one-symex ()
   "Enter one lower symex level."
@@ -604,6 +612,15 @@ current tree."
                                nil))
               (my-forward-symex)
               nil)))
+
+(defun point-at-initial-symex? ()
+  "Check if point is at the first symex in the buffer."
+  (interactive)
+  (save-excursion
+    (condition-case nil
+        (progn (backward-sexp 1)
+               (not (thing-at-point 'sexp)))
+      (error nil))))
 
 (defun my-switch-branch-backward ()
   "Switch branch backward"
