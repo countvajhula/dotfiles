@@ -528,9 +528,22 @@ when the detour fails."
 
 (defvar preorder-in (my-make-maneuver (list move-go-in)))
 (defvar preorder-forward (my-make-maneuver (list move-go-forward)))
+(defvar detour-exit-until-root (my-make-maneuver (list move-go-out)
+                                                 :post-condition #'(lambda ()
+                                                                     (not (point-at-root-symex?)))))
+(defvar detour-exit-until-end-of-buffer (my-make-maneuver (list move-go-out)
+                                                          :post-condition #'(lambda ()
+                                                                              (not (point-at-final-symex?)))))
+
+(defvar postorder-in (my-make-maneuver (list move-go-in
+                                             (my-make-maneuver (list move-go-forward)
+                                                               :repeating? t))
+                                       :repeating? t))
+(defvar postorder-backwards-in (my-make-maneuver (list move-go-backward postorder-in)))
+(defvar postorder-out (my-make-maneuver (list move-go-out)))
+
 (defvar preorder-explore (list preorder-in preorder-forward))
-(defvar detour-exit-until-root (my-make-maneuver (list move-go-out-avoid-root)))
-(defvar detour-exit-until-end-of-buffer (my-make-maneuver (list move-go-out-avoid-eob)))
+(defvar postorder-explore (list postorder-backwards-in postorder-out))
 
 ;; TODO: is there a way to "monadically" build the tree data structure
 ;; (or ideally, do an arbitrary structural computation) as part of this traversal?
@@ -551,31 +564,16 @@ current rooted tree."
         (my-execute-strategy (my-make-strategy preorder-forward
                                                detour))))))
 
-(defun my--preorder-traverse-backward ()
-  "Lowlevel pre-order traversal operation."
-  (let ((previous-location (point))
-        (current-location (my-backward-symex)))
-    (if (= current-location previous-location)
-        (my-exit-symex)
-      current-location)))
+(defun my-traverse-symex-backward (&optional flow)
+  "Traverse symex as a tree, using converse post-order traversal.
 
-(defun my-preorder-traverse-symex-backward ()
-  "Traverse symex as a tree, using pre-order traversal."
+If FLOW is true, continue from one tree to another. Otherwise, stop at root of
+current tree."
   (interactive)
-  (let ((original-location (point)))
-    (my--preorder-traverse-backward)
-    (let ((previous-location (point))
-          (current-location (point)))
-      (when (= current-location original-location)
-        (catch 'done
-          (while t
-            (setq current-location (my-exit-symex))
-            (unless (= current-location previous-location)
-              (setq previous-location current-location)
-              (my-backward-symex)
-              (setq current-location (my-goto-innermost-symex))
-              (when (not (= current-location previous-location))
-                (throw 'done t)))))))))
+  (let ((move (my--greedy-execute-maneuver postorder-explore)))
+    (if (move-exists? move)
+        t
+      (error "Not implemented"))))
 
 (defmacro if-stuck (do-what operation &rest body)
   `(let ((orig-pt (point)))
@@ -968,7 +966,7 @@ current rooted tree."
   ("f" (lambda ()
          (interactive)
          (my-traverse-symex-forward t)) "flow forward")
-  ("b" my-preorder-traverse-symex-backward "flow backward")
+  ("b" my-traverse-symex-backward "flow backward")
   ("C-k" my-switch-branch-backward "switch branch backward")
   ("C-j" my-switch-branch-forward "switch branch forward")
   ("y" my-yank-symex "yank (copy)")
