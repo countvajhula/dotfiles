@@ -2,7 +2,6 @@
 ;;; TODO: ideally, would be good to have a simple POC of the AST
 ;;; to operate on, via semantic?
 ;;; TODO: consider using S for dragging and C for movement (and then across all modes)
-;;; TODO: f b for forward back using tree traversal
 ;;; TODO: move back/forward through tree "at same level" without going up or down (i.e. switch branches, ideally preserving position index within branch)
 ;;; TODO: traverse tree with side effect (traversal-method, side-effect-fn), to use for "indent forward" on paste
 ;;; TODO: incorporate more clear tree-related terminology
@@ -353,6 +352,24 @@ Evalutes to a list of phases actually executed."
                    maneuver-zero)
           (my-make-maneuver executed-phases))))))
 
+(defun my--execute-maneuver-with-repetition (maneuver)
+  "Execute maneuever, repeating it as specified.
+
+Evaluates to a list containing each instance of maneuver execution (corresponding
+to repetition of the maneuver), which could be treated as phases of a
+higher-level maneuver by the caller.
+
+TODO: instead of these 'unrolled' phases; add support for repeat 'args' to return
+rolled ones."
+  (let ((executed-maneuver (my--execute-a-maneuver maneuver))
+        (repeating? (my-maneuver-repeating? maneuver)))
+    (when (maneuver-exists? executed-maneuver)
+      (let ((result (list executed-maneuver)))
+        (if repeating?
+            (append result
+                    (my--execute-maneuver-with-repetition maneuver))
+          result)))))
+
 (defun my-execute-maneuver (maneuver)
   "Attempt to execute a given MANEUVER.
 
@@ -366,18 +383,7 @@ POST-CONDITION does not hold after the provisional execution of the maneuver.
 If the maneuver is REPEATING, it will be repeated until it fails.
 
 Evaluates to the maneuver actually executed."
-  (let ((repeating? (my-maneuver-repeating? maneuver))
-        (executed-phases '()))  ;; TODO: currently evalutes to "unrolled" phases; add support for "args" later to return rolled ones
-    (catch 'done
-      (while t
-        (let ((executed-maneuver (my--execute-a-maneuver maneuver)))
-          (if (maneuver-exists? executed-maneuver)
-              (setq executed-phases
-                    (append executed-phases
-                            (list executed-maneuver)))
-            (throw 'done t)))
-        (unless repeating?
-          (throw 'done t))))
+  (let ((executed-phases (my--execute-maneuver-with-repetition maneuver)))
     (my-make-maneuver executed-phases)))
 
 (defun my--greedy-execute-maneuver (maneuvers)
