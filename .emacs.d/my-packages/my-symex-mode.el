@@ -621,14 +621,23 @@ current rooted tree."
   "Delete symex"
   (interactive)
   (sp-kill-sexp nil)
-  (if (or (current-line-empty-p)
-          (save-excursion (back-to-indentation)
-                          (forward-char)
-                          (lispy-right-p)))
-      (progn (evil-previous-line)
-             (my-symex-join-lines))
-    (fixup-whitespace))
-  (my-select-nearest-symex))
+  (cond ((or (current-line-empty-p)  ;; ^<>$
+             (save-excursion (back-to-indentation)  ;; ^(<>
+                             (forward-char)
+                             (lispy-right-p)))
+         (progn (evil-previous-line)
+                (my-symex-join-lines)))
+        ((save-excursion (evil-last-non-blank)  ;; (<>$
+                         (lispy-left-p))
+         (sp-next-sexp)
+         (save-excursion
+           (my-symex-join-lines t)))
+        ((looking-at-p "\n")  ;; (abc <>
+         (evil-join (line-beginning-position)
+                    (line-end-position)))
+        (t (fixup-whitespace)))
+  (my-select-nearest-symex)
+  (my-tidy-symex))
 
 (defun my-change-symex ()
   "Change symex"
