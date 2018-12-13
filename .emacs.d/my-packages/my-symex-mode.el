@@ -291,21 +291,15 @@ Evaluates to the actual move executed."
         (move-x (my-move-x move))
         (move-y (my-move-y move)))
     (cond ((> move-x 0)
-           (setq move-magnitude move-x)
-           (setq move-function #'my-forward-symex))
+           (my-forward-symex move-x))
           ((< move-x 0)
-           (setq move-magnitude (abs move-x))
-           (setq move-function #'my-backward-symex))
+           (my-backward-symex (abs move-x)))
           ((> move-y 0)
-           (setq move-magnitude move-y)
-           (setq move-function #'my-enter-symex))
+           (my-enter-symex move-y))
           ((< move-y 0)
-           (setq move-magnitude (abs move-y))
-           (setq move-function #'my-exit-symex))
-          (t  ;; zero move
-           (setq move-magnitude 0)
-           (setq move-function #'my-forward-symex)))
-    (funcall move-function move-magnitude)))
+           (my-exit-symex (abs move-y)))
+          (t ;; zero move
+           move-zero))))
 
 (defun my--execute-maneuver-phases (phases)
   "Execute the phases of a maneuver, stopping if a phase fails.
