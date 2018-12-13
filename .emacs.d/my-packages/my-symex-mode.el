@@ -301,6 +301,26 @@ Evaluates to the actual move executed."
           (t ;; zero move
            move-zero))))
 
+(cl-defun symex-forward (&optional (count 1))
+  "Move forward COUNT symexes."
+  (interactive)
+  (execute-tree-move (my-make-move count 0)))
+
+(cl-defun symex-backward (&optional (count 1))
+  "Move backward COUNT symexes."
+  (interactive)
+  (execute-tree-move (my-make-move (- 0 count) 0)))
+
+(cl-defun symex-in (&optional (count 1))
+  "Move in COUNT symexes."
+  (interactive)
+  (execute-tree-move (my-make-move 0 count)))
+
+(cl-defun symex-out (&optional (count 1))
+  "Move out COUNT symexes."
+  (interactive)
+  (execute-tree-move (my-make-move 0 (- 0 count))))
+
 (defun my--execute-maneuver-phases (phases)
   "Execute the phases of a maneuver, stopping if a phase fails.
 
