@@ -499,10 +499,15 @@ when the detour fails."
                     :repeating? t))
 (defvar postorder-backwards-in
   (my-make-maneuver (list move-go-backward postorder-in)))
+(defvar postorder-backwards-in-tree
+  (my-make-maneuver (list move-go-backward postorder-in)
+                    :pre-condition #'(lambda ()
+                                       (not (point-at-root-symex?)))))
 (defvar postorder-out (my-make-maneuver (list move-go-out)))
 
 (defvar preorder-explore (list preorder-in preorder-forward))
 (defvar postorder-explore (list postorder-backwards-in postorder-out))
+(defvar postorder-explore-tree (list postorder-backwards-in-tree postorder-out))
 
 ;; TODO: is there a way to "monadically" build the tree data structure
 ;; (or ideally, do an arbitrary structural computation) as part of this traversal?
@@ -529,10 +534,13 @@ current rooted tree."
 If FLOW is true, continue from one tree to another. Otherwise, stop at root of
 current tree."
   (interactive)
-  (let ((move (my--greedy-execute-maneuver postorder-explore)))
-    (if (move-exists? move)
-        t
-      (error "Not implemented"))))
+  (let ((maneuver (if flow
+                      postorder-explore
+                    postorder-explore-tree)))
+    (let ((move (my--greedy-execute-maneuver maneuver)))
+      (if (move-exists? move)
+          t
+        (error "Not implemented")))))
 
 (defun my-switch-branch-backward ()
   "Switch branch backward"
@@ -983,7 +991,9 @@ current tree."
   ("f" (lambda ()
          (interactive)
          (my-traverse-symex-forward t)) "flow forward")
-  ("b" my-traverse-symex-backward "flow backward")
+  ("b" (lambda ()
+         (interactive)
+         (my-traverse-symex-backward t)) "flow backward")
   ("C-k" my-switch-branch-backward "switch branch backward")
   ("C-j" my-switch-branch-forward "switch branch forward")
   ("y" my-yank-symex "yank (copy)")
