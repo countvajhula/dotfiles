@@ -308,18 +308,21 @@ Evalutes to a list of phases actually executed."
   (let ((current-phase (car phases))
         (remaining-phases (cdr phases)))
     (if (is-maneuver? current-phase)
-        (progn (fset 'phase-executor #'my-execute-maneuver)
-               (fset 'phase-verifier #'maneuver-exists?))
+        (let ((executed-phase (my-execute-maneuver current-phase)))
+          (when (maneuver-exists? executed-phase)
+            (let ((result (list executed-phase)))
+              (if remaining-phases
+                  (append result
+                          (my--execute-maneuver-phases remaining-phases))
+                result))))
       ;; base case -- execute in terms of primitives, i.e. moves
-      (fset 'phase-executor #'execute-tree-move)
-      (fset 'phase-verifier #'move-exists?))
-    (let ((executed-phase (phase-executor current-phase)))
-      (when (phase-verifier executed-phase)
-        (let ((result (list executed-phase)))
-          (if remaining-phases
-              (append result
-                      (my--execute-maneuver-phases remaining-phases))
-            result))))))
+      (let ((executed-phase (execute-tree-move current-phase)))
+        (when (move-exists? executed-phase)
+          (let ((result (list executed-phase)))
+            (if remaining-phases
+                (append result
+                        (my--execute-maneuver-phases remaining-phases))
+              result)))))))
 
 (defun my--execute-a-maneuver (maneuver)
   "Execute a MANEUVER specification once (disregarding any repetition)."
