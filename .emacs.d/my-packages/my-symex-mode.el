@@ -266,15 +266,21 @@ with no repetition."
         (setq result (+ res result))))
     (my-make-move 0 result)))
 
+(defun my--exit-one-symex ()
+  "Exit one level."
+  (condition-case nil
+      (progn (paredit-backward-up 1)
+             1)
+    (error 0)))
+
 (defun my-exit-symex (&optional count)
   "Exit to higher symex level"
   (interactive)
   (let ((count (or count 1))
         (result 0))
-    (condition-case nil
-        (progn (paredit-backward-up count)
-               (setq result count)) ;; note: paredit moves as much as possible on failure, so this may be inaccurate
-      (error nil))
+    (dotimes (i count)
+      (let ((res (my--exit-one-symex)))
+        (setq result (+ res result))))
     (my-make-move 0 (- 0 result))))
 
 (defun execute-tree-move (move)
