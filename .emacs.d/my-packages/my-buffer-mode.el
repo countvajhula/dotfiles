@@ -81,6 +81,12 @@ current ('original') buffer."
   (interactive)
   (gethash "0" my-buffer-marks-hash))
 
+(defun my-search-buffers ()
+  "Search for buffer."
+  (interactive)
+  (return-to-original-buffer)
+  (ivy-switch-buffer))
+
 (defhydra hydra-buffer (:idle 1.0
                         :columns 3
                         :body-pre (progn (setup-buffer-marks-table)
@@ -95,8 +101,8 @@ current ('original') buffer."
   ("m" my-buffer-set-mark "set mark")
   ("'" my-buffer-return-to-mark "return to mark")
   ("`" my-buffer-return-to-mark "return to mark")
-  ("s" ivy-switch-buffer "search" :exit t)
-  ("/" ivy-switch-buffer "search" :exit t)
+  ("s" my-search-buffers "search" :exit t)
+  ("/" my-search-buffers "search" :exit t)
   ("i" ibuffer "ibuffer" :exit t)
   ("s-i" ibuffer "ibuffer" :exit t)
   ("x" kill-buffer "delete")
