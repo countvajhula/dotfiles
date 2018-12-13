@@ -146,12 +146,12 @@ with no repetition."
          (geiser-mode-switch-to-repl))
         (t (error "Symex mode: Lisp flavor not recognized!"))))
 
-(defun lispy-comment-line-p ()
+(defun symex-comment-line-p ()
   "Checks if we're currently at the start of a comment line."
   (and (lispy-bolp)
        (looking-at-p ";")))
 
-(defun lispy-empty-list-p ()
+(defun symex-empty-list-p ()
   "Checks if we're looking at an empty list."
   (save-excursion
     (and (lispy-left-p)
@@ -265,10 +265,10 @@ with no repetition."
 (defun my--enter-one-symex ()
   "Enter one lower symex level."
   (let ((result 1))
-    (cond ((lispy-comment-line-p)
+    (cond ((symex-comment-line-p)
            (lispy-flow 1))
           ((and (lispy-left-p)
-                (not (lispy-empty-list-p)))
+                (not (symex-empty-list-p)))
            (forward-char))
           (t (setq result 0)))
     result))
@@ -707,12 +707,12 @@ current tree."
   "Spit backward"
   (interactive)
   (when (and (lispy-left-p)
-             (not (lispy-empty-list-p)))
+             (not (symex-empty-list-p)))
     (save-excursion
       (my-enter-symex) ;; need to be inside the symex to spit and slurp
       (paredit-backward-barf-sexp 1))
     (my-forward-symex)
-    (when (lispy-empty-list-p)
+    (when (symex-empty-list-p)
       (fixup-whitespace)
       (re-search-forward lispy-left)
       (my-exit-symex))))
@@ -721,11 +721,11 @@ current tree."
   "Spit forward"
   (interactive)
   (when (and (lispy-left-p)
-             (not (lispy-empty-list-p)))
+             (not (symex-empty-list-p)))
     (save-excursion
       (my-enter-symex) ;; need to be inside the symex to spit and slurp
       (paredit-forward-barf-sexp 1))
-    (when (lispy-empty-list-p)
+    (when (symex-empty-list-p)
       (my-forward-symex)
       (fixup-whitespace)
       (re-search-backward lispy-left))))
@@ -734,7 +734,7 @@ current tree."
   "Slurp from behind"
   (interactive)
   (when (lispy-left-p)
-    (if (lispy-empty-list-p)
+    (if (symex-empty-list-p)
         (forward-char)
       (my-enter-symex)) ;; need to be inside the symex to spit and slurp
     (paredit-backward-slurp-sexp 1)
@@ -746,7 +746,7 @@ current tree."
   (interactive)
   (when (lispy-left-p)
     (save-excursion
-      (if (lispy-empty-list-p)
+      (if (symex-empty-list-p)
           (forward-char)
         (my-enter-symex))  ;; need to be inside the symex to spit and slurp
       (lispy-forward-slurp-sexp 1))))
