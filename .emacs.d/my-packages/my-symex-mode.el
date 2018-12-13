@@ -111,40 +111,55 @@ with no repetition."
   "Construct a strategy from the given maneuvers."
   maneuvers)
 
-(defun my-evaluate-symex ()
-  "Evaluate Symex"
+(defmacro if-stuck (do-what operation &rest body)
+  `(let ((orig-pt (point)))
+     ,operation
+     (if (= orig-pt (point))
+         ,do-what
+       ,@body)))
+
+(defun point-at-root-symex? ()
+  "Check if point is at a root symex."
   (interactive)
   (save-excursion
-    (forward-sexp)  ;; selected symexes will have the cursor on the starting paren
-    (cond ((equal major-mode 'racket-mode)
-           (my-racket-eval-symex))
-          ((member major-mode elisp-modes)
-           (my-elisp-eval-symex))
-          ((equal major-mode 'scheme-mode)
-           (my-scheme-eval-symex))
-          (t (error "Symex mode: Lisp flavor not recognized!")))))
+    (if-stuck t
+              (my-exit-symex)
+              nil)))
 
-(defun my-evaluate-definition ()
-  "Evaluate top-level definition"
+(defun point-at-first-symex? ()
+  "Check if point is at the first symex at some level."
   (interactive)
-  (cond ((equal major-mode 'racket-mode)
-         (racket-send-definition nil))
-        ((member major-mode elisp-modes)
-         (eval-defun nil))
-        ((equal major-mode 'scheme-mode)
-         (geiser-eval-definition nil))
-        (t (error "Symex mode: Lisp flavor not recognized!"))))
+  (save-excursion
+    (if-stuck t
+              (my-backward-symex)
+              nil)))
 
-(defun my-symex-repl ()
-  "Go to REPL."
+(defun point-at-last-symex? ()
+  "Check if point is at the last symex at some level."
   (interactive)
-  (cond ((equal major-mode 'racket-mode)
-         (racket-repl))
-        ((member major-mode elisp-modes)
-         (my-lisp-repl))
-        ((equal major-mode 'scheme-mode)
-         (geiser-mode-switch-to-repl))
-        (t (error "Symex mode: Lisp flavor not recognized!"))))
+  (save-excursion
+    (if-stuck t
+              (my-forward-symex)
+              nil)))
+
+(defun point-at-final-symex? ()
+  "Check if point is at the last symex in the buffer."
+  (interactive)
+  (save-excursion
+    (if-stuck (progn (if-stuck t
+                               (my-exit-symex)
+                               nil))
+              (my-forward-symex)
+              nil)))
+
+(defun point-at-initial-symex? ()
+  "Check if point is at the first symex in the buffer."
+  (interactive)
+  (save-excursion
+    (condition-case nil
+        (progn (backward-sexp 1)
+               (not (thing-at-point 'sexp)))
+      (error nil))))
 
 (defun symex-comment-line-p ()
   "Checks if we're currently at the start of a comment line."
@@ -171,38 +186,6 @@ with no repetition."
           (setq current-location (point))
           (setq result (+ 1 result)))
         result))))
-
-(defun my-refocus-on-symex (&optional smooth-scroll)
-  "Move screen to put symex in convenient part of the view."
-  (interactive)
-  ;; Note: window-text-height is not robust to zooming
-  (let* ((window-focus-line-number (/ (window-text-height)
-                                       3))
-         (current-line-number (line-number-at-pos))
-         (top-line-number (save-excursion (evil-window-top)
-                                          (line-number-at-pos)))
-         (window-current-line-number (- current-line-number
-                                        top-line-number))
-         (window-scroll-delta (- window-current-line-number
-                                 window-focus-line-number))
-         (window-upper-view-bound (/ (window-text-height)
-                                     9))
-         (window-lower-view-bound (* (window-text-height)
-                                     (/ 4.0 6))))
-    (unless (and (> window-current-line-number
-                    window-upper-view-bound)
-                 (< window-current-line-number
-                    window-lower-view-bound))
-      (if smooth-scroll
-          (dotimes (i (/ (abs window-scroll-delta)
-                         3))
-            (condition-case nil
-                (evil-scroll-line-down (if (> window-scroll-delta 0)
-                                           3
-                                         -3))
-              (error nil))
-            (sit-for 0.0001))
-        (recenter window-focus-line-number)))))
 
 (defun my--forward-one-symex ()
   "Forward one symex"
@@ -422,38 +405,6 @@ when the detour fails."
         (goto-char original-location))
       result)))
 
-(defun my-select-nearest-symex ()
-  "Select symex nearest to point"
-  (interactive)
-  (cond ((save-excursion (forward-char) (lispy-right-p))  ;; |)
-         (forward-char)
-         (lispy-different))
-        ((looking-at-p "[[:space:]\n]")  ;; <> |<> or <> |$
-         (re-search-forward "[^[:space:]\n]")
-         (backward-char))
-        ((thing-at-point 'sexp)  ;; som|ething
-         (beginning-of-thing 'sexp))
-        (t (let ((previous-position (point)))
-             (my-forward-symex)
-             (setq current-position (point))
-             (when (= current-position previous-position)
-               (my-backward-symex)))))
-  (my-refocus-on-symex)
-  (point))
-
-(defun my-describe-symex ()
-  "Lookup doc on symex."
-  (interactive)
-  (save-excursion
-    (forward-sexp)  ;; selected symexes will have the cursor on the starting paren
-    (cond ((equal major-mode 'racket-mode)
-           (my-racket-describe-symbol))
-          ((member major-mode elisp-modes)
-           (my-elisp-describe-symbol))
-          ((equal major-mode 'scheme-mode)
-           (my-scheme-describe-symbol))
-          (t (error "Symex mode: Lisp flavor not recognized!")))))
-
 (defun my-goto-first-symex ()
   "Select first symex at present level"
   (interactive)
@@ -583,56 +534,6 @@ current tree."
         t
       (error "Not implemented"))))
 
-(defmacro if-stuck (do-what operation &rest body)
-  `(let ((orig-pt (point)))
-     ,operation
-     (if (= orig-pt (point))
-         ,do-what
-       ,@body)))
-
-(defun point-at-root-symex? ()
-  "Check if point is at a root symex."
-  (interactive)
-  (save-excursion
-    (if-stuck t
-              (my-exit-symex)
-              nil)))
-
-(defun point-at-first-symex? ()
-  "Check if point is at the first symex at some level."
-  (interactive)
-  (save-excursion
-    (if-stuck t
-              (my-backward-symex)
-              nil)))
-
-(defun point-at-last-symex? ()
-  "Check if point is at the last symex at some level."
-  (interactive)
-  (save-excursion
-    (if-stuck t
-              (my-forward-symex)
-              nil)))
-
-(defun point-at-final-symex? ()
-  "Check if point is at the last symex in the buffer."
-  (interactive)
-  (save-excursion
-    (if-stuck (progn (if-stuck t
-                               (my-exit-symex)
-                               nil))
-              (my-forward-symex)
-              nil)))
-
-(defun point-at-initial-symex? ()
-  "Check if point is at the first symex in the buffer."
-  (interactive)
-  (save-excursion
-    (condition-case nil
-        (progn (backward-sexp 1)
-               (not (thing-at-point 'sexp)))
-      (error nil))))
-
 (defun my-switch-branch-backward ()
   "Switch branch backward"
   (interactive)
@@ -750,21 +651,6 @@ current tree."
           (forward-char)
         (my-enter-symex))  ;; need to be inside the symex to spit and slurp
       (lispy-forward-slurp-sexp 1))))
-
-(defun my-tidy-symex ()
-  "Auto-indent symex and fix any whitespace."
-  (interactive)
-  (fixup-whitespace)
-  (when (save-excursion (looking-at-p "[[:space:]]"))
-      (forward-char))
-  (save-excursion
-    (forward-sexp)
-    (fixup-whitespace))
-  (save-excursion
-    (apply 'evil-indent
-           (seq-take (evil-cp-a-form 1)
-                     2)))
-  (my-select-nearest-symex))
 
 (defun my-join-symexes ()
   "Merge symexes at the same level."
@@ -927,11 +813,6 @@ current tree."
   (my-symex-wrap-round)
   (my-insert-at-beginning-of-symex))
 
-(defun my-switch-to-scratch-buffer ()
-  "Switch to scratch buffer."
-  (interactive)
-  (switch-to-buffer-other-window "*scratch*"))  ;; TODO: create in lisp interaction mode if missing)
-
 (defun my-move-symex-forward ()
   "Move symex forward in current tree level."
   (interactive)
@@ -949,12 +830,131 @@ current tree."
       (my-move-symex-forward)
       (my-backward-symex))))
 
+(defun my-evaluate-symex ()
+  "Evaluate Symex"
+  (interactive)
+  (save-excursion
+    (forward-sexp)  ;; selected symexes will have the cursor on the starting paren
+    (cond ((equal major-mode 'racket-mode)
+           (my-racket-eval-symex))
+          ((member major-mode elisp-modes)
+           (my-elisp-eval-symex))
+          ((equal major-mode 'scheme-mode)
+           (my-scheme-eval-symex))
+          (t (error "Symex mode: Lisp flavor not recognized!")))))
+
+(defun my-evaluate-definition ()
+  "Evaluate top-level definition"
+  (interactive)
+  (cond ((equal major-mode 'racket-mode)
+         (racket-send-definition nil))
+        ((member major-mode elisp-modes)
+         (eval-defun nil))
+        ((equal major-mode 'scheme-mode)
+         (geiser-eval-definition nil))
+        (t (error "Symex mode: Lisp flavor not recognized!"))))
+
 (defun my-eval-print-symex ()
   "Eval symex and print result in buffer."
   (interactive)
   (save-excursion
     (forward-sexp)
     (eval-print-last-sexp)))
+
+(defun my-symex-repl ()
+  "Go to REPL."
+  (interactive)
+  (cond ((equal major-mode 'racket-mode)
+         (racket-repl))
+        ((member major-mode elisp-modes)
+         (my-lisp-repl))
+        ((equal major-mode 'scheme-mode)
+         (geiser-mode-switch-to-repl))
+        (t (error "Symex mode: Lisp flavor not recognized!"))))
+
+(defun my-switch-to-scratch-buffer ()
+  "Switch to scratch buffer."
+  (interactive)
+  (switch-to-buffer-other-window "*scratch*"))  ;; TODO: create in lisp interaction mode if missing)
+
+(defun my-select-nearest-symex ()
+  "Select symex nearest to point"
+  (interactive)
+  (cond ((save-excursion (forward-char) (lispy-right-p))  ;; |)
+         (forward-char)
+         (lispy-different))
+        ((looking-at-p "[[:space:]\n]")  ;; <> |<> or <> |$
+         (re-search-forward "[^[:space:]\n]")
+         (backward-char))
+        ((thing-at-point 'sexp)  ;; som|ething
+         (beginning-of-thing 'sexp))
+        (t (let ((previous-position (point)))
+             (my-forward-symex)
+             (setq current-position (point))
+             (when (= current-position previous-position)
+               (my-backward-symex)))))
+  (my-refocus-on-symex)
+  (point))
+
+(defun my-describe-symex ()
+  "Lookup doc on symex."
+  (interactive)
+  (save-excursion
+    (forward-sexp)  ;; selected symexes will have the cursor on the starting paren
+    (cond ((equal major-mode 'racket-mode)
+           (my-racket-describe-symbol))
+          ((member major-mode elisp-modes)
+           (my-elisp-describe-symbol))
+          ((equal major-mode 'scheme-mode)
+           (my-scheme-describe-symbol))
+          (t (error "Symex mode: Lisp flavor not recognized!")))))
+
+(defun my-refocus-on-symex (&optional smooth-scroll)
+  "Move screen to put symex in convenient part of the view."
+  (interactive)
+  ;; Note: window-text-height is not robust to zooming
+  (let* ((window-focus-line-number (/ (window-text-height)
+                                       3))
+         (current-line-number (line-number-at-pos))
+         (top-line-number (save-excursion (evil-window-top)
+                                          (line-number-at-pos)))
+         (window-current-line-number (- current-line-number
+                                        top-line-number))
+         (window-scroll-delta (- window-current-line-number
+                                 window-focus-line-number))
+         (window-upper-view-bound (/ (window-text-height)
+                                     9))
+         (window-lower-view-bound (* (window-text-height)
+                                     (/ 4.0 6))))
+    (unless (and (> window-current-line-number
+                    window-upper-view-bound)
+                 (< window-current-line-number
+                    window-lower-view-bound))
+      (if smooth-scroll
+          (dotimes (i (/ (abs window-scroll-delta)
+                         3))
+            (condition-case nil
+                (evil-scroll-line-down (if (> window-scroll-delta 0)
+                                           3
+                                         -3))
+              (error nil))
+            (sit-for 0.0001))
+        (recenter window-focus-line-number)))))
+
+(defun my-tidy-symex ()
+  "Auto-indent symex and fix any whitespace."
+  (interactive)
+  (fixup-whitespace)
+  (when (save-excursion (looking-at-p "[[:space:]]"))
+      (forward-char))
+  (save-excursion
+    (forward-sexp)
+    (fixup-whitespace))
+  (save-excursion
+    (apply 'evil-indent
+           (seq-take (evil-cp-a-form 1)
+                     2)))
+  (my-select-nearest-symex))
 
 
 (defhydra hydra-symex (:idle 1.0
