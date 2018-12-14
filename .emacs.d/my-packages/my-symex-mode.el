@@ -107,6 +107,64 @@ with no repetition."
   (are-maneuvers-equal? (naive-maneuver m1)
                         (naive-maneuver m2)))
 
+(defun my-make-detour (conjugation maneuver)
+  "Construct a detour.
+
+A detour consists of two components -- a MANEUVER that we wish to execute, and
+a CONJUGATION which is a transformation we want to apply prior to attempting
+the maneuver. The conjugation could simply be another maneuver, or could itself
+be a detour.
+
+The conjugation is applied repeatedly and the maneuver is re-attempted each
+time, until it succeeds. If the conjugation itself fails, then the detour fails
+as well."
+  (list 'detour
+        conjugation
+        maneuver))
+
+(defun symex--detour-conjugation (detour)
+  "Get the conjugation component of the DETOUR."
+  (nth 1 detour))
+
+(defun symex--detour-maneuver (detour)
+  "Get the maneuver component of the DETOUR."
+  (nth 2 detour))
+
+(defun is-detour? (obj)
+  "Checks if the data specifies a detour."
+  (condition-case nil
+      (equal 'detour
+             (nth 0 obj))
+    (error nil)))
+
+(defun symex--execute-maneuver-with-conjugation (conjugation maneuver)
+  "Apply a conjugation and then attempt the maneuver.
+
+If the maneuver fails, then the conjugation is attempted as many times as
+necessary until either it succeeds, or the conjugation fails.
+
+Evaluates to a list of maneuvers executed, if any, which could be treated
+as phases of a higher-level maneuver by the caller."
+  (let ((executed-conjugation (if (is-detour? conjugation)
+                                  (my-execute-detour conjugation)
+                                (my-execute-maneuver conjugation))))
+    (when (maneuver-exists? executed-conjugation)
+      (let ((executed-maneuver (my-execute-maneuver maneuver)))
+        (if (maneuver-exists? executed-maneuver)
+            (append (list executed-conjugation)
+                    executed-maneuver)
+          (let ((attempt (symex--execute-maneuver-with-conjugation conjugation
+                                                                   maneuver)))
+            (when attempt
+              (append (list executed-conjugation)
+                      attempt))))))))
+
+(defun my-execute-detour (detour)
+  "Execute the DETOUR."
+  (let ((conjugation (symex--detour-conjugation detour))
+        (maneuver (symex--detour-maneuver detour)))
+    (my-make-maneuver (symex--execute-maneuver-with-conjugation conjugation maneuver))))
+
 (defun my-make-strategy (&rest maneuvers)
   "Construct a strategy from the given maneuvers."
   maneuvers)
