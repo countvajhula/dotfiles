@@ -123,7 +123,7 @@ with no repetition."
   (interactive)
   (save-excursion
     (if-stuck t
-              (symex-out)
+              (symex-go-out)
               nil)))
 
 (defun point-at-first-symex? ()
@@ -131,7 +131,7 @@ with no repetition."
   (interactive)
   (save-excursion
     (if-stuck t
-              (symex-backward)
+              (symex-go-backward)
               nil)))
 
 (defun point-at-last-symex? ()
@@ -139,7 +139,7 @@ with no repetition."
   (interactive)
   (save-excursion
     (if-stuck t
-              (symex-forward)
+              (symex-go-forward)
               nil)))
 
 (defun point-at-final-symex? ()
@@ -147,9 +147,9 @@ with no repetition."
   (interactive)
   (save-excursion
     (if-stuck (progn (if-stuck t
-                               (symex-out)
+                               (symex-go-out)
                                nil))
-              (symex-forward)
+              (symex-go-forward)
               nil)))
 
 (defun point-at-initial-symex? ()
@@ -182,7 +182,7 @@ with no repetition."
       (let ((current-location (my-goto-first-symex))
             (result 0))
         (while (< current-location original-location)
-          (symex-forward)
+          (symex-go-forward)
           (setq current-location (point))
           (setq result (+ 1 result)))
         result))))
@@ -301,22 +301,22 @@ Evaluates to the actual move executed."
           (t ;; zero move
            move-zero))))
 
-(cl-defun symex-forward (&optional (count 1))
+(cl-defun symex-go-forward (&optional (count 1))
   "Move forward COUNT symexes."
   (interactive)
   (execute-tree-move (my-make-move count 0)))
 
-(cl-defun symex-backward (&optional (count 1))
+(cl-defun symex-go-backward (&optional (count 1))
   "Move backward COUNT symexes."
   (interactive)
   (execute-tree-move (my-make-move (- 0 count) 0)))
 
-(cl-defun symex-in (&optional (count 1))
+(cl-defun symex-go-in (&optional (count 1))
   "Move in COUNT symexes."
   (interactive)
   (execute-tree-move (my-make-move 0 count)))
 
-(cl-defun symex-out (&optional (count 1))
+(cl-defun symex-go-out (&optional (count 1))
   "Move out COUNT symexes."
   (interactive)
   (execute-tree-move (my-make-move 0 (- 0 count))))
@@ -541,12 +541,12 @@ current tree."
     (defun switch-backward ()
       (if (point-at-root-symex?)
           (goto-char best-branch-position)
-        (symex-out)
+        (symex-go-out)
         (if-stuck (switch-backward)
-                  (symex-backward)
+                  (symex-go-backward)
                   (if-stuck (switch-backward)
-                            (symex-in)
-                            (symex-forward symex-index)
+                            (symex-go-in)
+                            (symex-go-forward symex-index)
                             (let ((current-index (my-symex-index)))
                               (when (and (< current-index
                                             symex-index)
@@ -560,10 +560,10 @@ current tree."
   "Switch branch forward"
   (interactive)
   (let ((symex-index (my-symex-index)))
-    (symex-out)
-    (symex-forward)
-    (symex-in)
-    (symex-forward symex-index)))
+    (symex-go-out)
+    (symex-go-forward)
+    (symex-go-in)
+    (symex-go-forward symex-index)))
 
 (defun my-delete-symex ()
   "Delete symex"
@@ -596,7 +596,7 @@ current tree."
 (defun my-replace-symex ()
   "Replace contents of symex"
   (interactive)
-  (let ((move (symex-in)))
+  (let ((move (symex-go-in)))
     (if (move-exists? move)
         (apply 'evil-change (evil-inner-paren))  ;; TODO: dispatch on paren type
       (sp-kill-sexp nil)
@@ -608,13 +608,13 @@ current tree."
   (when (and (lispy-left-p)
              (not (symex-empty-list-p)))
     (save-excursion
-      (symex-in) ;; need to be inside the symex to spit and slurp
+      (symex-go-in) ;; need to be inside the symex to spit and slurp
       (paredit-backward-barf-sexp 1))
-    (symex-forward)
+    (symex-go-forward)
     (when (symex-empty-list-p)
       (fixup-whitespace)
       (re-search-forward lispy-left)
-      (symex-out))))
+      (symex-go-out))))
 
 (defun my-spit-forward ()
   "Spit forward"
@@ -622,10 +622,10 @@ current tree."
   (when (and (lispy-left-p)
              (not (symex-empty-list-p)))
     (save-excursion
-      (symex-in) ;; need to be inside the symex to spit and slurp
+      (symex-go-in) ;; need to be inside the symex to spit and slurp
       (paredit-forward-barf-sexp 1))
     (when (symex-empty-list-p)
-      (symex-forward)
+      (symex-go-forward)
       (fixup-whitespace)
       (re-search-backward lispy-left))))
 
@@ -635,10 +635,10 @@ current tree."
   (when (lispy-left-p)
     (if (symex-empty-list-p)
         (forward-char)
-      (symex-in)) ;; need to be inside the symex to spit and slurp
+      (symex-go-in)) ;; need to be inside the symex to spit and slurp
     (paredit-backward-slurp-sexp 1)
     (fixup-whitespace)
-    (symex-out)))
+    (symex-go-out)))
 
 (defun my-slurp-forward ()
   "Slurp from the front"
@@ -647,14 +647,14 @@ current tree."
     (save-excursion
       (if (symex-empty-list-p)
           (forward-char)
-        (symex-in))  ;; need to be inside the symex to spit and slurp
+        (symex-go-in))  ;; need to be inside the symex to spit and slurp
       (lispy-forward-slurp-sexp 1))))
 
 (defun my-join-symexes ()
   "Merge symexes at the same level."
   (interactive)
   (save-excursion
-    (symex-forward)
+    (symex-go-forward)
     (paredit-join-sexps)))
 
 (defun my-symex-join-lines (&optional backwards)
@@ -689,7 +689,7 @@ current tree."
         (evil-paste-before nil nil)
         (forward-char)
         (insert extra-to-append))
-      (symex-forward)
+      (symex-go-forward)
       (my-tidy-symex))))
 
 (defun my-paste-after-symex ()
@@ -708,9 +708,9 @@ current tree."
         (insert extra-to-prepend)
         (evil-paste-before nil nil)
         (forward-char))
-      (symex-forward)
+      (symex-go-forward)
       (my-tidy-symex))
-    (symex-forward)))
+    (symex-go-forward)))
 
 (defun my-open-line-after-symex ()
   "Open new line after symex"
@@ -777,21 +777,21 @@ current tree."
 (defun my-swallow-symex ()
   "Swallow symex, putting its contents in the parent symex."
   (interactive)
-  (symex-in)
-  (symex-forward)
+  (symex-go-in)
+  (symex-go-forward)
   (paredit-splice-sexp-killing-backward))
 
 (defun my-symex-wrap-round ()
   "Wrap with ()"
   (interactive)
   (paredit-wrap-round)
-  (symex-out))
+  (symex-go-out))
 
 (defun my-symex-wrap-square ()
   "Wrap with []"
   (interactive)
   (paredit-wrap-square)
-  (symex-out))
+  (symex-go-out))
 
 (defun my-symex-wrap-curly ()
   "Wrap with {}"
@@ -823,10 +823,10 @@ current tree."
 (defun my-move-symex-backward ()
   "Move symex backward in current tree level."
   (interactive)
-  (let ((move (symex-backward)))
+  (let ((move (symex-go-backward)))
     (when (move-exists? move)
       (my-move-symex-forward)
-      (symex-backward))))
+      (symex-go-backward))))
 
 (defun my-evaluate-symex ()
   "Evaluate Symex"
@@ -887,10 +887,10 @@ current tree."
         ((thing-at-point 'sexp)  ;; som|ething
          (beginning-of-thing 'sexp))
         (t (let ((previous-position (point)))
-             (symex-forward)
+             (symex-go-forward)
              (setq current-position (point))
              (when (= current-position previous-position)
-               (symex-backward)))))
+               (symex-go-backward)))))
   (my-refocus-on-symex)
   (point))
 
@@ -974,10 +974,10 @@ current tree."
   ("<" (lambda ()
          (interactive)
          (my-create-symex 'angled)) "<>")
-  ("h" symex-backward "previous")
-  ("j" symex-in "enter")
-  ("k" symex-out "exit")
-  ("l" symex-forward "next")
+  ("h" symex-go-backward "previous")
+  ("j" symex-go-in "enter")
+  ("k" symex-go-out "exit")
+  ("l" symex-go-forward "next")
   ("f" (lambda ()
          (interactive)
          (my-traverse-symex-forward t)) "flow forward")
