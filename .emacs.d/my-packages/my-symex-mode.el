@@ -490,17 +490,6 @@ Evaluates to the maneuver actually executed."
   (let ((executed-phases (my--execute-maneuver-with-repetition maneuver)))
     (my-make-maneuver executed-phases)))
 
-(defun my--greedy-execute-maneuver (maneuvers)
-  "Given an ordered list of maneuvers, attempt each one in turn
-until one succeeds."
-  (let ((executed-maneuver
-         (catch 'done
-           (dolist (maneuver maneuvers)
-             (when (maneuver-exists? (my-execute-maneuver maneuver))
-               (throw 'done maneuver)))
-           maneuver-zero)))
-    executed-maneuver))
-
 (defun my--execute-maneuver-with-detour (maneuver detour)
   "Execute the maneuver, trying the indicated detour as needed.
 
@@ -553,19 +542,15 @@ when the detour fails."
   (my-refocus-on-symex)
   (point))
 
-(defun my--goto-innermost (maneuvers)
-  "Helper to greedily execute maneuvers until steady state."
-  (let ((maneuver (my--greedy-execute-maneuver maneuvers)))
-    (when (maneuver-exists? maneuver)
-      (my--goto-innermost maneuvers))))
-
 (defun my-goto-innermost-symex ()
   "Select innermost symex."
   (interactive)
-  (let ((go-deep (my-make-maneuver (list move-go-in)
-                                   :repeating? t))
-        (go-forward (my-make-maneuver (list move-go-forward))))
-    (my--goto-innermost (list go-deep go-forward)))
+  (let* ((go-deep (my-make-maneuver (list move-go-in)
+                                    :repeating? t))
+         (go-forward (my-make-maneuver (list move-go-forward)))
+         (choice-go-in (my-make-choice (list go-deep
+                                             go-forward))))
+    (symex--execute-protocol choice-go-in))
   (my-refocus-on-symex)
   (point))
 
@@ -610,7 +595,8 @@ current rooted tree."
   (let ((detour (if flow
                     detour-exit-until-end-of-buffer
                   detour-exit-until-root)))
-    (let ((maneuver (my--greedy-execute-maneuver preorder-explore)))
+    (let* ((choice-preorder-explore (my-make-choice preorder-explore))
+           (maneuver (symex-choose-maneuver choice-preorder-explore)))
       (if (maneuver-exists? maneuver)
           t
         (my-execute-strategy (my-make-strategy preorder-forward
@@ -622,11 +608,12 @@ current rooted tree."
 If FLOW is true, continue from one tree to another. Otherwise, stop at root of
 current tree."
   (interactive)
-  (let ((maneuver (if flow
-                      postorder-explore
-                    postorder-explore-tree)))
-    (let ((move (my--greedy-execute-maneuver maneuver)))
-      (if (move-exists? move)
+  (let* ((maneuvers (if flow
+                       postorder-explore
+                     postorder-explore-tree))
+         (choice-postorder (my-make-choice maneuvers)))
+    (let ((maneuver (symex-choose-maneuver choice-postorder)))
+      (if (maneuver-exists? maneuver)
           t
         (error "Not implemented")))))
 
