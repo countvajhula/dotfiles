@@ -165,6 +165,46 @@ as phases of a higher-level maneuver by the caller."
         (maneuver (symex--detour-maneuver detour)))
     (my-make-maneuver (symex--execute-maneuver-with-conjugation conjugation maneuver))))
 
+(defun my-make-choice (maneuvers)
+  "Construct a choice abstraction for the given MANEUVERS."
+  (list 'choice
+        maneuvers))
+
+(defun symex--choice-maneuvers (choice)
+  "Get the set of maneuvers the CHOICE is over."
+  (nth 1 choice))
+
+(defun is-choice? (obj)
+  "Checks if the data specifies a choice."
+  (condition-case nil
+      (equal 'choice
+             (nth 0 obj))
+    (error nil)))
+
+(defun symex--try-maneuvers-in-sequence (maneuvers)
+  "Try maneuvers one at a time until one succeeds."
+  (let ((maneuver (car maneuvers))
+        (remaining-maneuvers (cdr maneuvers)))
+    (let ((executed-maneuver (my-execute-maneuver maneuver)))
+      (if (maneuver-exists? executed-maneuver)
+          executed-maneuver
+        (if remaining-maneuvers
+            (symex--try-maneuvers-in-sequence remaining-maneuvers)
+          maneuver-zero)))))
+
+(defun symex-choose-maneuver (choice)
+  "Given a choice over a set of maneuvers, executes the first one that succeeds.
+
+Evaluates to the maneuver actually executed."
+  (let ((maneuvers (symex--choice-maneuvers choice)))
+    (symex--try-maneuvers-in-sequence maneuvers)))
+
+(defun symex--execute-protocol (choice)
+  "Helper to repeatedly choose a maneuver to execute until steady state."
+  (let ((maneuver (symex-choose-maneuver choice)))
+    (when (maneuver-exists? maneuver)
+      (symex--execute-protocol choice))))
+
 (defun my-make-strategy (&rest maneuvers)
   "Construct a strategy from the given maneuvers."
   maneuvers)
