@@ -107,23 +107,23 @@ with no repetition."
   (are-maneuvers-equal? (naive-maneuver m1)
                         (naive-maneuver m2)))
 
-(defun my-make-detour (conjugation maneuver)
+(defun my-make-detour (reorientation maneuver)
   "Construct a detour.
 
 A detour consists of two components -- a MANEUVER that we wish to execute, and
-a CONJUGATION which is a transformation we want to apply prior to attempting
-the maneuver. The conjugation could simply be another maneuver, or could itself
+a REORIENTATION which is a transformation we want to apply prior to attempting
+the maneuver. The reorientation could simply be another maneuver, or could itself
 be a detour.
 
-The conjugation is applied repeatedly and the maneuver is re-attempted each
-time, until it succeeds. If the conjugation itself fails, then the detour fails
+The reorientation is applied repeatedly and the maneuver is re-attempted each
+time, until it succeeds. If the reorientation itself fails, then the detour fails
 as well."
   (list 'detour
-        conjugation
+        reorientation
         maneuver))
 
-(defun symex--detour-conjugation (detour)
-  "Get the conjugation component of the DETOUR."
+(defun symex--detour-reorientation (detour)
+  "Get the reorientation component of the DETOUR."
   (nth 1 detour))
 
 (defun symex--detour-maneuver (detour)
@@ -137,33 +137,33 @@ as well."
              (nth 0 obj))
     (error nil)))
 
-(defun symex--execute-maneuver-with-conjugation (conjugation maneuver)
-  "Apply a conjugation and then attempt the maneuver.
+(defun symex--execute-maneuver-with-reorientation (reorientation maneuver)
+  "Apply a reorientation and then attempt the maneuver.
 
-If the maneuver fails, then the conjugation is attempted as many times as
-necessary until either it succeeds, or the conjugation fails.
+If the maneuver fails, then the reorientation is attempted as many times as
+necessary until either it succeeds, or the reorientation fails.
 
 Evaluates to a list of maneuvers executed, if any, which could be treated
 as phases of a higher-level maneuver by the caller."
-  (let ((executed-conjugation (if (is-detour? conjugation)
-                                  (my-execute-detour conjugation)
-                                (my-execute-maneuver conjugation))))
-    (when (maneuver-exists? executed-conjugation)
+  (let ((executed-reorientation (if (is-detour? reorientation)
+                                    (my-execute-detour reorientation)
+                                  (my-execute-maneuver reorientation))))
+    (when (maneuver-exists? executed-reorientation)
       (let ((executed-maneuver (my-execute-maneuver maneuver)))
         (if (maneuver-exists? executed-maneuver)
-            (append (list executed-conjugation)
+            (append (list executed-reorientation)
                     executed-maneuver)
-          (let ((attempt (symex--execute-maneuver-with-conjugation conjugation
-                                                                   maneuver)))
+          (let ((attempt (symex--execute-maneuver-with-reorientation reorientation
+                                                                     maneuver)))
             (when attempt
-              (append (list executed-conjugation)
+              (append (list executed-reorientation)
                       attempt))))))))
 
 (defun my-execute-detour (detour)
   "Execute the DETOUR."
-  (let ((conjugation (symex--detour-conjugation detour))
+  (let ((reorientation (symex--detour-reorientation detour))
         (maneuver (symex--detour-maneuver detour)))
-    (my-make-maneuver (symex--execute-maneuver-with-conjugation conjugation maneuver))))
+    (my-make-maneuver (symex--execute-maneuver-with-reorientation reorientation maneuver))))
 
 (defun my-make-choice (maneuvers)
   "Construct a choice abstraction for the given MANEUVERS."
