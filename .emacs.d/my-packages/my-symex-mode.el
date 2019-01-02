@@ -545,42 +545,14 @@ when the detour fails."
 (defun my-goto-innermost-symex ()
   "Select innermost symex."
   (interactive)
-  (let* ((go-deep (my-make-maneuver (list move-go-in)
-                                    :repeating? t))
-         (go-forward (my-make-maneuver (list move-go-forward)))
-         (choice-go-in (my-make-choice (list go-deep
-                                             go-forward))))
-    (symex--execute-protocol choice-go-in))
+  (let ((go-deep (my-make-maneuver (list move-go-in)
+                                   :repeating? t))
+        (go-forward (my-make-maneuver (list move-go-forward))))
+    (let ((choice-go-in (my-make-choice (list go-deep
+                                              go-forward))))
+      (symex--execute-protocol choice-go-in)))
   (my-refocus-on-symex)
   (point))
-
-(defvar preorder-in (my-make-maneuver (list move-go-in)))
-(defvar preorder-forward (my-make-maneuver (list move-go-forward)))
-(defvar detour-exit-until-root
-  (my-make-maneuver (list move-go-out)
-                    :post-condition #'(lambda ()
-                                        (not (point-at-root-symex?)))))
-(defvar detour-exit-until-end-of-buffer
-  (my-make-maneuver (list move-go-out)
-                    :post-condition #'(lambda ()
-                                        (not (point-at-final-symex?)))))
-
-(defvar postorder-in
-  (my-make-maneuver (list move-go-in
-                          (my-make-maneuver (list move-go-forward)
-                                            :repeating? t))
-                    :repeating? t))
-(defvar postorder-backwards-in
-  (my-make-maneuver (list move-go-backward postorder-in)))
-(defvar postorder-backwards-in-tree
-  (my-make-maneuver (list move-go-backward postorder-in)
-                    :pre-condition #'(lambda ()
-                                       (not (point-at-root-symex?)))))
-(defvar postorder-out (my-make-maneuver (list move-go-out)))
-
-(defvar preorder-explore (list preorder-in preorder-forward))
-(defvar postorder-explore (list postorder-backwards-in postorder-out))
-(defvar postorder-explore-tree (list postorder-backwards-in-tree postorder-out))
 
 ;; TODO: is there a way to "monadically" build the tree data structure
 ;; (or ideally, do an arbitrary structural computation) as part of this traversal?
@@ -592,15 +564,26 @@ when the detour fails."
 If FLOW is true, continue from one tree to another. Otherwise, stop at end of
 current rooted tree."
   (interactive)
-  (let ((detour (if flow
-                    detour-exit-until-end-of-buffer
-                  detour-exit-until-root)))
-    (let* ((choice-preorder-explore (my-make-choice preorder-explore))
-           (maneuver (symex-choose-maneuver choice-preorder-explore)))
-      (if (maneuver-exists? maneuver)
-          t
-        (my-execute-strategy (my-make-strategy preorder-forward
-                                               detour))))))
+  (let ((preorder-in (my-make-maneuver (list move-go-in)))
+        (preorder-forward (my-make-maneuver (list move-go-forward)))
+        (detour-exit-until-root
+         (my-make-maneuver (list move-go-out)
+                           :post-condition #'(lambda ()
+                                               (not (point-at-root-symex?)))))
+        (detour-exit-until-end-of-buffer
+         (my-make-maneuver (list move-go-out)
+                           :post-condition #'(lambda ()
+                                               (not (point-at-final-symex?))))))
+    (let ((choice-preorder-explore (my-make-choice (list preorder-in
+                                                         preorder-forward)))
+          (detour (if flow
+                      detour-exit-until-end-of-buffer
+                    detour-exit-until-root)))
+      (let ((maneuver (symex-choose-maneuver choice-preorder-explore)))
+        (if (maneuver-exists? maneuver)
+            t
+          (my-execute-strategy (my-make-strategy preorder-forward
+                                                 detour)))))))
 
 (defun my-traverse-symex-backward (&optional flow)
   "Traverse symex as a tree, using converse post-order traversal.
@@ -608,14 +591,28 @@ current rooted tree."
 If FLOW is true, continue from one tree to another. Otherwise, stop at root of
 current tree."
   (interactive)
-  (let* ((maneuvers (if flow
-                       postorder-explore
-                     postorder-explore-tree))
-         (choice-postorder (my-make-choice maneuvers)))
-    (let ((maneuver (symex-choose-maneuver choice-postorder)))
-      (if (maneuver-exists? maneuver)
-          t
-        (error "Not implemented")))))
+  (let* ((postorder-in
+          (my-make-maneuver (list move-go-in
+                                  (my-make-maneuver (list move-go-forward)
+                                                    :repeating? t))
+                            :repeating? t))
+         (postorder-backwards-in
+          (my-make-maneuver (list move-go-backward postorder-in)))
+         (postorder-backwards-in-tree
+          (my-make-maneuver (list move-go-backward postorder-in)
+                            :pre-condition #'(lambda ()
+                                               (not (point-at-root-symex?)))))
+         (postorder-out (my-make-maneuver (list move-go-out))))
+    (let ((postorder-explore (list postorder-backwards-in postorder-out))
+          (postorder-explore-tree (list postorder-backwards-in-tree postorder-out)))
+      (let* ((maneuvers (if flow
+                            postorder-explore
+                          postorder-explore-tree))
+             (choice-postorder (my-make-choice maneuvers)))
+        (let ((maneuver (symex-choose-maneuver choice-postorder)))
+          (if (maneuver-exists? maneuver)
+              t
+            (error "Not implemented")))))))
 
 (defun my-switch-branch-backward ()
   "Switch branch backward"
