@@ -566,24 +566,24 @@ current rooted tree."
   (interactive)
   (let ((preorder-in (my-make-maneuver (list move-go-in)))
         (preorder-forward (my-make-maneuver (list move-go-forward)))
-        (detour-exit-until-root
+        (exit-until-root
          (my-make-maneuver (list move-go-out)
                            :post-condition #'(lambda ()
                                                (not (point-at-root-symex?)))))
-        (detour-exit-until-end-of-buffer
+        (exit-until-end-of-buffer
          (my-make-maneuver (list move-go-out)
                            :post-condition #'(lambda ()
                                                (not (point-at-final-symex?))))))
     (let ((choice-preorder-explore (my-make-choice (list preorder-in
                                                          preorder-forward)))
-          (detour (if flow
-                      detour-exit-until-end-of-buffer
-                    detour-exit-until-root)))
+          (reorientation (if flow
+                             exit-until-end-of-buffer
+                           exit-until-root)))
       (let ((maneuver (symex-choose-maneuver choice-preorder-explore)))
         (if (maneuver-exists? maneuver)
             t
-          (my-execute-strategy (my-make-strategy preorder-forward
-                                                 detour)))))))
+          (my-execute-detour (my-make-detour reorientation
+                                             preorder-forward)))))))
 
 (defun my-traverse-symex-backward (&optional flow)
   "Traverse symex as a tree, using converse post-order traversal.
