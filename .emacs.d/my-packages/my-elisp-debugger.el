@@ -20,7 +20,7 @@
   ("d" edebug-backtrace "Show program backtrace")
   ("e" edebug-eval-expression "Evaluate an expression")
   ("E" edebug-visit-eval-list "Visit eval list")
-  ("u" edebug-update-eval-list "Update eval list (;-- to separate groups)")
+  ("v" edebug-update-eval-list "Update eval list (;-- to separate groups)")
   ("f" edebug-forward-sexp "Run for one expression (sets temporary breakpoint)")
   ("g" edebug-go-mode "Run until next breakpoint")
   ("G" edebug-Go-nonstop-mode "Go nonstop (interrupt with S)")
