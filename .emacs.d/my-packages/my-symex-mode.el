@@ -210,9 +210,6 @@ Evaluates to the maneuver actually executed."
     (when (maneuver-exists? maneuver)
       (symex--execute-protocol choice))))
 
-(defun my-make-strategy (&rest maneuvers)
-  "Construct a strategy from the given maneuvers."
-  maneuvers)
 
 (defmacro if-stuck (do-what operation &rest body)
   `(let ((orig-pt (point)))
@@ -493,31 +490,6 @@ If the maneuver is REPEATING, it will be repeated until it fails.
 Evaluates to the maneuver actually executed."
   (let ((executed-phases (my--execute-maneuver-with-repetition maneuver)))
     (my-make-maneuver executed-phases)))
-
-(defun my--execute-maneuver-with-detour (maneuver detour)
-  "Execute the maneuver, trying the indicated detour as needed.
-
-Continues trying until the detour fails."
-  (let ((detour-attempt (my-execute-maneuver detour)))
-    (if (maneuver-exists? detour-attempt)
-      (let ((attempt (my-execute-maneuver maneuver)))
-        (if (maneuver-exists? attempt)
-            t
-          (my--execute-maneuver-with-detour maneuver detour)))
-      nil)))
-
-(defun my-execute-strategy (strategy)
-  "Execute the provided maneuver, taking detours until successful.
-
-This operation terminates either when the maneuver succeeds, or
-when the detour fails."
-  (let* ((original-location (point))
-         (maneuver (car strategy))
-         (detour (cadr strategy)))
-    (let ((result (my--execute-maneuver-with-detour maneuver detour)))
-      (unless result
-        (goto-char original-location))
-      result)))
 
 (defun my-goto-first-symex ()
   "Select first symex at present level"
