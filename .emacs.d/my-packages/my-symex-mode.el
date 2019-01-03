@@ -161,9 +161,14 @@ as phases of a higher-level maneuver by the caller."
 
 (defun my-execute-detour (detour)
   "Execute the DETOUR."
-  (let ((reorientation (symex--detour-reorientation detour))
+  (let ((original-location (point))
+        (reorientation (symex--detour-reorientation detour))
         (maneuver (symex--detour-maneuver detour)))
-    (my-make-maneuver (symex--execute-maneuver-with-reorientation reorientation maneuver))))
+    (let ((result (symex--execute-maneuver-with-reorientation reorientation
+                                                              maneuver)))
+      (unless result
+        (goto-char original-location))
+      (my-make-maneuver result))))
 
 (defun my-make-choice (maneuvers)
   "Construct a choice abstraction for the given MANEUVERS."
@@ -385,8 +390,7 @@ Evaluates to the maneuver actually executed."
   "Execute the specified MOVE at the current point location in the tree.
 
 Evaluates to the actual move executed."
-  (let ((original-location (point))
-        (move-x (my-move-x move))
+  (let ((move-x (my-move-x move))
         (move-y (my-move-y move)))
     (cond ((> move-x 0)
            (my-forward-symex move-x))
@@ -579,11 +583,12 @@ current rooted tree."
           (reorientation (if flow
                              exit-until-end-of-buffer
                            exit-until-root)))
-      (let ((maneuver (symex-choose-maneuver choice-preorder-explore)))
+      (let ((maneuver (symex-choose-maneuver choice-preorder-explore))
+            (detour (my-make-detour reorientation
+                                    preorder-forward)))
         (if (maneuver-exists? maneuver)
             t
-          (my-execute-detour (my-make-detour reorientation
-                                             preorder-forward)))))))
+          (my-execute-detour detour))))))
 
 (defun my-traverse-symex-backward (&optional flow)
   "Traverse symex as a tree, using converse post-order traversal.
