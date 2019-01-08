@@ -147,6 +147,7 @@
 (setq eem-buffer-prefix "EPISTEMIC")
 
 (setq current-tower-index 0)
+(make-variable-buffer-local 'current-tower-index)
 
 (defun eem--tower (tower-id)
   "The epistemic tower corresponding to the provided index."
@@ -156,30 +157,34 @@
 (defun eem--current-tower ()
   "The epistemic editing tower we are currently in."
   (interactive)
-  (eem--tower current-tower-index))
+  (with-current-buffer eem--current-buffer
+    (eem--tower current-tower-index)))
 
 (defun eem-previous-tower ()
   "Previous tower"
   (interactive)
-  (let ((tower-id (mod (- current-tower-index
-                          1)
-                       (ht-size eem-towers))))
-    (eem--switch-to-tower tower-id)))
+  (with-current-buffer eem--current-buffer
+    (let ((tower-id (mod (- current-tower-index
+                           1)
+                        (ht-size eem-towers))))
+     (eem--switch-to-tower tower-id))))
 
 (defun eem-next-tower ()
   "Next tower"
   (interactive)
-  (let ((tower-id (mod (+ current-tower-index
-                          1)
-                       (ht-size eem-towers))))
-    (eem--switch-to-tower tower-id)))
+  (with-current-buffer eem--current-buffer
+    (let ((tower-id (mod (+ current-tower-index
+                           1)
+                        (ht-size eem-towers))))
+     (eem--switch-to-tower tower-id))))
 
 (defun eem--switch-to-tower (tower-id)
   "Switch to the tower indicated"
   (interactive)
   (let ((tower (eem--tower tower-id)))
     (switch-to-buffer (eem--buffer-name tower))
-    (setq current-tower-index tower-id)
+    (with-current-buffer eem--current-buffer
+      (setq current-tower-index tower-id))
     (eem--extract-selected-level)))
 
 (defun eem--buffer-name (tower)
@@ -225,9 +230,14 @@
   "Enter a buffer containing a textual representation of the
 initial epistemic tower."
   (interactive)
+  (setq eem--current-buffer (current-buffer))
   (dolist (tower (ht-values eem-towers))
     (eem-render-tower tower))
-  (eem--switch-to-tower current-tower-index)
+  ;; ideally we just switch to the buffer-local "current tower"
+  ;; here, but for some reason it evaluates to the global value
+  ;; when this function is invoked (but not before). We use a scratch
+  ;; global value here to preserve the buffer-local value
+  (eem--switch-to-tower eem--temp-tower-idx)
   (evil-mode-state))
 
 (defun my-exit-mode-mode ()
@@ -235,7 +245,10 @@ initial epistemic tower."
   (interactive)
   (eem--revert-buffer-appearance)
   (evil-normal-state)
-  (kill-matching-buffers (concat "^" eem-buffer-prefix) nil t))
+  (kill-matching-buffers (concat "^" eem-buffer-prefix) nil t)
+  ;; buffer-local workaround: buffer-local value is correct here,
+  ;; so preserve it in a "scratch" global
+  (setq eem--temp-tower-idx current-tower-index))
 
 (define-key evil-insert-state-map [s-escape] 'enter-first-level)
 (define-key evil-normal-state-map [s-escape] 'hydra-window/body)
@@ -246,9 +259,10 @@ initial epistemic tower."
   (let* ((tower (eem--current-tower))
          (levels (ht-get tower 'levels))
          (level (ht-get levels level-number)))
-    (funcall (ht-get level 'mode-entry))))
+    (funcall (ht-get level 'mode-entry))
+    (setq eem--current-level level-number)))
 
-(defun eem-enter-level ()
+(defun eem-enter-selected-level ()
   "Enter selected level"
   (interactive)
   (eem--enter-level eem--selected-level))
@@ -305,7 +319,7 @@ initial epistemic tower."
   ;; the mode mode, tower mode, and so on recursively makes more sense
   ;; if we assume that keyboard shortcuts are scarce. this gives us ways to use
   ;; a small number of keys in any arbitrary configuration
-  ("<return>" eem-enter-level :exit t)
+  ("<return>" eem-enter-selected-level :exit t)
   ("i" my-noop "exit" :exit t)
   ("<escape>" nil "exit" :exit t)
   ("s-<return>" hydra-view/body "enter lower level" :exit t)
