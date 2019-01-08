@@ -137,10 +137,10 @@
                                ('mode-entry 'evil-normal-state)))))))
 
 (setq eem-towers
-      `(,eem-complete-tower
-        ,eem-lisp-tower
-        ,eem-vim-tower
-        ,eem-emacs-tower))
+      (ht ('complete eem-complete-tower)
+          ('lisp eem-lisp-tower)
+          ('vim eem-vim-tower)
+          ('emacs eem-emacs-tower)))
 
 ;; the prefix that will be used in naming all buffers used
 ;; in epistemic mode representations
@@ -151,7 +151,7 @@
 (defun eem--tower (tower-id)
   "The epistemic tower corresponding to the provided index."
   (interactive)
-  (nth tower-id eem-towers))
+  (nth tower-id (ht-values eem-towers)))
 
 (defun eem--current-tower ()
   "The epistemic editing tower we are currently in."
@@ -163,7 +163,7 @@
   (interactive)
   (let ((tower-id (mod (- current-tower-index
                           1)
-                       (length eem-towers))))
+                       (ht-size eem-towers))))
     (eem--switch-to-tower tower-id)))
 
 (defun eem-next-tower ()
@@ -171,7 +171,7 @@
   (interactive)
   (let ((tower-id (mod (+ current-tower-index
                           1)
-                       (length eem-towers))))
+                       (ht-size eem-towers))))
     (eem--switch-to-tower tower-id)))
 
 (defun eem--switch-to-tower (tower-id)
@@ -181,13 +181,6 @@
     (switch-to-buffer (eem--buffer-name tower))
     (setq current-tower-index tower-id)
     (eem--extract-selected-level)))
-
-(defun enter-first-level ()
-  "Enter epistemic modes at first level"
-  (interactive)
-  (evil-force-normal-state)
-  ;; start at the lowest level
-  (hydra-char/body))
 
 (defun eem--buffer-name (tower)
   "Buffer name to use for a given tower."
@@ -232,7 +225,7 @@
   "Enter a buffer containing a textual representation of the
 initial epistemic tower."
   (interactive)
-  (dolist (tower eem-towers)
+  (dolist (tower (ht-values eem-towers))
     (eem-render-tower tower))
   (eem--switch-to-tower current-tower-index)
   (evil-mode-state))
@@ -259,6 +252,13 @@ initial epistemic tower."
   "Enter selected level"
   (interactive)
   (eem--enter-level eem--selected-level))
+
+(defun enter-first-level ()
+  "Enter epistemic modes at first level"
+  (interactive)
+  (evil-force-normal-state)
+  ;; start at the lowest level
+  (eem--enter-level 1))
 
 (defun eem--extract-selected-level ()
   "Extract the selected level from the current representation"
