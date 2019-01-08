@@ -109,8 +109,8 @@ current ('original') buffer."
   ("?" my-buffer-info "info" :exit t)
   ("q" return-to-original-buffer "return to original" :exit t)
   ("<escape>" flash-to-original-and-back "exit" :exit t)
-  ("s-<return>" hydra-window/body "enter lower level" :exit t)
-  ("s-<escape>" hydra-application/body "escape to higher level" :exit t))
+  ("s-<return>" eem-enter-lower-level "enter lower level" :exit t)
+  ("s-<escape>" eem-enter-higher-level "escape to higher level" :exit t))
 
 ;; access the buffer menu via a "body" keybinding
 (global-set-key (kbd "s-b") 'hydra-buffer/body)

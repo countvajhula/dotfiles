@@ -65,8 +65,8 @@
   ("l" hl-line-mode "toggle highlight line")
   ("c" counsel-load-theme "change color scheme")
   ("<escape>" nil "exit" :exit t)
-  ("s-<return>" hydra-buffer/body "enter lower level" :exit t)
-  ("s-<escape>" hydra-system/body "escape to higher level" :exit t))
+  ("s-<return>" eem-enter-lower-level "enter lower level" :exit t)
+  ("s-<escape>" eem-enter-higher-level "escape to higher level" :exit t))
 
 ;; hydra to configure the application environment
 ;; contains a nested hydra to modulate transparency

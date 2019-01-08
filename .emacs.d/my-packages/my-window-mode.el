@@ -52,8 +52,8 @@
   ("f" ffap-other-window "go to file in other window" :exit t)
   ("i" my-noop "exit" :exit t)
   ("<escape>" nil "exit" :exit t)
-  ("s-<return>" hydra-view/body "enter lower level" :exit t)
-  ("s-<escape>" hydra-buffer/body "escape to higher level" :exit t))
+  ("s-<return>" eem-enter-lower-level "enter lower level" :exit t)
+  ("s-<escape>" eem-enter-higher-level "escape to higher level" :exit t))
 
 (global-set-key (kbd "s-w") 'hydra-window/body)
 

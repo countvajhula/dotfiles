@@ -152,8 +152,8 @@
   ("s-o" my-delete-other-words "delete other words" :exit t)
   ("?" dictionary-lookup-definition "lookup in dictionary" :exit t)
   ("<escape>" nil "exit" :exit t)
-  ("s-<return>" hydra-char/body "enter lower level" :exit t)
-  ("s-<escape>" hydra-line/body "escape to higher level" :exit t))
+  ("s-<return>" eem-enter-lower-level "enter lower level" :exit t)
+  ("s-<escape>" eem-enter-higher-level "escape to higher level" :exit t))
 
 (global-set-key (kbd "s-r") 'hydra-word/body)
 

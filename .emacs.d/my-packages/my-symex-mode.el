@@ -1101,8 +1101,8 @@ current tree."
   ;; standard exits
   ("?" my-describe-symex "info")
   ("<escape>" nil "exit" :exit t)
-  ("s-<return>" hydra-word/body "enter lower level" :exit t)
-  ("s-<escape>" hydra-view/body "escape to higher level" :exit t))
+  ("s-<return>" eem-enter-lower-level "enter lower level" :exit t)
+  ("s-<escape>" eem-enter-higher-level "escape to higher level" :exit t))
 
 (global-set-key (kbd "s-y") 'hydra-symex/body)  ;; since y looks like inverted lambda
 (global-set-key (kbd "s-;") 'hydra-symex/body)  ;; since y is hard to reach

@@ -274,6 +274,18 @@ initial epistemic tower."
   ;; start at the lowest level
   (eem--enter-level 1))
 
+(defun eem-enter-lower-level ()
+  "Enter lower level."
+  (interactive)
+  (eem--enter-level (- eem--current-level
+                       1)))
+
+(defun eem-enter-higher-level ()
+  "Enter higher level."
+  (interactive)
+  (eem--enter-level (+ eem--current-level
+                       1)))
+
 (defun eem--extract-selected-level ()
   "Extract the selected level from the current representation"
   (interactive)
@@ -322,8 +334,8 @@ initial epistemic tower."
   ("<return>" eem-enter-selected-level :exit t)
   ("i" my-noop "exit" :exit t)
   ("<escape>" nil "exit" :exit t)
-  ("s-<return>" hydra-view/body "enter lower level" :exit t)
-  ("s-<escape>" hydra-buffer/body "escape to higher level" :exit t))
+  ("s-<return>" eem-enter-lower-level "enter lower level" :exit t)
+  ("s-<escape>" eem-enter-higher-level "escape to higher level" :exit t))
 
 (global-set-key (kbd "s-m") 'hydra-mode/body)
 

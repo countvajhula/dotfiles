@@ -32,8 +32,10 @@ Version 2016-04-04"
   ("L" evil-goto-line "end")
   ("C-h" xah-pop-local-mark-ring "previous mark")
   ("C-l" unpop-to-mark-command "next mark")
-  ("i" my-noop "exit" :exit t)
-  ("<escape>" my-noop "exit" :exit t))
+  ("i" nil "exit" :exit t)
+  ("<escape>" nil "exit" :exit t)
+  ("s-<return>" eem-enter-lower-level "enter lower level" :exit t)
+  ("s-<escape>" eem-enter-higher-level "escape to higher level" :exit t))
 
 (global-set-key (kbd "s-f") 'hydra-file/body)
 

@@ -90,8 +90,8 @@
   ("w" widen "widen to full view")
   ("i" my-noop "exit" :exit t)
   ("<escape>" nil "exit" :exit t)
-  ("s-<return>" hydra-line/body "enter lower level" :exit t)
-  ("s-<escape>" hydra-window/body "escape to higher level" :exit t))
+  ("s-<return>" eem-enter-lower-level "enter lower level" :exit t)
+  ("s-<escape>" eem-enter-higher-level "escape to higher level" :exit t))
 
 (global-set-key (kbd "s-v") 'hydra-view/body)
 

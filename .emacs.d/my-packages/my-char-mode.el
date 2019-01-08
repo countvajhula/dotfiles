@@ -107,8 +107,8 @@
   ("i" my-char-info "info" :exit t)
   ("?" my-char-info "info" :exit t)
   ("<escape>" nil "exit" :exit t)
-  ("s-<return>" evil-insert-state "enter lower level" :exit t)
-  ("s-<escape>" hydra-word/body "escape to higher level" :exit t))
+  ("s-<return>" eem-enter-lower-level "enter lower level" :exit t)
+  ("s-<escape>" eem-enter-higher-level "escape to higher level" :exit t))
 
 (global-set-key (kbd "s-x") 'hydra-char/body)
 
