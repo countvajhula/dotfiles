@@ -92,39 +92,55 @@
 (set-face-font 'eem-face "-*-Consolas-normal-normal-normal-*-*-*-*-*-m-0-iso10646-1")
 (set-face-foreground 'eem-face "tomato")
 
-(setq eem-complete-tower (ht ('name "complete")
-                             ('levels (ht ('0 (ht ('name "insert")
-                                                  ('mode-entry 'evil-insert-state)))
-                                          ('1 (ht ('name "char")
-                                                  ('mode-entry 'hydra-char/body)))
-                                          ('2 (ht ('name "word")
-                                                  ('mode-entry 'hydra-word/body)))
-                                          ('3 (ht ('name "line")
-                                                  ('mode-entry 'hydra-line/body)))
-                                          ('4 (ht ('name "view")
-                                                  ('mode-entry 'hydra-view/body)))
-                                          ('5 (ht ('name "window")
-                                                  ('mode-entry 'hydra-window/body)))
-                                          ('6 (ht ('name "file")
-                                                  ('mode-entry 'hydra-file/body)))
-                                          ('7 (ht ('name "buffer")
-                                                  ('mode-entry 'hydra-buffer/body)))
-                                          ('8 (ht ('name "system")
-                                                  ('mode-entry 'hydra-system/body)))
-                                          ('9 (ht ('name "application")
-                                                  ('mode-entry 'hydra-application/body)))))))
+(setq eem-complete-tower
+      (ht ('name "complete")
+          ('levels (ht ('0 (ht ('name "insert")
+                               ('mode-entry 'evil-insert-state)))
+                       ('1 (ht ('name "char")
+                               ('mode-entry 'hydra-char/body)))
+                       ('2 (ht ('name "word")
+                               ('mode-entry 'hydra-word/body)))
+                       ('3 (ht ('name "line")
+                               ('mode-entry 'hydra-line/body)))
+                       ('4 (ht ('name "view")
+                               ('mode-entry 'hydra-view/body)))
+                       ('5 (ht ('name "window")
+                               ('mode-entry 'hydra-window/body)))
+                       ('6 (ht ('name "file")
+                               ('mode-entry 'hydra-file/body)))
+                       ('7 (ht ('name "buffer")
+                               ('mode-entry 'hydra-buffer/body)))
+                       ('8 (ht ('name "system")
+                               ('mode-entry 'hydra-system/body)))
+                       ('9 (ht ('name "application")
+                               ('mode-entry 'hydra-application/body)))))))
 
-(setq eem-vim-tower (ht ('name "vim")
-                        ('levels (ht ('0 (ht ('name "insert")
-                                             ('mode-entry 'evil-insert-state)))
-                                     ('1 (ht ('name "normal")
-                                             ('mode-entry 'evil-normal-state)))))))
+(setq eem-vim-tower
+      (ht ('name "vim")
+          ('levels (ht ('0 (ht ('name "insert")
+                               ('mode-entry 'evil-insert-state)))
+                       ('1 (ht ('name "normal")
+                               ('mode-entry 'evil-normal-state)))))))
 
-(setq eem-emacs-tower (ht ('name "emacs")
-                          ('levels (ht ('0 (ht ('name "emacs")
-                                               ('mode-entry 'evil-emacs-state)))))))
+(setq eem-emacs-tower
+      (ht ('name "emacs")
+          ('levels (ht ('0 (ht ('name "emacs")
+                               ('mode-entry 'evil-emacs-state)))))))
 
-(setq eem-towers `(,eem-complete-tower ,eem-vim-tower ,eem-emacs-tower))
+(setq eem-lisp-tower
+      (ht ('name "lisp")
+          ('levels (ht ('0 (ht ('name "insert")
+                               ('mode-entry 'evil-insert-state)))
+                       ('1 (ht ('name "symex")
+                               ('mode-entry 'hydra-symex/body)))
+                       ('2 (ht ('name "normal")
+                               ('mode-entry 'evil-normal-state)))))))
+
+(setq eem-towers
+      `(,eem-complete-tower
+        ,eem-lisp-tower
+        ,eem-vim-tower
+        ,eem-emacs-tower))
 
 ;; the prefix that will be used in naming all buffers used
 ;; in epistemic mode representations
