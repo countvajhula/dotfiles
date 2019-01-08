@@ -250,9 +250,9 @@ initial epistemic tower."
   ;; so preserve it in a "scratch" global
   (setq eem--temp-tower-idx current-tower-index))
 
-(define-key evil-insert-state-map [s-escape] 'enter-first-level)
-(define-key evil-normal-state-map [s-escape] 'hydra-window/body)
-(define-key evil-normal-state-map [s-return] 'evil-insert-state)
+(define-key evil-insert-state-map [s-escape] 'eem-enter-higher-level)
+(define-key evil-normal-state-map [s-escape] 'eem-enter-higher-level)
+(define-key evil-normal-state-map [s-return] 'eem-enter-lower-level)
 
 (defun eem--enter-level (level-number)
   "Enter level LEVEL-NUMBER"
