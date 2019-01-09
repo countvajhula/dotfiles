@@ -169,8 +169,7 @@ From: https://emacs.stackexchange.com/questions/17846/calculating-the-length-of-
 
 (defhydra hydra-line (:idle 1.0
                       :columns 4
-                      :body-pre (evil-line-state)
-                      :post (evil-normal-state))
+                      :body-pre (evil-line-state))
   "Line mode"
   ("h" evil-previous-line "previous")
   ("j" evil-next-line "next")
@@ -197,9 +196,8 @@ From: https://emacs.stackexchange.com/questions/17846/calculating-the-length-of-
   ("y" my-yank-line "yank (copy)")
   (";" my-toggle-comment-line "toggle comment")
   ("i" my-line-info "info" :exit t)
-  ("<escape>" nil "exit" :exit t)
-  ("s-<return>" eem-enter-lower-level "enter lower level" :exit t)
-  ("s-<escape>" eem-enter-higher-level "escape to higher level" :exit t))
+  ("<return>" eem-enter-lower-level "enter lower level" :exit t)
+  ("<escape>" eem-enter-higher-level "escape to higher level" :exit t))
 
 (global-set-key (kbd "s-l") 'hydra-line/body)
 

@@ -147,7 +147,11 @@
 (setq eem-buffer-prefix "EPISTEMIC")
 
 (setq current-tower-index 0)
+(setq eem--temp-tower-idx current-tower-index)  ;; workaround
+(setq eem--current-level 1)  ;; TODO: set via hook in all modes incl evil modes
+(setq eem--current-buffer (current-buffer))
 (make-variable-buffer-local 'current-tower-index)
+(make-variable-buffer-local 'eem--current-level)
 
 (defun eem--tower (tower-id)
   "The epistemic tower corresponding to the provided index."
@@ -250,9 +254,10 @@ initial epistemic tower."
   ;; so preserve it in a "scratch" global
   (setq eem--temp-tower-idx current-tower-index))
 
-(define-key evil-insert-state-map [s-escape] 'eem-enter-higher-level)
-(define-key evil-normal-state-map [s-escape] 'eem-enter-higher-level)
-(define-key evil-normal-state-map [s-return] 'eem-enter-lower-level)
+(define-key evil-insert-state-map [escape] 'eem-enter-higher-level)
+(define-key evil-normal-state-map [escape] 'eem-enter-higher-level)
+(define-key evil-normal-state-map [return] 'eem-enter-lower-level)
+(global-set-key (kbd "s-<escape>") 'evil-force-normal-state)
 
 (defun eem--enter-level (level-number)
   "Enter level LEVEL-NUMBER"
@@ -333,9 +338,9 @@ initial epistemic tower."
   ;; a small number of keys in any arbitrary configuration
   ("<return>" eem-enter-selected-level :exit t)
   ("i" my-noop "exit" :exit t)
-  ("<escape>" nil "exit" :exit t)
-  ("s-<return>" eem-enter-lower-level "enter lower level" :exit t)
-  ("s-<escape>" eem-enter-higher-level "escape to higher level" :exit t))
+  ("<escape>" nil "exit" :exit t))
+  ;("s-<return>" eem-enter-lower-level "enter lower level" :exit t)
+  ;("s-<escape>" eem-enter-higher-level "escape to higher level" :exit t))
 
 (global-set-key (kbd "s-m") 'hydra-mode/body)
 

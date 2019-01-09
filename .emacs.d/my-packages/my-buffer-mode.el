@@ -91,7 +91,7 @@ current ('original') buffer."
                         :columns 3
                         :body-pre (progn (setup-buffer-marks-table)
                                          (evil-buffer-state))
-                        :post (evil-normal-state))
+                        :post (flash-to-original-and-back))
   "Buffer mode"
   ("b" list-buffers "show all")
   ("s-b" evil-switch-to-windows-last-buffer "switch to last" :exit t)
@@ -108,9 +108,8 @@ current ('original') buffer."
   ("x" kill-buffer "delete")
   ("?" my-buffer-info "info" :exit t)
   ("q" return-to-original-buffer "return to original" :exit t)
-  ("<escape>" flash-to-original-and-back "exit" :exit t)
-  ("s-<return>" eem-enter-lower-level "enter lower level" :exit t)
-  ("s-<escape>" eem-enter-higher-level "escape to higher level" :exit t))
+  ("<return>" eem-enter-lower-level "enter lower level" :exit t)
+  ("<escape>" eem-enter-higher-level "escape to higher level" :exit t))
 
 ;; access the buffer menu via a "body" keybinding
 (global-set-key (kbd "s-b") 'hydra-buffer/body)

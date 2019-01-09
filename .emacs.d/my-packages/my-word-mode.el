@@ -124,8 +124,7 @@
 
 (defhydra hydra-word (:idle 1.0
                       :columns 2
-                      :body-pre (evil-word-state)
-                      :post (evil-normal-state))
+                      :body-pre (evil-word-state))
   "Word mode"
   ("h" evil-backward-WORD-begin "backward")
   ("j" evil-next-line "down")
@@ -151,9 +150,8 @@
   ("s-r" my-delete-word "delete" :exit t)
   ("s-o" my-delete-other-words "delete other words" :exit t)
   ("?" dictionary-lookup-definition "lookup in dictionary" :exit t)
-  ("<escape>" nil "exit" :exit t)
-  ("s-<return>" eem-enter-lower-level "enter lower level" :exit t)
-  ("s-<escape>" eem-enter-higher-level "escape to higher level" :exit t))
+  ("<return>" eem-enter-lower-level "enter lower level" :exit t)
+  ("<escape>" eem-enter-higher-level "escape to higher level" :exit t))
 
 (global-set-key (kbd "s-r") 'hydra-word/body)
 

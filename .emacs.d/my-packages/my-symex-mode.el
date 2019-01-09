@@ -1018,8 +1018,7 @@ current tree."
                        :columns 5
                        :color pink
                        :body-pre (progn (my-select-nearest-symex)
-                                        (evil-symex-state))
-                       :post (evil-normal-state))
+                                        (evil-symex-state)))
   "Symex mode"
   ("(" (lambda ()
          (interactive)
@@ -1100,9 +1099,8 @@ current tree."
   ("C-v" evil-visual-block nil :exit t)
   ;; standard exits
   ("?" my-describe-symex "info")
-  ("<escape>" nil "exit" :exit t)
-  ("s-<return>" eem-enter-lower-level "enter lower level" :exit t)
-  ("s-<escape>" eem-enter-higher-level "escape to higher level" :exit t))
+  ("<return>" eem-enter-lower-level "enter lower level" :exit t)
+  ("<escape>" eem-enter-higher-level "escape to higher level" :exit t))
 
 (global-set-key (kbd "s-y") 'hydra-symex/body)  ;; since y looks like inverted lambda
 (global-set-key (kbd "s-;") 'hydra-symex/body)  ;; since y is hard to reach

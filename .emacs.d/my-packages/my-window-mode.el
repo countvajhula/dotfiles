@@ -18,8 +18,7 @@
 
 (defhydra hydra-window (:idle 1.0
                         :columns 4
-                        :body-pre (evil-window-state)
-                        :post (evil-normal-state))
+                        :body-pre (evil-window-state))
   "Window mode"
   ("h" evil-window-left "left")
   ("j" evil-window-down "down")
@@ -51,9 +50,8 @@
   ("R" evil-window-rotate-upwards "rotate upwards")
   ("f" ffap-other-window "go to file in other window" :exit t)
   ("i" my-noop "exit" :exit t)
-  ("<escape>" nil "exit" :exit t)
-  ("s-<return>" eem-enter-lower-level "enter lower level" :exit t)
-  ("s-<escape>" eem-enter-higher-level "escape to higher level" :exit t))
+  ("<return>" eem-enter-lower-level "enter lower level" :exit t)
+  ("<escape>" eem-enter-higher-level "escape to higher level" :exit t))
 
 (global-set-key (kbd "s-w") 'hydra-window/body)
 

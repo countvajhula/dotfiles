@@ -59,8 +59,7 @@
 
 (defhydra hydra-view (:idle 1.0
                       :columns 6
-                      :body-pre (evil-view-state)
-                      :post (evil-normal-state))
+                      :body-pre (evil-view-state))
   "View mode"
   ("j" my-scroll-down "down")
   ("k" my-scroll-up "up")
@@ -89,9 +88,8 @@
   ("n" my-narrow-to-defun-or-region "narrow context")
   ("w" widen "widen to full view")
   ("i" my-noop "exit" :exit t)
-  ("<escape>" nil "exit" :exit t)
-  ("s-<return>" eem-enter-lower-level "enter lower level" :exit t)
-  ("s-<escape>" eem-enter-higher-level "escape to higher level" :exit t))
+  ("<return>" eem-enter-lower-level "enter lower level" :exit t)
+  ("<escape>" eem-enter-higher-level "escape to higher level" :exit t))
 
 (global-set-key (kbd "s-v") 'hydra-view/body)
 
