@@ -248,6 +248,11 @@
     "Face used in evil color-coded segments when in Activity state."
     :group 'telephone-line-evil)
 
+  (defface telephone-line-evil-mode
+    '((t (:background "firebrick" :inherit telephone-line-evil)))
+    "Face used in evil color-coded segments when in Mode state."
+    :group 'telephone-line-evil)
+
   (telephone-line-mode t))
 
 ;; cozy time
