@@ -220,17 +220,21 @@
   (let ((tower-buffer (my-new-empty-buffer
                        (eem--buffer-name tower)))
         (tower-levels (ht-get tower 'levels)))
-    (with-current-buffer tower-buffer
-      (eem--set-buffer-appearance)
-      (dotimes (level-number (length tower-levels))
-        (let ((level (nth level-number
-                          tower-levels)))
-          (insert "|―――"
-                  (number-to-string level-number)
-                  "―――|"
-                  " " (ht-get level
-                              'name) "\n")))
-      (my-delete-line))
+    (let ((tower-height (length tower-levels)))
+      (with-current-buffer tower-buffer
+       (eem--set-buffer-appearance)
+       (dolist
+           (level-number (reverse
+                          (number-sequence 0 (- tower-height
+                                                1))))
+         (let ((level (nth level-number
+                           tower-levels)))
+           (insert "|―――"
+                   (number-to-string level-number)
+                   "―――|"
+                   " " (ht-get level
+                               'name) "\n")))
+       (my-delete-line)))
     tower-buffer))
 
 (defun my-enter-mode-mode ()
