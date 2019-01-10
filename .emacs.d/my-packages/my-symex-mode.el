@@ -937,19 +937,20 @@ current tree."
 (defun my-select-nearest-symex ()
   "Select symex nearest to point"
   (interactive)
-  (cond ((save-excursion (forward-char) (lispy-right-p))  ;; |)
+  (cond ((and (not (eobp))
+              (save-excursion (forward-char) (lispy-right-p))) ;; |)
          (forward-char)
          (lispy-different))
         ((looking-at-p "[[:space:]\n]")  ;; <> |<> or <> |$
-         (re-search-forward "[^[:space:]\n]")
-         (backward-char))
+         (condition-case nil
+             (progn (re-search-forward "[^[:space:]\n]")
+                    (backward-char))
+           (error (if-stuck (symex-go-backward)
+                            (symex-go-forward)))))
         ((thing-at-point 'sexp)  ;; som|ething
          (beginning-of-thing 'sexp))
-        (t (let ((previous-position (point)))
-             (symex-go-forward)
-             (setq current-position (point))
-             (when (= current-position previous-position)
-               (symex-go-backward)))))
+        (t (if-stuck (symex-go-backward)
+                     (symex-go-forward))))
   (my-refocus-on-symex)
   (point))
 
