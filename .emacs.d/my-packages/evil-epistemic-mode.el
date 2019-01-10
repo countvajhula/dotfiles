@@ -94,53 +94,57 @@
 
 (setq eem-complete-tower
       (ht ('name "complete")
-          ('levels (ht ('0 (ht ('name "insert")
-                               ('mode-entry 'evil-insert-state)))
-                       ('1 (ht ('name "char")
-                               ('mode-entry 'hydra-char/body)))
-                       ('2 (ht ('name "word")
-                               ('mode-entry 'hydra-word/body)))
-                       ('3 (ht ('name "line")
-                               ('mode-entry 'hydra-line/body)))
-                       ('4 (ht ('name "view")
-                               ('mode-entry 'hydra-view/body)))
-                       ('5 (ht ('name "window")
-                               ('mode-entry 'hydra-window/body)))
-                       ('6 (ht ('name "file")
-                               ('mode-entry 'hydra-file/body)))
-                       ('7 (ht ('name "buffer")
-                               ('mode-entry 'hydra-buffer/body)))
-                       ('8 (ht ('name "system")
-                               ('mode-entry 'hydra-system/body)))
-                       ('9 (ht ('name "application")
-                               ('mode-entry 'hydra-application/body)))))))
+          ('levels (list (ht ('name "insert")
+                             ('mode-entry 'evil-insert-state))
+                         (ht ('name "char")
+                             ('mode-entry 'hydra-char/body))
+                         (ht ('name "word")
+                             ('mode-entry 'hydra-word/body))
+                         (ht ('name "line")
+                             ('mode-entry 'hydra-line/body))
+                         (ht ('name "activity")
+                             ('mode-entry 'hydra-activity/body))
+                         (ht ('name "normal")
+                             ('mode-entry 'evil-normal-state))
+                         (ht ('name "view")
+                             ('mode-entry 'hydra-view/body))
+                         (ht ('name "window")
+                             ('mode-entry 'hydra-window/body))
+                         (ht ('name "file")
+                             ('mode-entry 'hydra-file/body))
+                         (ht ('name "buffer")
+                             ('mode-entry 'hydra-buffer/body))
+                         (ht ('name "system")
+                             ('mode-entry 'hydra-system/body))
+                         (ht ('name "application")
+                             ('mode-entry 'hydra-application/body))))))
 
 (setq eem-vim-tower
       (ht ('name "vim")
-          ('levels (ht ('0 (ht ('name "insert")
-                               ('mode-entry 'evil-insert-state)))
-                       ('1 (ht ('name "normal")
-                               ('mode-entry 'evil-normal-state)))))))
+          ('levels (list (ht ('name "insert")
+                             ('mode-entry 'evil-insert-state))
+                         (ht ('name "normal")
+                             ('mode-entry 'evil-normal-state))))))
 
 (setq eem-emacs-tower
       (ht ('name "emacs")
-          ('levels (ht ('0 (ht ('name "emacs")
-                               ('mode-entry 'evil-emacs-state)))))))
+          ('levels (list (ht ('name "emacs")
+                             ('mode-entry 'evil-emacs-state))))))
 
 (setq eem-lisp-tower
       (ht ('name "lisp")
-          ('levels (ht ('0 (ht ('name "insert")
-                               ('mode-entry 'evil-insert-state)))
-                       ('1 (ht ('name "symex")
-                               ('mode-entry 'hydra-symex/body)))
-                       ('2 (ht ('name "normal")
-                               ('mode-entry 'evil-normal-state)))))))
+          ('levels (list (ht ('name "insert")
+                             ('mode-entry 'evil-insert-state))
+                         (ht ('name "symex")
+                             ('mode-entry 'hydra-symex/body))
+                         (ht ('name "normal")
+                             ('mode-entry 'evil-normal-state))))))
 
 (setq eem-towers
-      (ht ('complete eem-complete-tower)
-          ('lisp eem-lisp-tower)
-          ('vim eem-vim-tower)
-          ('emacs eem-emacs-tower)))
+      (list eem-vim-tower
+            eem-complete-tower
+            eem-lisp-tower
+            eem-emacs-tower))
 
 ;; the prefix that will be used in naming all buffers used
 ;; in epistemic mode representations
@@ -156,7 +160,7 @@
 (defun eem--tower (tower-id)
   "The epistemic tower corresponding to the provided index."
   (interactive)
-  (nth tower-id (ht-values eem-towers)))
+  (nth tower-id eem-towers))
 
 (defun eem--current-tower ()
   "The epistemic editing tower we are currently in."
@@ -170,7 +174,7 @@
   (with-current-buffer eem--current-buffer
     (let ((tower-id (mod (- current-tower-index
                            1)
-                        (ht-size eem-towers))))
+                        (length eem-towers))))
      (eem--switch-to-tower tower-id))))
 
 (defun eem-next-tower ()
@@ -179,7 +183,7 @@
   (with-current-buffer eem--current-buffer
     (let ((tower-id (mod (+ current-tower-index
                            1)
-                        (ht-size eem-towers))))
+                        (length eem-towers))))
      (eem--switch-to-tower tower-id))))
 
 (defun eem--switch-to-tower (tower-id)
@@ -218,10 +222,9 @@
         (tower-levels (ht-get tower 'levels)))
     (with-current-buffer tower-buffer
       (eem--set-buffer-appearance)
-      (dolist (level-number
-               (ht-keys tower-levels))
-        (let ((level (ht-get tower-levels
-                             level-number)))
+      (dotimes (level-number (length tower-levels))
+        (let ((level (nth level-number
+                          tower-levels)))
           (insert "|―――"
                   (number-to-string level-number)
                   "―――|"
@@ -235,7 +238,7 @@
 initial epistemic tower."
   (interactive)
   (setq eem--current-buffer (current-buffer))
-  (dolist (tower (ht-values eem-towers))
+  (dolist (tower eem-towers)
     (eem-render-tower tower))
   ;; ideally we just switch to the buffer-local "current tower"
   ;; here, but for some reason it evaluates to the global value
@@ -263,9 +266,14 @@ initial epistemic tower."
   "Enter level LEVEL-NUMBER"
   (let* ((tower (eem--current-tower))
          (levels (ht-get tower 'levels))
-         (level (ht-get levels level-number)))
-    (funcall (ht-get level 'mode-entry))
-    (setq eem--current-level level-number)))
+         (tower-height (length levels))
+         (level-number (if (< level-number
+                              tower-height)
+                           level-number
+                         (- tower-height 1))))
+    (let ((level (nth level-number levels)))
+      (funcall (ht-get level 'mode-entry))
+      (setq eem--current-level level-number))))
 
 (defun eem-enter-selected-level ()
   "Enter selected level"
