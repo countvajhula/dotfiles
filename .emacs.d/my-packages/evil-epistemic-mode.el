@@ -150,11 +150,10 @@
 ;; in epistemic mode representations
 (setq eem-buffer-prefix "EPISTEMIC")
 
-(setq current-tower-index 0)
-(setq eem--temp-tower-idx current-tower-index)  ;; workaround
+(setq eem--current-tower-index 0)
 (setq eem--current-level 1)  ;; TODO: set via hook in all modes incl evil modes
 (setq eem--current-buffer (current-buffer))
-(make-variable-buffer-local 'current-tower-index)
+(make-variable-buffer-local 'eem--current-tower-index)
 (make-variable-buffer-local 'eem--current-level)
 
 (defun eem--tower (tower-id)
@@ -166,13 +165,13 @@
   "The epistemic editing tower we are currently in."
   (interactive)
   (with-current-buffer eem--current-buffer
-    (eem--tower current-tower-index)))
+    (eem--tower eem--current-tower-index)))
 
 (defun eem-previous-tower ()
   "Previous tower"
   (interactive)
   (with-current-buffer eem--current-buffer
-    (let ((tower-id (mod (- current-tower-index
+    (let ((tower-id (mod (- eem--current-tower-index
                            1)
                         (length eem-towers))))
      (eem--switch-to-tower tower-id))))
@@ -181,7 +180,7 @@
   "Next tower"
   (interactive)
   (with-current-buffer eem--current-buffer
-    (let ((tower-id (mod (+ current-tower-index
+    (let ((tower-id (mod (+ eem--current-tower-index
                            1)
                         (length eem-towers))))
      (eem--switch-to-tower tower-id))))
@@ -192,7 +191,7 @@
   (let ((tower (eem--tower tower-id)))
     (switch-to-buffer (eem--buffer-name tower))
     (with-current-buffer eem--current-buffer
-      (setq current-tower-index tower-id))
+      (setq eem--current-tower-index tower-id))
     (eem--extract-selected-level)))
 
 (defun eem--buffer-name (tower)
@@ -244,11 +243,8 @@ initial epistemic tower."
   (setq eem--current-buffer (current-buffer))
   (dolist (tower eem-towers)
     (eem-render-tower tower))
-  ;; ideally we just switch to the buffer-local "current tower"
-  ;; here, but for some reason it evaluates to the global value
-  ;; when this function is invoked (but not before). We use a scratch
-  ;; global value here to preserve the buffer-local value
-  (eem--switch-to-tower eem--temp-tower-idx)
+  (with-current-buffer eem--current-buffer
+    (eem--switch-to-tower eem--current-tower-index))
   (evil-mode-state))
 
 (defun my-exit-mode-mode ()
@@ -256,10 +252,7 @@ initial epistemic tower."
   (interactive)
   (eem--revert-buffer-appearance)
   (evil-normal-state)
-  (kill-matching-buffers (concat "^" eem-buffer-prefix) nil t)
-  ;; buffer-local workaround: buffer-local value is correct here,
-  ;; so preserve it in a "scratch" global
-  (setq eem--temp-tower-idx current-tower-index))
+  (kill-matching-buffers (concat "^" eem-buffer-prefix) nil t))
 
 (define-key evil-insert-state-map [escape] 'eem-enter-higher-level)
 (define-key evil-normal-state-map [escape] 'eem-enter-higher-level)
