@@ -1091,7 +1091,7 @@ current tree."
   ("w" my-wrap-symex "wrap with symex" :exit t)
   (";" my-eval-print-symex "eval + print")
   ;; canonical action
-  ("s-;" my-evaluate-symex "evaluate")
+  ("s-;" my-evaluate-symex "evaluate" :exit t)
   ;; escape hatches
   ("R" evil-replace-state nil :exit t)
   ("v" evil-visual-char nil :exit t)
