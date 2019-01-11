@@ -314,8 +314,10 @@ initial epistemic tower."
 (defun eem--extract-selected-level ()
   "Extract the selected level from the current representation"
   (interactive)
-  (let* ((level-str (substring (thing-at-point 'line t) 0 5))
-         (level-number (string-to-number (substring level-str 4 5))))
+  (let* ((level-str (thing-at-point 'line t))
+         (level-number (string-to-number (progn (string-match "[[:digit:]]+"
+                                                              level-str)
+                                                (match-string 0 level-str)))))
     (setq eem--selected-level level-number)))
 
 (defun eem-select-previous-level ()
