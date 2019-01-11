@@ -170,45 +170,50 @@ as phases of a higher-level maneuver by the caller."
         (goto-char original-location))
       (my-make-maneuver result))))
 
-(defun my-make-choice (maneuvers)
-  "Construct a choice abstraction for the given MANEUVERS."
-  (list 'choice
-        maneuvers))
+(defun my-make-protocol (options)
+  "Construct a protocol abstraction for the given OPTIONS.
 
-(defun symex--choice-maneuvers (choice)
-  "Get the set of maneuvers the CHOICE is over."
-  (nth 1 choice))
+An option could be either a maneuver, or a protocol itself."
+  (list 'protocol
+        options))
 
-(defun is-choice? (obj)
-  "Checks if the data specifies a choice."
+(defun symex--protocol-options (protocol)
+  "Get the set of options that are part of the PROTOCOL."
+  (nth 1 protocol))
+
+(defun is-protocol? (obj)
+  "Checks if the data specifies a protocol."
   (condition-case nil
-      (equal 'choice
+      (equal 'protocol
              (nth 0 obj))
     (error nil)))
 
-(defun symex--try-maneuvers-in-sequence (maneuvers)
-  "Try maneuvers one at a time until one succeeds."
-  (let ((maneuver (car maneuvers))
-        (remaining-maneuvers (cdr maneuvers)))
-    (let ((executed-maneuver (my-execute-maneuver maneuver)))
-      (if (maneuver-exists? executed-maneuver)
-          executed-maneuver
-        (if remaining-maneuvers
-            (symex--try-maneuvers-in-sequence remaining-maneuvers)
+(defun symex--try-options-in-sequence (options)
+  "Try options one at a time until one succeeds."
+  (let ((option (car options))
+        (remaining-options (cdr options)))
+    (let ((executed-option (if (is-protocol? option)
+                               (symex-execute-protocol option)
+                             (my-execute-maneuver option))))
+      (if (maneuver-exists? executed-option)
+          executed-option
+        (if remaining-options
+            (symex--try-options-in-sequence remaining-options)
           maneuver-zero)))))
 
-(defun symex-choose-maneuver (choice)
-  "Given a choice over a set of maneuvers, executes the first one that succeeds.
+(defun symex-execute-protocol (protocol)
+  "Given a protocol including a set of options, attempt to execute them
+in order until one succeeds.
 
 Evaluates to the maneuver actually executed."
-  (let ((maneuvers (symex--choice-maneuvers choice)))
-    (symex--try-maneuvers-in-sequence maneuvers)))
+  (let ((options (symex--protocol-options protocol)))
+    (symex--try-options-in-sequence options)))
 
-(defun symex--execute-protocol (choice)
+(defun symex-repeat-protocol (protocol)
   "Helper to repeatedly choose a maneuver to execute until steady state."
-  (let ((maneuver (symex-choose-maneuver choice)))
+  (let ((maneuver (symex-execute-protocol protocol)))
     (when (maneuver-exists? maneuver)
-      (symex--execute-protocol choice))))
+      (symex-repeat-protocol protocol))))
 
 
 (defmacro if-stuck (do-what operation &rest body)
@@ -524,9 +529,9 @@ Evaluates to the maneuver actually executed."
   (let ((go-deep (my-make-maneuver (list move-go-in)
                                    :repeating? t))
         (go-forward (my-make-maneuver (list move-go-forward))))
-    (let ((choice-go-in (my-make-choice (list go-deep
-                                              go-forward))))
-      (symex--execute-protocol choice-go-in)))
+    (let ((protocol-go-in (my-make-protocol (list go-deep
+                                                  go-forward))))
+      (symex-repeat-protocol protocol-go-in)))
   (my-refocus-on-symex)
   (point))
 
@@ -550,12 +555,12 @@ current rooted tree."
          (my-make-maneuver (list move-go-out)
                            :post-condition #'(lambda ()
                                                (not (point-at-final-symex?))))))
-    (let ((choice-preorder-explore (my-make-choice (list preorder-in
-                                                         preorder-forward)))
+    (let ((protocol-preorder-explore (my-make-protocol (list preorder-in
+                                                             preorder-forward)))
           (reorientation (if flow
                              exit-until-end-of-buffer
                            exit-until-root)))
-      (let ((maneuver (symex-choose-maneuver choice-preorder-explore))
+      (let ((maneuver (symex-execute-protocol protocol-preorder-explore))
             (detour (my-make-detour reorientation
                                     preorder-forward)))
         (if (maneuver-exists? maneuver)
@@ -585,8 +590,8 @@ current tree."
       (let* ((maneuvers (if flow
                             postorder-explore
                           postorder-explore-tree))
-             (choice-postorder (my-make-choice maneuvers)))
-        (let ((maneuver (symex-choose-maneuver choice-postorder)))
+             (protocol-postorder (my-make-protocol maneuvers)))
+        (let ((maneuver (symex-execute-protocol protocol-postorder)))
           (if (maneuver-exists? maneuver)
               t
             (error "Not implemented")))))))
