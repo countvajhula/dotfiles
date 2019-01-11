@@ -156,6 +156,13 @@
 (make-variable-buffer-local 'eem--current-tower-index)
 (make-variable-buffer-local 'eem--current-level)
 
+;; ideally, epistemic mode should be aware when any evil state is entered,
+;; if that state is in the present tower. For now, just handle the specific
+;; case of insert mode, since it's the one that's often entered using a
+;; non-eem entry point
+(add-function :after (symbol-function 'evil-insert-state)
+              (lambda (&rest args) (setq eem--current-level 0)))
+
 (defun eem--tower (tower-id)
   "The epistemic tower corresponding to the provided index."
   (interactive)
