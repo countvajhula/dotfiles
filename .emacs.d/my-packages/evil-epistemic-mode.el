@@ -163,6 +163,18 @@
 (add-function :after (symbol-function 'evil-insert-state)
               (lambda (&rest args) (setq eem--current-level 0)))
 
+;;;; set tower to lisp tower in all lisp modes (emulating major mode -- TODO: improve)
+;; (defvar lisp-modes (list 'emacs-lisp-mode
+;;                          'scheme-mode
+;;                          'racket-mode))
+
+;; (dolist (mode lisp-modes)
+;;   (let ((hook (intern (concat (symbol-name mode)
+;;                               "-hook"))))
+;;     (add-hook hook (lambda (&rest)
+;;                      (setq eem--current-tower-index 2)
+;;                      (setq eem--current-level 2)))))
+
 (defun eem--get-reference-buffer ()
   "Get the buffer in reference to which epistemic mode is operating."
   (if (string-match (format "^%s"
