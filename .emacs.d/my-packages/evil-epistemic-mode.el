@@ -152,7 +152,7 @@
 
 (setq eem--current-tower-index 0)
 (setq eem--current-level 1)  ;; TODO: set via hook in all modes incl evil modes
-(setq eem--current-buffer (current-buffer))
+(setq eem--reference-buffer (current-buffer))
 (make-variable-buffer-local 'eem--current-tower-index)
 (make-variable-buffer-local 'eem--current-level)
 
@@ -163,6 +163,14 @@
 (add-function :after (symbol-function 'evil-insert-state)
               (lambda (&rest args) (setq eem--current-level 0)))
 
+(defun eem--get-reference-buffer ()
+  "Get the buffer in reference to which epistemic mode is operating."
+  (if (string-match (format "^%s"
+                             eem-buffer-prefix)
+                     (buffer-name))
+      eem--reference-buffer
+    (current-buffer)))
+
 (defun eem--tower (tower-id)
   "The epistemic tower corresponding to the provided index."
   (interactive)
@@ -171,13 +179,13 @@
 (defun eem--current-tower ()
   "The epistemic editing tower we are currently in."
   (interactive)
-  (with-current-buffer eem--current-buffer
+  (with-current-buffer (eem--get-reference-buffer)
     (eem--tower eem--current-tower-index)))
 
 (defun eem-previous-tower ()
   "Previous tower"
   (interactive)
-  (with-current-buffer eem--current-buffer
+  (with-current-buffer (eem--get-reference-buffer)
     (let ((tower-id (mod (- eem--current-tower-index
                            1)
                         (length eem-towers))))
@@ -186,7 +194,7 @@
 (defun eem-next-tower ()
   "Next tower"
   (interactive)
-  (with-current-buffer eem--current-buffer
+  (with-current-buffer (eem--get-reference-buffer)
     (let ((tower-id (mod (+ eem--current-tower-index
                            1)
                         (length eem-towers))))
@@ -197,7 +205,7 @@
   (interactive)
   (let ((tower (eem--tower tower-id)))
     (switch-to-buffer (eem--buffer-name tower))
-    (with-current-buffer eem--current-buffer
+    (with-current-buffer (eem--get-reference-buffer)
       (setq eem--current-tower-index tower-id))
     (eem--extract-selected-level)))
 
@@ -247,10 +255,10 @@
   "Enter a buffer containing a textual representation of the
 initial epistemic tower."
   (interactive)
-  (setq eem--current-buffer (current-buffer))
+  (setq eem--reference-buffer (current-buffer))
   (dolist (tower eem-towers)
     (eem-render-tower tower))
-  (with-current-buffer eem--current-buffer
+  (with-current-buffer (eem--get-reference-buffer)
     (eem--switch-to-tower eem--current-tower-index))
   (evil-mode-state))
 
