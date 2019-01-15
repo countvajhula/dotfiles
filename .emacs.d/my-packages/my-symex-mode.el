@@ -45,6 +45,52 @@
   "Check if two moves are identical, including any conditions."
   (equal m1 m2))
 
+(defun my-make-circuit (traversal times)
+  "A specification to repeat a TRAVERSAL TIMES times.
+
+If TIMES is nil, repeat indefinitely until the traversal fails."
+  (list 'circuit
+        traversal
+        times))
+
+(defun my-circuit-traversal (circuit)
+  "Get the traversal component of the circuit, i.e. the traversal
+to be looped."
+  (nth 1 circuit))
+
+(defun my-circuit-times (circuit)
+  "Get the times component of the circuit, i.e. the number of times
+the traversal should be repeated."
+  (nth 2 circuit))
+
+(defun is-circuit? (obj)
+  "Checks if the data specifies a circuit."
+  (condition-case nil
+      (equal 'circuit
+             (nth 0 obj))
+    (error nil)))
+
+(defun symex--execute-circuit (traversal times)
+  "Execute TRAVERSAL TIMES times."
+  (when (or (not times)  ; loop indefinitely
+            (> times 0))
+    (let ((result (symex-execute-traversal traversal)))
+      (when result
+        (let ((times (if times
+                         (- times 1)
+                       times)))
+          (append result
+                  (symex--execute-circuit traversal
+                                          times)))))))
+
+(defun my-execute-circuit (circuit)
+  "Execute a circuit.
+
+This repeats some traversal as specified."
+  (let ((traversal (my-circuit-traversal circuit))
+        (times (my-circuit-times circuit)))
+    (symex--execute-circuit traversal times)))
+
 (cl-defun my-make-maneuver (phases
                             &key
                             repeating?
