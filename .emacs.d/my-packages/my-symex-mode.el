@@ -45,7 +45,7 @@
   "Check if two moves are identical, including any conditions."
   (equal m1 m2))
 
-(defun my-make-circuit (traversal times)
+(defun my-make-circuit (traversal &optional times)
   "A specification to repeat a TRAVERSAL TIMES times.
 
 If TIMES is nil, repeat indefinitely until the traversal fails."
