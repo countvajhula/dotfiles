@@ -254,6 +254,16 @@ Evaluates to the maneuver actually executed."
     (when (maneuver-exists? maneuver)
       (symex-repeat-protocol protocol))))
 
+(defun symex-execute-traversal (traversal)
+  "Execute a tree traversal."
+  (cond ((is-maneuver? traversal)
+         (my-execute-maneuver traversal))
+        ((is-circuit? traversal)
+         (my-execute-circuit traversal))
+        ((is-protocol? traversal)
+         (symex-execute-protocol traversal))
+        (t (execute-tree-move traversal))))
+        ;;(t (error "Syntax error: unrecognized traversal type!"))))
 
 (defmacro if-stuck (do-what operation &rest body)
   `(let ((orig-pt (point)))
