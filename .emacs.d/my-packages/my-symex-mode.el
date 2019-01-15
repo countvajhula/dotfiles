@@ -376,7 +376,8 @@ Evaluates to the maneuver actually executed."
     (dotimes (i count)
       (let ((res (my--forward-one-symex)))
         (setq result (+ res result))))
-    (my-make-move result 0)))
+    (when (> result 0)
+      (my-make-move result 0))))
 
 (defun my--backward-one-symex ()
   "Backward one symex."
@@ -397,7 +398,8 @@ Evaluates to the maneuver actually executed."
       (let ((res (my--backward-one-symex)))
         (setq result (+ res result))))
     (my-refocus-on-symex)
-    (my-make-move (- 0 result) 0)))
+    (when (> result 0)
+      (my-make-move (- 0 result) 0))))
 
 (defun my--enter-one-symex ()
   "Enter one lower symex level."
@@ -418,7 +420,8 @@ Evaluates to the maneuver actually executed."
     (dotimes (i count)
       (let ((res (my--enter-one-symex)))
         (setq result (+ res result))))
-    (my-make-move 0 result)))
+    (when (> result 0)
+      (my-make-move 0 result))))
 
 (defun my--exit-one-symex ()
   "Exit one level."
@@ -435,12 +438,13 @@ Evaluates to the maneuver actually executed."
     (dotimes (i count)
       (let ((res (my--exit-one-symex)))
         (setq result (+ res result))))
-    (my-make-move 0 (- 0 result))))
+    (when (> result 0)
+      (my-make-move 0 (- 0 result)))))
 
 (defun execute-tree-move (move)
   "Execute the specified MOVE at the current point location in the tree.
 
-Evaluates to the actual move executed."
+Evaluates to the actual move executed or nil if no move was executed."
   (let ((move-x (my-move-x move))
         (move-y (my-move-y move)))
     (cond ((> move-x 0)
@@ -450,9 +454,7 @@ Evaluates to the actual move executed."
           ((> move-y 0)
            (my-enter-symex move-y))
           ((< move-y 0)
-           (my-exit-symex (abs move-y)))
-          (t ;; zero move
-           move-zero))))
+           (my-exit-symex (abs move-y))))))
 
 (cl-defun symex-go-forward (&optional (count 1))
   "Move forward COUNT symexes."
