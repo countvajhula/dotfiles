@@ -512,39 +512,40 @@ Evaluates to the maneuver actually executed."
 (defun my-goto-first-symex ()
   "Select first symex at present level"
   (interactive)
-  (let ((maneuver (my-make-maneuver (list move-go-backward)
-                                    :repeating? t)))
-    (my-execute-maneuver maneuver))
+  (let ((traversal (my-make-circuit (my-make-maneuver (list move-go-backward))
+                                    nil)))
+    (symex-execute-traversal traversal))
   (my-refocus-on-symex)
   (point))
 
 (defun my-goto-last-symex ()
   "Select last symex at present level"
   (interactive)
-  (let ((maneuver (my-make-maneuver (list move-go-forward)
-                                    :repeating? t)))
-    (my-execute-maneuver maneuver))
+  (let ((traversal (my-make-circuit (my-make-maneuver (list move-go-forward))
+                                    nil)))
+    (symex-execute-traversal traversal))
   (my-refocus-on-symex)
   (point))
 
 (defun my-goto-outermost-symex ()
   "Select outermost symex."
   (interactive)
-  (let ((maneuver (my-make-maneuver (list move-go-out)
-                                    :repeating? t)))
-    (my-execute-maneuver maneuver))
+  (let ((traversal (my-make-circuit (my-make-maneuver (list move-go-out))
+                                    nil)))
+    (symex-execute-traversal traversal))
   (my-refocus-on-symex)
   (point))
 
 (defun my-goto-innermost-symex ()
   "Select innermost symex."
   (interactive)
-  (let ((go-deep (my-make-maneuver (list move-go-in)
-                                   :repeating? t))
+  (let ((go-deep (my-make-circuit (my-make-maneuver (list move-go-in))
+                                  nil))
         (go-forward (my-make-maneuver (list move-go-forward))))
     (let ((protocol-go-in (my-make-protocol (list go-deep
                                                   go-forward))))
-      (symex-repeat-protocol protocol-go-in)))
+      (symex-execute-traversal (my-make-circuit protocol-go-in
+                                                nil))))
   (my-refocus-on-symex)
   (point))
 
@@ -587,10 +588,13 @@ If FLOW is true, continue from one tree to another. Otherwise, stop at root of
 current tree."
   (interactive)
   (let* ((postorder-in
-          (my-make-maneuver (list move-go-in
-                                  (my-make-maneuver (list move-go-forward)
-                                                    :repeating? t))
-                            :repeating? t))
+          (my-make-circuit
+           (my-make-maneuver
+            (list move-go-in
+                  (my-make-circuit
+                   move-go-forward
+                   nil)))
+           nil))
          (postorder-backwards-in
           (my-make-maneuver (list move-go-backward postorder-in)))
          (postorder-backwards-in-tree
