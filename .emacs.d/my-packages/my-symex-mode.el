@@ -231,14 +231,11 @@ An option could be either a maneuver, or a protocol itself."
   "Try options one at a time until one succeeds."
   (let ((option (car options))
         (remaining-options (cdr options)))
-    (let ((executed-option (if (is-protocol? option)
-                               (symex-execute-protocol option)
-                             (my-execute-maneuver option))))
-      (if (maneuver-exists? executed-option)
+    (let ((executed-option (symex-execute-traversal option)))
+      (if executed-option
           executed-option
-        (if remaining-options
-            (symex--try-options-in-sequence remaining-options)
-          maneuver-zero)))))
+        (when remaining-options
+          (symex--try-options-in-sequence remaining-options))))))
 
 (defun symex-execute-protocol (protocol)
   "Given a protocol including a set of options, attempt to execute them
