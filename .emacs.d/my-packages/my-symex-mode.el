@@ -93,7 +93,6 @@ This repeats some traversal as specified."
 
 (cl-defun my-make-maneuver (phases
                             &key
-                            repeating?
                             pre-condition
                             post-condition)
   "Construct a maneuver from the given moves."
@@ -101,7 +100,6 @@ This repeats some traversal as specified."
         (post-condition (or post-condition (lambda () t))))
     (list 'maneuver
           phases
-          repeating?
           pre-condition
           post-condition)))
 
@@ -109,17 +107,13 @@ This repeats some traversal as specified."
   "Get the phases of a maneuver (which are themselves maneuvers or moves)."
   (nth 1 maneuver))
 
-(defun my-maneuver-repeating? (maneuver)
-  "Whether the maneuver is repeating or not."
-  (nth 2 maneuver))
-
 (defun my-maneuver-pre-condition (maneuver)
   "Pre-condition of maneuver"
-  (nth 3 maneuver))
+  (nth 2 maneuver))
 
 (defun my-maneuver-post-condition (maneuver)
   "Post-condition of maneuver"
-  (nth 4 maneuver))
+  (nth 3 maneuver))
 
 (defvar maneuver-zero (my-make-maneuver nil))
 
@@ -144,12 +138,11 @@ This repeats some traversal as specified."
   (equal m1 m2))
 
 (defun naive-maneuver (maneuver)
-  "A 'naive' version of the maneuver, not including any conditions, and
-with no repetition."
+  "A 'naive' version of the maneuver, not including any conditions."
   (my-make-maneuver (my-maneuver-phases maneuver)))  ;; TODO: should recursively transform nested maneuvers to naive ones, leaving moves alone
 
 (defun are-maneuvers-equivalent? (m1 m2)
-  "Check if two maneuvers are equal, disregarding any conditions and repetition."
+  "Check if two maneuvers are equal, disregarding any conditions."
   (are-maneuvers-equal? (naive-maneuver m1)
                         (naive-maneuver m2)))
 
