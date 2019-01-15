@@ -482,54 +482,13 @@ Evaluates to the actual move executed or nil if no move was executed."
 Evalutes to a list of phases actually executed."
   (let ((current-phase (car phases))
         (remaining-phases (cdr phases)))
-    (if (is-maneuver? current-phase)
-        (let ((executed-phase (my-execute-maneuver current-phase)))
-          (when (maneuver-exists? executed-phase)
-            (let ((result (list executed-phase)))
-              (if remaining-phases
-                  (append result
-                          (my--execute-maneuver-phases remaining-phases))
-                result))))
-      ;; base case -- execute in terms of primitives, i.e. moves
-      (let ((executed-phase (execute-tree-move current-phase)))
-        (when (move-exists? executed-phase)
-          (let ((result (list executed-phase)))
-            (if remaining-phases
-                (append result
-                        (my--execute-maneuver-phases remaining-phases))
-              result)))))))
-
-(defun my--execute-a-maneuver (maneuver)
-  "Execute a MANEUVER specification once (disregarding any repetition)."
-  (let ((original-location (point))
-        (phases (my-maneuver-phases maneuver))
-        (pre-condition (my-maneuver-pre-condition maneuver))
-        (post-condition (my-maneuver-post-condition maneuver)))
-    (if (not (funcall pre-condition))
-        maneuver-zero
-      (let ((executed-phases (my--execute-maneuver-phases phases)))
-        (if (not (funcall post-condition))
-            (progn (goto-char original-location)
-                   maneuver-zero)
-          (my-make-maneuver executed-phases))))))
-
-(defun my--execute-maneuver-with-repetition (maneuver)
-  "Execute maneuever, repeating it as specified.
-
-Evaluates to a list containing each instance of maneuver execution (corresponding
-to repetition of the maneuver), which could be treated as phases of a
-higher-level maneuver by the caller.
-
-TODO: instead of these 'unrolled' phases; add support for repeat 'args' to return
-rolled ones."
-  (let ((executed-maneuver (my--execute-a-maneuver maneuver))
-        (repeating? (my-maneuver-repeating? maneuver)))
-    (when (maneuver-exists? executed-maneuver)
-      (let ((result (list executed-maneuver)))
-        (if repeating?
-            (append result
-                    (my--execute-maneuver-with-repetition maneuver))
-          result)))))
+    (let ((executed-phase (symex-execute-traversal current-phase)))
+      (when executed-phase
+        (let ((result (list executed-phase)))
+          (if remaining-phases
+              (append result
+                      (my--execute-maneuver-phases remaining-phases))
+            result))))))
 
 (defun my-execute-maneuver (maneuver)
   "Attempt to execute a given MANEUVER.
@@ -541,11 +500,17 @@ terminated at that step.
 The maneuver is only executed if PRE-CONDITION holds, and is reversed if
 POST-CONDITION does not hold after the provisional execution of the maneuver.
 
-If the maneuver is REPEATING, it will be repeated until it fails.
-
 Evaluates to the maneuver actually executed."
-  (let ((executed-phases (my--execute-maneuver-with-repetition maneuver)))
-    (my-make-maneuver executed-phases)))
+  (let ((original-location (point))
+        (phases (my-maneuver-phases maneuver))
+        (pre-condition (my-maneuver-pre-condition maneuver))
+        (post-condition (my-maneuver-post-condition maneuver)))
+    (when (funcall pre-condition)
+      (let ((executed-phases (my--execute-maneuver-phases phases)))
+        (if (not (funcall post-condition))
+            (goto-char original-location)
+          (when executed-phases
+            (my-make-maneuver executed-phases)))))))
 
 (defun my-goto-first-symex ()
   "Select first symex at present level"
