@@ -1095,6 +1095,7 @@ current tree."
   ("i" my-insert-at-beginning-of-symex "insert inside symex" :exit t)
   ("I" my-insert-before-symex "insert before symex" :exit t)
   ("w" my-wrap-symex "wrap with symex" :exit t)
+  ("g" evil-jump-to-tag "Go to definition")
   (";" my-eval-print-symex "eval + print")
   ;; canonical action
   ("s-;" my-evaluate-symex "evaluate" :exit t)
