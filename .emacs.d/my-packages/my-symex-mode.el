@@ -512,8 +512,9 @@ Evaluates to the maneuver actually executed."
 (defun my-goto-first-symex ()
   "Select first symex at present level"
   (interactive)
-  (let ((traversal (my-make-circuit (my-make-maneuver (list move-go-backward))
-                                    nil)))
+  (let ((traversal
+         (my-make-circuit
+          move-go-backward)))
     (symex-execute-traversal traversal))
   (my-refocus-on-symex)
   (point))
@@ -521,8 +522,9 @@ Evaluates to the maneuver actually executed."
 (defun my-goto-last-symex ()
   "Select last symex at present level"
   (interactive)
-  (let ((traversal (my-make-circuit (my-make-maneuver (list move-go-forward))
-                                    nil)))
+  (let ((traversal
+         (my-make-circuit
+          move-go-forward)))
     (symex-execute-traversal traversal))
   (my-refocus-on-symex)
   (point))
@@ -530,8 +532,9 @@ Evaluates to the maneuver actually executed."
 (defun my-goto-outermost-symex ()
   "Select outermost symex."
   (interactive)
-  (let ((traversal (my-make-circuit (my-make-maneuver (list move-go-out))
-                                    nil)))
+  (let ((traversal
+         (my-make-circuit
+          move-go-out)))
     (symex-execute-traversal traversal))
   (my-refocus-on-symex)
   (point))
@@ -539,13 +542,13 @@ Evaluates to the maneuver actually executed."
 (defun my-goto-innermost-symex ()
   "Select innermost symex."
   (interactive)
-  (let ((go-deep (my-make-circuit (my-make-maneuver (list move-go-in))
-                                  nil))
-        (go-forward (my-make-maneuver (list move-go-forward))))
-    (let ((protocol-go-in (my-make-protocol (list go-deep
-                                                  go-forward))))
-      (symex-execute-traversal (my-make-circuit protocol-go-in
-                                                nil))))
+  (let ((traversal
+         (my-make-circuit
+          (my-make-protocol
+           (list (my-make-circuit
+                  move-go-in)
+                 move-go-forward)))))
+    (symex-execute-traversal traversal))
   (my-refocus-on-symex)
   (point))
 
@@ -592,9 +595,7 @@ current tree."
            (my-make-maneuver
             (list move-go-in
                   (my-make-circuit
-                   move-go-forward
-                   nil)))
-           nil))
+                   move-go-forward)))))
          (postorder-backwards-in
           (my-make-maneuver (list move-go-backward postorder-in)))
          (postorder-backwards-in-tree
