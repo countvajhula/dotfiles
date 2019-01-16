@@ -15,6 +15,30 @@
 (use-package evil-cleverparens)  ;; really only need cp-textobjects here
 (require 'cl-lib)
 
+;;;;;;;;;;;;;;;;;;;;;
+;;; CONFIGURATION ;;;
+;;;;;;;;;;;;;;;;;;;;;
+
+;; use paredit balancing behavior in insert mode
+(define-key
+  evil-insert-state-map
+  (kbd "\(")
+  'paredit-open-round)
+
+(define-key
+  evil-insert-state-map
+  (kbd "\)")
+  'paredit-close-round)
+
+(define-key
+  evil-insert-state-map
+  (kbd "\[")
+  'paredit-open-square)
+
+(define-key
+  evil-insert-state-map
+  (kbd "\]")
+  'paredit-close-square)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; DATA ABSTRACTIONS ;;;
