@@ -198,7 +198,7 @@ as phases of a higher-level maneuver by the caller."
         (goto-char original-location))
       (my-make-maneuver result))))
 
-(defun my-make-protocol (options)
+(defun my-make-protocol (&rest options)
   "Construct a protocol abstraction for the given OPTIONS.
 
 An option could be either a maneuver, or a protocol itself."
@@ -233,12 +233,6 @@ in order until one succeeds.
 Evaluates to the maneuver actually executed."
   (let ((options (symex--protocol-options protocol)))
     (symex--try-options-in-sequence options)))
-
-(defun symex-repeat-protocol (protocol)
-  "Helper to repeatedly choose a maneuver to execute until steady state."
-  (let ((maneuver (symex-execute-protocol protocol)))
-    (when (maneuver-exists? maneuver)
-      (symex-repeat-protocol protocol))))
 
 (defun symex-execute-traversal (traversal)
   "Execute a tree traversal."
@@ -549,9 +543,9 @@ Evaluates to the maneuver actually executed."
   (let ((traversal
          (my-make-circuit
           (my-make-protocol
-           (list (my-make-circuit
-                  move-go-in)
-                 move-go-forward)))))
+           (my-make-circuit
+            move-go-in)
+           move-go-forward))))
     (symex-execute-traversal traversal))
   (my-refocus-on-symex)
   (point))
@@ -578,14 +572,14 @@ current rooted tree."
                               (not (point-at-final-symex?))))))
     (let ((traversal
            (my-make-protocol
-            (list (my-make-protocol
-                   (list move-go-in
-                         move-go-forward))
-                  (my-make-detour
-                   (if flow
-                       exit-until-end-of-buffer
-                     exit-until-root)
-                   move-go-forward)))))
+            (my-make-protocol
+             move-go-in
+             move-go-forward)
+            (my-make-detour
+             (if flow
+                 exit-until-end-of-buffer
+               exit-until-root)
+             move-go-forward))))
       (symex-execute-traversal traversal))))
 
 (defun my-traverse-symex-backward (&optional flow)
@@ -610,13 +604,12 @@ current tree."
                   postorder-in))
            :pre-condition #'(lambda ()
                               (not (point-at-root-symex?))))))
-    (let* ((maneuvers)
-           (traversal
+    (let* ((traversal
             (my-make-protocol
-             (list (if flow
-                       postorder-backwards-in
-                     postorder-backwards-in-tree)
-                   move-go-out))))
+             (if flow
+                 postorder-backwards-in
+               postorder-backwards-in-tree)
+             move-go-out)))
       (symex-execute-traversal traversal))))
 
 (defun my-switch-branch-backward ()
