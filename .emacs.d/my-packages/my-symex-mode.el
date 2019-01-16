@@ -161,27 +161,27 @@ This repeats some traversal as specified."
   (are-maneuvers-equal? (naive-maneuver m1)
                         (naive-maneuver m2)))
 
-(defun my-make-detour (reorientation maneuver)
+(defun my-make-detour (reorientation traversal)
   "Construct a detour.
 
-A detour consists of two components -- a MANEUVER that we wish to execute, and
+A detour consists of two components -- a TRAVERSAL that we wish to execute, and
 a REORIENTATION which is a transformation we want to apply prior to attempting
-the maneuver. The reorientation could simply be another maneuver, or could itself
-be a detour.
+the traversal. Both the reorientation as well as the traversal could be any
+type of traversal, for instance a detour or a maneuver.
 
-The reorientation is applied repeatedly and the maneuver is re-attempted each
+The reorientation is applied repeatedly and the traversal is re-attempted each
 time, until it succeeds. If the reorientation itself fails, then the detour fails
 as well."
   (list 'detour
         reorientation
-        maneuver))
+        traversal))
 
 (defun symex--detour-reorientation (detour)
   "Get the reorientation component of the DETOUR."
   (nth 1 detour))
 
-(defun symex--detour-maneuver (detour)
-  "Get the maneuver component of the DETOUR."
+(defun symex--detour-traversal (detour)
+  "Get the traversal component of the DETOUR."
   (nth 2 detour))
 
 (defun is-detour? (obj)
@@ -191,7 +191,7 @@ as well."
              (nth 0 obj))
     (error nil)))
 
-(defun symex--execute-maneuver-with-reorientation (reorientation maneuver)
+(defun symex--execute-traversal-with-reorientation (reorientation traversal)
   "Apply a reorientation and then attempt the maneuver.
 
 If the maneuver fails, then the reorientation is attempted as many times as
@@ -199,16 +199,14 @@ necessary until either it succeeds, or the reorientation fails.
 
 Evaluates to a list of maneuvers executed, if any, which could be treated
 as phases of a higher-level maneuver by the caller."
-  (let ((executed-reorientation (if (is-detour? reorientation)
-                                    (my-execute-detour reorientation)
-                                  (my-execute-maneuver reorientation))))
-    (when (maneuver-exists? executed-reorientation)
-      (let ((executed-maneuver (my-execute-maneuver maneuver)))
-        (if (maneuver-exists? executed-maneuver)
+  (let ((executed-reorientation (symex-execute-traversal reorientation)))
+    (when executed-reorientation
+      (let ((executed-traversal (symex-execute-traversal traversal)))
+        (if executed-traversal
             (append (list executed-reorientation)
-                    executed-maneuver)
-          (let ((attempt (symex--execute-maneuver-with-reorientation reorientation
-                                                                     maneuver)))
+                    executed-traversal)
+          (let ((attempt (symex--execute-traversal-with-reorientation reorientation
+                                                                      traversal)))
             (when attempt
               (append (list executed-reorientation)
                       attempt))))))))
@@ -217,9 +215,9 @@ as phases of a higher-level maneuver by the caller."
   "Execute the DETOUR."
   (let ((original-location (point))
         (reorientation (symex--detour-reorientation detour))
-        (maneuver (symex--detour-maneuver detour)))
-    (let ((result (symex--execute-maneuver-with-reorientation reorientation
-                                                              maneuver)))
+        (traversal (symex--detour-traversal detour)))
+    (let ((result (symex--execute-traversal-with-reorientation reorientation
+                                                               traversal)))
       (unless result
         (goto-char original-location))
       (my-make-maneuver result))))
