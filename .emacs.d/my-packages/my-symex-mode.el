@@ -45,6 +45,36 @@
   "Check if two moves are identical, including any conditions."
   (equal m1 m2))
 
+(cl-defun my-make-precaution (traversal &key pre-condition post-condition)
+  "A specification to check conditions before and/or after execution
+of a traversal."
+  (let ((pre-condition (or pre-condition (lambda () t)))
+        (post-condition (or post-condition (lambda () t))))
+    (list 'precaution
+          traversal
+          pre-condition
+          post-condition)))
+
+(defun my-precaution-traversal (precaution)
+  "The traversal component of the precaution, i.e. the traversal to be
+executed with precautions."
+  (nth 1 precaution))
+
+(defun my-precaution-pre-condition (precaution)
+  "Pre-condition of precaution"
+  (nth 2 precaution))
+
+(defun my-precaution-post-condition (precaution)
+  "Post-condition of precaution"
+  (nth 3 precaution))
+
+(defun is-precaution? (obj)
+  "Checks if the data specifies a precaution."
+  (condition-case nil
+      (equal 'precaution
+             (nth 0 obj))
+    (error nil)))
+
 (defun my-make-circuit (traversal &optional times)
   "A specification to repeat a TRAVERSAL TIMES times.
 
