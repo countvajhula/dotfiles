@@ -784,14 +784,21 @@ current tree."
 (defun my-symex-join-lines (&optional backwards)
   "Join lines inside symex."
   (interactive)
-  (save-excursion
-    (if backwards
-        (evil-previous-line)
-      (forward-sexp))
-    (evil-join (line-beginning-position)
-               (line-end-position)))
-  (when backwards
-    (forward-char)))
+  (let ((original-column (current-column)))
+    (save-excursion
+      (if backwards
+          (progn (evil-previous-line)
+                 (if (current-line-empty-p)
+                     (evil-join (line-beginning-position)
+                                (+ 1 (line-beginning-position)))
+                   (evil-join (line-beginning-position)
+                              (line-end-position))))
+        (forward-sexp)
+        (evil-join (line-beginning-position)
+                   (line-end-position))))
+    (unless (= (current-column)
+               original-column)
+      (forward-char))))
 
 (defun my-yank-symex ()
   "Yank (copy) symex."
