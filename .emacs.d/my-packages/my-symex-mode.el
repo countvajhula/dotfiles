@@ -130,36 +130,12 @@ This repeats some traversal as specified."
   "Get the phases of a maneuver (which are themselves maneuvers or moves)."
   (nth 1 maneuver))
 
-(defvar maneuver-zero (my-make-maneuver nil))
-
 (defun is-maneuver? (obj)
   "Checks if the data specifies a maneuver."
   (condition-case nil
       (equal 'maneuver
              (nth 0 obj))
     (error nil)))
-
-(defun is-null-maneuver? (maneuver)
-  "Checks if the maneuver specifies no movement."
-  (are-maneuvers-equivalent? maneuver
-                             maneuver-zero))
-
-(defun maneuver-exists? (maneuver)
-  "Checks if the maneuver is non-zero."
-  (not (is-null-maneuver? maneuver)))
-
-(defun are-maneuvers-equal? (m1 m2)
-  "Check if two maneuvers are identical."
-  (equal m1 m2))
-
-(defun naive-maneuver (maneuver)
-  "A 'naive' version of the maneuver, not including any conditions."
-  (my-make-maneuver (my-maneuver-phases maneuver)))  ;; TODO: should recursively transform nested maneuvers to naive ones, leaving moves alone
-
-(defun are-maneuvers-equivalent? (m1 m2)
-  "Check if two maneuvers are equal, disregarding any conditions."
-  (are-maneuvers-equal? (naive-maneuver m1)
-                        (naive-maneuver m2)))
 
 (defun my-make-detour (reorientation traversal)
   "Construct a detour.
