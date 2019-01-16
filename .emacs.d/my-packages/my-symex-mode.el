@@ -590,27 +590,27 @@ Evaluates to the maneuver actually executed."
 If FLOW is true, continue from one tree to another. Otherwise, stop at end of
 current rooted tree."
   (interactive)
-  (let ((preorder-in (my-make-maneuver (list move-go-in)))
-        (preorder-forward (my-make-maneuver (list move-go-forward)))
-        (exit-until-root
-         (my-make-precaution (my-make-maneuver (list move-go-out))
-                             :post-condition #'(lambda ()
-                                                 (not (point-at-root-symex?)))))
+  (let ((exit-until-root
+         (my-make-precaution
+          move-go-out
+          :post-condition #'(lambda ()
+                              (not (point-at-root-symex?)))))
         (exit-until-end-of-buffer
-         (my-make-precaution (my-make-maneuver (list move-go-out))
-                             :post-condition #'(lambda ()
-                                                 (not (point-at-final-symex?))))))
-    (let ((protocol-preorder-explore (my-make-protocol (list preorder-in
-                                                             preorder-forward)))
-          (reorientation (if flow
-                             exit-until-end-of-buffer
-                           exit-until-root)))
-      (let ((maneuver (symex-execute-protocol protocol-preorder-explore))
-            (detour (my-make-detour reorientation
-                                    preorder-forward)))
-        (if (maneuver-exists? maneuver)
-            t
-          (my-execute-detour detour))))))
+         (my-make-precaution
+          move-go-out
+          :post-condition #'(lambda ()
+                              (not (point-at-final-symex?))))))
+    (let ((traversal
+           (my-make-protocol
+            (list (my-make-protocol
+                   (list move-go-in
+                         move-go-forward))
+                  (my-make-detour
+                   (if flow
+                       exit-until-end-of-buffer
+                     exit-until-root)
+                   move-go-forward)))))
+      (symex-execute-traversal traversal))))
 
 (defun my-traverse-symex-backward (&optional flow)
   "Traverse symex as a tree, using converse post-order traversal.
@@ -625,20 +625,23 @@ current tree."
                   (my-make-circuit
                    move-go-forward)))))
          (postorder-backwards-in
-          (my-make-maneuver (list move-go-backward postorder-in)))
+          (my-make-maneuver (list move-go-backward
+                                  postorder-in)))
          (postorder-backwards-in-tree
-          (my-make-precaution (my-make-maneuver (list move-go-backward postorder-in))
-                              :pre-condition #'(lambda ()
-                                                 (not (point-at-root-symex?)))))
-         (postorder-out (my-make-maneuver (list move-go-out))))
-    (let ((postorder-explore (list postorder-backwards-in postorder-out))
-          (postorder-explore-tree (list postorder-backwards-in-tree postorder-out)))
-      (let* ((maneuvers (if flow
-                            postorder-explore
-                          postorder-explore-tree))
-             (protocol-postorder (my-make-protocol maneuvers)))
-        (let ((maneuver (symex-execute-protocol protocol-postorder)))
-          maneuver)))))
+          (my-make-precaution
+           (my-make-maneuver
+            (list move-go-backward
+                  postorder-in))
+           :pre-condition #'(lambda ()
+                              (not (point-at-root-symex?))))))
+    (let* ((maneuvers)
+           (traversal
+            (my-make-protocol
+             (list (if flow
+                       postorder-backwards-in
+                     postorder-backwards-in-tree)
+                   move-go-out))))
+      (symex-execute-traversal traversal))))
 
 (defun my-switch-branch-backward ()
   "Switch branch backward"
