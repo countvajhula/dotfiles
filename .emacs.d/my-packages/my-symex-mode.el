@@ -274,6 +274,8 @@ Evaluates to the maneuver actually executed."
          (my-execute-circuit traversal))
         ((is-protocol? traversal)
          (symex-execute-protocol traversal))
+        ((is-precaution? traversal)
+         (my-execute-precaution traversal))
         (t (execute-tree-move traversal))))
         ;;(t (error "Syntax error: unrecognized traversal type!"))))
 
