@@ -591,13 +591,13 @@ current rooted tree."
   (let ((preorder-in (my-make-maneuver (list move-go-in)))
         (preorder-forward (my-make-maneuver (list move-go-forward)))
         (exit-until-root
-         (my-make-maneuver (list move-go-out)
-                           :post-condition #'(lambda ()
-                                               (not (point-at-root-symex?)))))
+         (my-make-precaution (my-make-maneuver (list move-go-out))
+                             :post-condition #'(lambda ()
+                                                 (not (point-at-root-symex?)))))
         (exit-until-end-of-buffer
-         (my-make-maneuver (list move-go-out)
-                           :post-condition #'(lambda ()
-                                               (not (point-at-final-symex?))))))
+         (my-make-precaution (my-make-maneuver (list move-go-out))
+                             :post-condition #'(lambda ()
+                                                 (not (point-at-final-symex?))))))
     (let ((protocol-preorder-explore (my-make-protocol (list preorder-in
                                                              preorder-forward)))
           (reorientation (if flow
@@ -625,9 +625,9 @@ current tree."
          (postorder-backwards-in
           (my-make-maneuver (list move-go-backward postorder-in)))
          (postorder-backwards-in-tree
-          (my-make-maneuver (list move-go-backward postorder-in)
-                            :pre-condition #'(lambda ()
-                                               (not (point-at-root-symex?)))))
+          (my-make-precaution (my-make-maneuver (list move-go-backward postorder-in))
+                              :pre-condition #'(lambda ()
+                                                 (not (point-at-root-symex?)))))
          (postorder-out (my-make-maneuver (list move-go-out))))
     (let ((postorder-explore (list postorder-backwards-in postorder-out))
           (postorder-explore-tree (list postorder-backwards-in-tree postorder-out)))
@@ -636,9 +636,7 @@ current tree."
                           postorder-explore-tree))
              (protocol-postorder (my-make-protocol maneuvers)))
         (let ((maneuver (symex-execute-protocol protocol-postorder)))
-          (if (maneuver-exists? maneuver)
-              t
-            (error "Not implemented")))))))
+          maneuver)))))
 
 (defun my-switch-branch-backward ()
   "Switch branch backward"
