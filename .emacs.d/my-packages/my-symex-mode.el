@@ -121,7 +121,7 @@ This repeats some traversal as specified."
         (times (my-circuit-times circuit)))
     (symex--execute-circuit traversal times)))
 
-(defun my-make-maneuver (phases)
+(defun my-make-maneuver (&rest phases)
   "Construct a maneuver from the given moves."
   (list 'maneuver
         phases))
@@ -196,7 +196,7 @@ as phases of a higher-level maneuver by the caller."
                                                                traversal)))
       (unless result
         (goto-char original-location))
-      (my-make-maneuver result))))
+      (apply #'my-make-maneuver result))))
 
 (defun my-make-protocol (&rest options)
   "Construct a protocol abstraction for the given OPTIONS.
@@ -488,7 +488,7 @@ Evaluates to the maneuver actually executed."
   (let ((phases (my-maneuver-phases maneuver)))
     (let ((executed-phases (my--execute-maneuver-phases phases)))
       (when executed-phases
-        (my-make-maneuver executed-phases)))))
+        (apply #'my-make-maneuver executed-phases)))))
 
 (defun my-execute-precaution (precaution)
   "Attempt to execute a given PRECAUTION.
@@ -591,17 +591,17 @@ current tree."
   (let* ((postorder-in
           (my-make-circuit
            (my-make-maneuver
-            (list move-go-in
-                  (my-make-circuit
-                   move-go-forward)))))
+            move-go-in
+            (my-make-circuit
+             move-go-forward))))
          (postorder-backwards-in
-          (my-make-maneuver (list move-go-backward
-                                  postorder-in)))
+          (my-make-maneuver move-go-backward
+                            postorder-in))
          (postorder-backwards-in-tree
           (my-make-precaution
            (my-make-maneuver
-            (list move-go-backward
-                  postorder-in))
+            move-go-backward
+            postorder-in)
            :pre-condition #'(lambda ()
                               (not (point-at-root-symex?))))))
     (let* ((traversal
