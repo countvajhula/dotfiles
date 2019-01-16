@@ -121,29 +121,14 @@ This repeats some traversal as specified."
         (times (my-circuit-times circuit)))
     (symex--execute-circuit traversal times)))
 
-(cl-defun my-make-maneuver (phases
-                            &key
-                            pre-condition
-                            post-condition)
+(defun my-make-maneuver (phases)
   "Construct a maneuver from the given moves."
-  (let ((pre-condition (or pre-condition (lambda () t)))
-        (post-condition (or post-condition (lambda () t))))
-    (list 'maneuver
-          phases
-          pre-condition
-          post-condition)))
+  (list 'maneuver
+        phases))
 
 (defun my-maneuver-phases (maneuver)
   "Get the phases of a maneuver (which are themselves maneuvers or moves)."
   (nth 1 maneuver))
-
-(defun my-maneuver-pre-condition (maneuver)
-  "Pre-condition of maneuver"
-  (nth 2 maneuver))
-
-(defun my-maneuver-post-condition (maneuver)
-  "Post-condition of maneuver"
-  (nth 3 maneuver))
 
 (defvar maneuver-zero (my-make-maneuver nil))
 
