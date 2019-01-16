@@ -16,6 +16,10 @@
 (require 'cl-lib)
 
 
+;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; DATA ABSTRACTIONS ;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;
+
 (defun my-make-move (x y)
   (list x y))
 
@@ -33,6 +37,10 @@
 (defvar move-go-in (my-make-move 0 1))
 (defvar move-go-out (my-make-move 0 -1))
 
+(defun are-moves-equal? (m1 m2)
+  "Check if two moves are identical, including any conditions."
+  (equal m1 m2))
+
 (defun is-null-move? (move)
   "Checks if the move specifies no movement."
   (are-moves-equal? move move-zero))
@@ -40,10 +48,6 @@
 (defun move-exists? (move)
   "Checks if the move specifies tangible movement."
   (not (is-null-move? move)))
-
-(defun are-moves-equal? (m1 m2)
-  "Check if two moves are identical, including any conditions."
-  (equal m1 m2))
 
 (cl-defun my-make-precaution (traversal &key pre-condition post-condition)
   "A specification to check conditions before and/or after execution
@@ -100,27 +104,6 @@ the traversal should be repeated."
              (nth 0 obj))
     (error nil)))
 
-(defun symex--execute-circuit (traversal times)
-  "Execute TRAVERSAL TIMES times."
-  (when (or (not times)  ; loop indefinitely
-            (> times 0))
-    (let ((result (symex-execute-traversal traversal)))
-      (when result
-        (let ((times (if times
-                         (- times 1)
-                       times)))
-          (append result
-                  (symex--execute-circuit traversal
-                                          times)))))))
-
-(defun my-execute-circuit (circuit)
-  "Execute a circuit.
-
-This repeats some traversal as specified."
-  (let ((traversal (my-circuit-traversal circuit))
-        (times (my-circuit-times circuit)))
-    (symex--execute-circuit traversal times)))
-
 (defun my-make-maneuver (&rest phases)
   "Construct a maneuver from the given moves."
   (list 'maneuver
@@ -167,37 +150,6 @@ as well."
              (nth 0 obj))
     (error nil)))
 
-(defun symex--execute-traversal-with-reorientation (reorientation traversal)
-  "Apply a reorientation and then attempt the maneuver.
-
-If the maneuver fails, then the reorientation is attempted as many times as
-necessary until either it succeeds, or the reorientation fails.
-
-Evaluates to a list of maneuvers executed, if any, which could be treated
-as phases of a higher-level maneuver by the caller."
-  (let ((executed-reorientation (symex-execute-traversal reorientation)))
-    (when executed-reorientation
-      (let ((executed-traversal (symex-execute-traversal traversal)))
-        (if executed-traversal
-            (append (list executed-reorientation)
-                    executed-traversal)
-          (let ((attempt (symex--execute-traversal-with-reorientation reorientation
-                                                                      traversal)))
-            (when attempt
-              (append (list executed-reorientation)
-                      attempt))))))))
-
-(defun my-execute-detour (detour)
-  "Execute the DETOUR."
-  (let ((original-location (point))
-        (reorientation (symex--detour-reorientation detour))
-        (traversal (symex--detour-traversal detour)))
-    (let ((result (symex--execute-traversal-with-reorientation reorientation
-                                                               traversal)))
-      (unless result
-        (goto-char original-location))
-      (apply #'my-make-maneuver result))))
-
 (defun my-make-protocol (&rest options)
   "Construct a protocol abstraction for the given OPTIONS.
 
@@ -216,38 +168,9 @@ An option could be either a maneuver, or a protocol itself."
              (nth 0 obj))
     (error nil)))
 
-(defun symex--try-options-in-sequence (options)
-  "Try options one at a time until one succeeds."
-  (let ((option (car options))
-        (remaining-options (cdr options)))
-    (let ((executed-option (symex-execute-traversal option)))
-      (if executed-option
-          executed-option
-        (when remaining-options
-          (symex--try-options-in-sequence remaining-options))))))
-
-(defun symex-execute-protocol (protocol)
-  "Given a protocol including a set of options, attempt to execute them
-in order until one succeeds.
-
-Evaluates to the maneuver actually executed."
-  (let ((options (symex--protocol-options protocol)))
-    (symex--try-options-in-sequence options)))
-
-(defun symex-execute-traversal (traversal)
-  "Execute a tree traversal."
-  (cond ((is-maneuver? traversal)
-         (my-execute-maneuver traversal))
-        ((is-circuit? traversal)
-         (my-execute-circuit traversal))
-        ((is-protocol? traversal)
-         (symex-execute-protocol traversal))
-        ((is-precaution? traversal)
-         (my-execute-precaution traversal))
-        ((is-detour? traversal)
-         (my-execute-detour traversal))
-        (t (execute-tree-move traversal))))
-        ;;(t (error "Syntax error: unrecognized traversal type!"))))
+;;;;;;;;;;;;;;;;;;
+;;; PRIMITIVES ;;;
+;;;;;;;;;;;;;;;;;;
 
 (defmacro if-stuck (do-what operation &rest body)
   `(let ((orig-pt (point)))
@@ -425,6 +348,10 @@ Evaluates to the maneuver actually executed."
     (when (> result 0)
       (my-make-move 0 (- 0 result)))))
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; EVALUATION AND EXECUTION ;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
 (defun execute-tree-move (move)
   "Execute the specified MOVE at the current point location in the tree.
 
@@ -506,6 +433,95 @@ Evaluates to the maneuver actually executed."
         (if (funcall post-condition)
             executed-traversal
           (goto-char original-location))))))
+
+(defun symex--execute-circuit (traversal times)
+  "Execute TRAVERSAL TIMES times."
+  (when (or (not times)  ; loop indefinitely
+            (> times 0))
+    (let ((result (symex-execute-traversal traversal)))
+      (when result
+        (let ((times (if times
+                         (- times 1)
+                       times)))
+          (append result
+                  (symex--execute-circuit traversal
+                                          times)))))))
+
+(defun my-execute-circuit (circuit)
+  "Execute a circuit.
+
+This repeats some traversal as specified."
+  (let ((traversal (my-circuit-traversal circuit))
+        (times (my-circuit-times circuit)))
+    (symex--execute-circuit traversal times)))
+
+(defun symex--execute-traversal-with-reorientation (reorientation traversal)
+  "Apply a reorientation and then attempt the maneuver.
+
+If the maneuver fails, then the reorientation is attempted as many times as
+necessary until either it succeeds, or the reorientation fails.
+
+Evaluates to a list of maneuvers executed, if any, which could be treated
+as phases of a higher-level maneuver by the caller."
+  (let ((executed-reorientation (symex-execute-traversal reorientation)))
+    (when executed-reorientation
+      (let ((executed-traversal (symex-execute-traversal traversal)))
+        (if executed-traversal
+            (append (list executed-reorientation)
+                    executed-traversal)
+          (let ((attempt (symex--execute-traversal-with-reorientation reorientation
+                                                                      traversal)))
+            (when attempt
+              (append (list executed-reorientation)
+                      attempt))))))))
+
+(defun my-execute-detour (detour)
+  "Execute the DETOUR."
+  (let ((original-location (point))
+        (reorientation (symex--detour-reorientation detour))
+        (traversal (symex--detour-traversal detour)))
+    (let ((result (symex--execute-traversal-with-reorientation reorientation
+                                                               traversal)))
+      (unless result
+        (goto-char original-location))
+      (apply #'my-make-maneuver result))))
+
+(defun symex--try-options-in-sequence (options)
+  "Try options one at a time until one succeeds."
+  (let ((option (car options))
+        (remaining-options (cdr options)))
+    (let ((executed-option (symex-execute-traversal option)))
+      (if executed-option
+          executed-option
+        (when remaining-options
+          (symex--try-options-in-sequence remaining-options))))))
+
+(defun symex-execute-protocol (protocol)
+  "Given a protocol including a set of options, attempt to execute them
+in order until one succeeds.
+
+Evaluates to the maneuver actually executed."
+  (let ((options (symex--protocol-options protocol)))
+    (symex--try-options-in-sequence options)))
+
+(defun symex-execute-traversal (traversal)
+  "Execute a tree traversal."
+  (cond ((is-maneuver? traversal)
+         (my-execute-maneuver traversal))
+        ((is-circuit? traversal)
+         (my-execute-circuit traversal))
+        ((is-protocol? traversal)
+         (symex-execute-protocol traversal))
+        ((is-precaution? traversal)
+         (my-execute-precaution traversal))
+        ((is-detour? traversal)
+         (my-execute-detour traversal))
+        (t (execute-tree-move traversal))))
+        ;;(t (error "Syntax error: unrecognized traversal type!"))))
+
+;;;;;;;;;;;;;;;;;;
+;;; TRAVERSALS ;;;
+;;;;;;;;;;;;;;;;;;
 
 (defun my-goto-first-symex ()
   "Select first symex at present level"
@@ -644,6 +660,10 @@ current tree."
     (symex-go-forward)
     (symex-go-in)
     (symex-go-forward symex-index)))
+
+;;;;;;;;;;;;;;;;;;;;;;;
+;;; TRANSFORMATIONS ;;;
+;;;;;;;;;;;;;;;;;;;;;;;
 
 (defun my-delete-symex ()
   "Delete symex"
@@ -908,6 +928,25 @@ current tree."
       (my-move-symex-forward)
       (symex-go-backward))))
 
+(defun my-tidy-symex ()
+  "Auto-indent symex and fix any whitespace."
+  (interactive)
+  (fixup-whitespace)
+  (when (save-excursion (looking-at-p "[[:space:]]"))
+      (forward-char))
+  (save-excursion
+    (forward-sexp)
+    (fixup-whitespace))
+  (save-excursion
+    (apply 'evil-indent
+           (seq-take (evil-cp-a-form 1)
+                     2)))
+  (my-select-nearest-symex))
+
+;;;;;;;;;;;;;;;;;;;;;
+;;; MISCELLANEOUS ;;;
+;;;;;;;;;;;;;;;;;;;;;
+
 (defun my-evaluate-symex ()
   "Evaluate Symex"
   (interactive)
@@ -938,6 +977,19 @@ current tree."
   (save-excursion
     (forward-sexp)
     (eval-print-last-sexp)))
+
+(defun my-describe-symex ()
+  "Lookup doc on symex."
+  (interactive)
+  (save-excursion
+    (forward-sexp)  ;; selected symexes will have the cursor on the starting paren
+    (cond ((equal major-mode 'racket-mode)
+           (my-racket-describe-symbol))
+          ((member major-mode elisp-modes)
+           (my-elisp-describe-symbol))
+          ((equal major-mode 'scheme-mode)
+           (my-scheme-describe-symbol))
+          (t (error "Symex mode: Lisp flavor not recognized!")))))
 
 (defun my-symex-repl ()
   "Go to REPL."
@@ -975,19 +1027,6 @@ current tree."
   (my-refocus-on-symex)
   (point))
 
-(defun my-describe-symex ()
-  "Lookup doc on symex."
-  (interactive)
-  (save-excursion
-    (forward-sexp)  ;; selected symexes will have the cursor on the starting paren
-    (cond ((equal major-mode 'racket-mode)
-           (my-racket-describe-symbol))
-          ((member major-mode elisp-modes)
-           (my-elisp-describe-symbol))
-          ((equal major-mode 'scheme-mode)
-           (my-scheme-describe-symbol))
-          (t (error "Symex mode: Lisp flavor not recognized!")))))
-
 (defun my-refocus-on-symex (&optional smooth-scroll)
   "Move screen to put symex in convenient part of the view."
   (interactive)
@@ -1019,21 +1058,6 @@ current tree."
               (error nil))
             (sit-for 0.0001))
         (recenter window-focus-line-number)))))
-
-(defun my-tidy-symex ()
-  "Auto-indent symex and fix any whitespace."
-  (interactive)
-  (fixup-whitespace)
-  (when (save-excursion (looking-at-p "[[:space:]]"))
-      (forward-char))
-  (save-excursion
-    (forward-sexp)
-    (fixup-whitespace))
-  (save-excursion
-    (apply 'evil-indent
-           (seq-take (evil-cp-a-form 1)
-                     2)))
-  (my-select-nearest-symex))
 
 
 (defhydra hydra-symex (:idle 1.0
