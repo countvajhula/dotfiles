@@ -513,16 +513,27 @@ The maneuver is only executed if PRE-CONDITION holds, and is reversed if
 POST-CONDITION does not hold after the provisional execution of the maneuver.
 
 Evaluates to the maneuver actually executed."
+  (let ((phases (my-maneuver-phases maneuver)))
+    (let ((executed-phases (my--execute-maneuver-phases phases)))
+      (when executed-phases
+        (my-make-maneuver executed-phases)))))
+
+(defun my-execute-precaution (precaution)
+  "Attempt to execute a given PRECAUTION.
+
+The traversal is only executed if PRE-CONDITION holds, and is reversed if
+POST-CONDITION does not hold after the provisional execution of the traversal.
+
+Evaluates to the maneuver actually executed."
   (let ((original-location (point))
-        (phases (my-maneuver-phases maneuver))
-        (pre-condition (my-maneuver-pre-condition maneuver))
-        (post-condition (my-maneuver-post-condition maneuver)))
+        (traversal (my-precaution-traversal precaution))
+        (pre-condition (my-precaution-pre-condition precaution))
+        (post-condition (my-precaution-post-condition precaution)))
     (when (funcall pre-condition)
-      (let ((executed-phases (my--execute-maneuver-phases phases)))
-        (if (not (funcall post-condition))
-            (goto-char original-location)
-          (when executed-phases
-            (my-make-maneuver executed-phases)))))))
+      (let ((executed-traversal (symex-execute-traversal traversal)))
+        (if (funcall post-condition)
+            executed-traversal
+          (goto-char original-location))))))
 
 (defun my-goto-first-symex ()
   "Select first symex at present level"
