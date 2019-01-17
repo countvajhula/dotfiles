@@ -19,6 +19,12 @@ open in current window."
   (interactive)
   (switch-to-buffer-other-window "*scratch*"))  ; TODO: create in lisp interaction mode if missing
 
+(defun my-switch-to-messages-buffer ()
+  "Switch to messages buffer while retaining focus in original window."
+  (interactive)
+  (switch-to-buffer-other-window "*Messages*")
+  (evil-window-mru))
+
 (defun my-current-dir ()
   "View current dir in dired."
   (interactive)
