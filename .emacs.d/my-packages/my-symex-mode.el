@@ -489,7 +489,7 @@ as phases of a higher-level maneuver by the caller."
       (let ((executed-traversal (symex-execute-traversal traversal)))
         (if executed-traversal
             (append (list executed-reorientation)
-                    executed-traversal)
+                    (list executed-traversal))
           (let ((attempt (symex--execute-traversal-with-reorientation reorientation
                                                                       traversal)))
             (when attempt
