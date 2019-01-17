@@ -544,7 +544,7 @@ Evaluates to the maneuver actually executed."
 ;;; TRAVERSALS ;;;
 ;;;;;;;;;;;;;;;;;;
 
-(defun symex-goto-first-symex ()
+(defun symex-goto-first ()
   "Select first symex at present level"
   (interactive)
   (let ((traversal
@@ -554,7 +554,7 @@ Evaluates to the maneuver actually executed."
   (symex-refocus)
   (point))
 
-(defun symex-goto-last-symex ()
+(defun symex-goto-last ()
   "Select last symex at present level"
   (interactive)
   (let ((traversal
@@ -564,7 +564,7 @@ Evaluates to the maneuver actually executed."
   (symex-refocus)
   (point))
 
-(defun symex-goto-outermost-symex ()
+(defun symex-goto-outermost ()
   "Select outermost symex."
   (interactive)
   (let ((traversal
@@ -574,7 +574,7 @@ Evaluates to the maneuver actually executed."
   (symex-refocus)
   (point))
 
-(defun symex-goto-innermost-symex ()
+(defun symex-goto-innermost ()
   "Select innermost symex."
   (interactive)
   (let ((traversal
@@ -652,7 +652,7 @@ current tree."
 (defun symex-switch-branch-backward ()
   "Switch branch backward"
   (interactive)
-  (let ((symex-index (symex-index))
+  (let ((index (symex-index))
         (closest-index -1)
         (best-branch-position (point)))
     (defun switch-backward ()
@@ -663,10 +663,10 @@ current tree."
                   (symex-go-backward)
                   (if-stuck (switch-backward)
                             (symex-go-in)
-                            (symex-go-forward symex-index)
+                            (symex-go-forward index)
                             (let ((current-index (symex-index)))
                               (when (and (< current-index
-                                            symex-index)
+                                            index)
                                          (> current-index
                                             closest-index))
                                 (setq closest-index current-index)
@@ -676,11 +676,11 @@ current tree."
 (defun symex-switch-branch-forward ()
   "Switch branch forward"
   (interactive)
-  (let ((symex-index (symex-index)))
+  (let ((index (symex-index)))
     (symex-go-out)
     (symex-go-forward)
     (symex-go-in)
-    (symex-go-forward symex-index)))
+    (symex-go-forward index)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;
 ;;; TRANSFORMATIONS ;;;
