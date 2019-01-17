@@ -44,22 +44,22 @@
 ;;; DATA ABSTRACTIONS ;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defun my-make-move (x y)
+(defun symex-make-move (x y)
   (list x y))
 
-(defun my-move-x (move)
+(defun symex--move-x (move)
   "X (horizontal) component of move."
   (nth 0 move))
 
-(defun my-move-y (move)
+(defun symex--move-y (move)
   "Y (vertical) component of move."
   (nth 1 move))
 
-(defconst move-zero (my-make-move 0 0))
-(defconst move-go-forward (my-make-move 1 0))
-(defconst move-go-backward (my-make-move -1 0))
-(defconst move-go-in (my-make-move 0 1))
-(defconst move-go-out (my-make-move 0 -1))
+(defconst move-zero (symex-make-move 0 0))
+(defconst move-go-forward (symex-make-move 1 0))
+(defconst move-go-backward (symex-make-move -1 0))
+(defconst move-go-in (symex-make-move 0 1))
+(defconst move-go-out (symex-make-move 0 -1))
 
 (defun are-moves-equal? (m1 m2)
   "Check if two moves are identical, including any conditions."
@@ -73,7 +73,7 @@
   "Checks if the move specifies tangible movement."
   (not (is-null-move? move)))
 
-(cl-defun my-make-precaution (traversal &key pre-condition post-condition)
+(cl-defun symex-make-precaution (traversal &key pre-condition post-condition)
   "A specification to check conditions before and/or after execution
 of a traversal."
   (let ((pre-condition (or pre-condition (lambda () t)))
@@ -83,16 +83,16 @@ of a traversal."
           pre-condition
           post-condition)))
 
-(defun my-precaution-traversal (precaution)
+(defun symex--precaution-traversal (precaution)
   "The traversal component of the precaution, i.e. the traversal to be
 executed with precautions."
   (nth 1 precaution))
 
-(defun my-precaution-pre-condition (precaution)
+(defun symex--precaution-pre-condition (precaution)
   "Pre-condition of precaution"
   (nth 2 precaution))
 
-(defun my-precaution-post-condition (precaution)
+(defun symex--precaution-post-condition (precaution)
   "Post-condition of precaution"
   (nth 3 precaution))
 
@@ -103,7 +103,7 @@ executed with precautions."
              (nth 0 obj))
     (error nil)))
 
-(defun my-make-circuit (traversal &optional times)
+(defun symex-make-circuit (traversal &optional times)
   "A specification to repeat a TRAVERSAL TIMES times.
 
 If TIMES is nil, repeat indefinitely until the traversal fails."
@@ -111,12 +111,12 @@ If TIMES is nil, repeat indefinitely until the traversal fails."
         traversal
         times))
 
-(defun my-circuit-traversal (circuit)
+(defun symex--circuit-traversal (circuit)
   "Get the traversal component of the circuit, i.e. the traversal
 to be looped."
   (nth 1 circuit))
 
-(defun my-circuit-times (circuit)
+(defun symex--circuit-times (circuit)
   "Get the times component of the circuit, i.e. the number of times
 the traversal should be repeated."
   (nth 2 circuit))
@@ -128,12 +128,12 @@ the traversal should be repeated."
              (nth 0 obj))
     (error nil)))
 
-(defun my-make-maneuver (&rest phases)
+(defun symex-make-maneuver (&rest phases)
   "Construct a maneuver from the given moves."
   (list 'maneuver
         phases))
 
-(defun my-maneuver-phases (maneuver)
+(defun symex--maneuver-phases (maneuver)
   "Get the phases of a maneuver (which are themselves maneuvers or moves)."
   (nth 1 maneuver))
 
@@ -144,7 +144,7 @@ the traversal should be repeated."
              (nth 0 obj))
     (error nil)))
 
-(defun my-make-detour (reorientation traversal)
+(defun symex-make-detour (reorientation traversal)
   "Construct a detour.
 
 A detour consists of two components -- a TRAVERSAL that we wish to execute, and
@@ -174,7 +174,7 @@ as well."
              (nth 0 obj))
     (error nil)))
 
-(defun my-make-protocol (&rest options)
+(defun symex-make-protocol (&rest options)
   "Construct a protocol abstraction for the given OPTIONS.
 
 An option could be either a maneuver, or a protocol itself."
@@ -258,13 +258,13 @@ An option could be either a maneuver, or a protocol itself."
          (progn (forward-char 2) ;; need to go forward by 2 for some reason
                 (lispy-right-p)))))
 
-(defun my-symex-index ()
+(defun symex-index ()
   "Get relative (from start of containing symex) index of current symex."
   (interactive)
   (save-excursion
-    (my-select-nearest-symex)
+    (symex-select-nearest)
     (let ((original-location (point)))
-      (let ((current-location (my-goto-first-symex))
+      (let ((current-location (symex-goto-first))
             (result 0))
         (while (< current-location original-location)
           (symex-go-forward)
@@ -272,7 +272,7 @@ An option could be either a maneuver, or a protocol itself."
           (setq result (1+ result)))
         result))))
 
-(defun my--forward-one-symex ()
+(defun symex--forward-one ()
   "Forward one symex"
   (let ((original-location (point))
         (result 0))
@@ -296,21 +296,21 @@ An option could be either a maneuver, or a protocol itself."
       (when (= original-location current-location)
         ;; happens at end of buffer
         (setq result 0)))
-    (my-refocus-on-symex)
+    (symex-refocus)
     result))
 
-(defun my-forward-symex (&optional count)
+(defun symex-forward (&optional count)
   "Forward symex"
   (interactive)
   (let ((count (or count 1))
         (result 0))
     (dotimes (i count)
-      (let ((res (my--forward-one-symex)))
+      (let ((res (symex--forward-one)))
         (setq result (+ res result))))
     (when (> result 0)
-      (my-make-move result 0))))
+      (symex-make-move result 0))))
 
-(defun my--backward-one-symex ()
+(defun symex--backward-one ()
   "Backward one symex."
   (let ((result 0))
     (when (not (point-at-initial-symex?))
@@ -320,19 +320,19 @@ An option could be either a maneuver, or a protocol itself."
         (error nil)))
     result))
 
-(defun my-backward-symex (&optional count)
+(defun symex-backward (&optional count)
   "Backward symex"
   (interactive)
   (let ((count (or count 1))
         (result 0))
     (dotimes (i count)
-      (let ((res (my--backward-one-symex)))
+      (let ((res (symex--backward-one)))
         (setq result (+ res result))))
-    (my-refocus-on-symex)
+    (symex-refocus)
     (when (> result 0)
-      (my-make-move (- result) 0))))
+      (symex-make-move (- result) 0))))
 
-(defun my--enter-one-symex ()
+(defun symex--enter-one ()
   "Enter one lower symex level."
   (let ((result 1))
     (cond ((symex-comment-line-p)
@@ -343,34 +343,34 @@ An option could be either a maneuver, or a protocol itself."
           (t (setq result 0)))
     result))
 
-(defun my-enter-symex (&optional count)
+(defun symex-enter (&optional count)
   "Enter lower symex level."
   (interactive)
   (let ((count (or count 1))
         (result 0))
     (dotimes (i count)
-      (let ((res (my--enter-one-symex)))
+      (let ((res (symex--enter-one)))
         (setq result (+ res result))))
     (when (> result 0)
-      (my-make-move 0 result))))
+      (symex-make-move 0 result))))
 
-(defun my--exit-one-symex ()
+(defun symex--exit-one ()
   "Exit one level."
   (condition-case nil
       (progn (paredit-backward-up 1)
              1)
     (error 0)))
 
-(defun my-exit-symex (&optional count)
+(defun symex-exit (&optional count)
   "Exit to higher symex level"
   (interactive)
   (let ((count (or count 1))
         (result 0))
     (dotimes (i count)
-      (let ((res (my--exit-one-symex)))
+      (let ((res (symex--exit-one)))
         (setq result (+ res result))))
     (when (> result 0)
-      (my-make-move 0 (- result)))))
+      (symex-make-move 0 (- result)))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; EVALUATION AND EXECUTION ;;;
@@ -380,38 +380,38 @@ An option could be either a maneuver, or a protocol itself."
   "Execute the specified MOVE at the current point location in the tree.
 
 Evaluates to the actual move executed or nil if no move was executed."
-  (let ((move-x (my-move-x move))
-        (move-y (my-move-y move)))
+  (let ((move-x (symex--move-x move))
+        (move-y (symex--move-y move)))
     (cond ((> move-x 0)
-           (my-forward-symex move-x))
+           (symex-forward move-x))
           ((< move-x 0)
-           (my-backward-symex (abs move-x)))
+           (symex-backward (abs move-x)))
           ((> move-y 0)
-           (my-enter-symex move-y))
+           (symex-enter move-y))
           ((< move-y 0)
-           (my-exit-symex (abs move-y))))))
+           (symex-exit (abs move-y))))))
 
 (cl-defun symex-go-forward (&optional (count 1))
   "Move forward COUNT symexes."
   (interactive)
-  (execute-tree-move (my-make-move count 0)))
+  (execute-tree-move (symex-make-move count 0)))
 
 (cl-defun symex-go-backward (&optional (count 1))
   "Move backward COUNT symexes."
   (interactive)
-  (execute-tree-move (my-make-move (- count) 0)))
+  (execute-tree-move (symex-make-move (- count) 0)))
 
 (cl-defun symex-go-in (&optional (count 1))
   "Move in COUNT symexes."
   (interactive)
-  (execute-tree-move (my-make-move 0 count)))
+  (execute-tree-move (symex-make-move 0 count)))
 
 (cl-defun symex-go-out (&optional (count 1))
   "Move out COUNT symexes."
   (interactive)
-  (execute-tree-move (my-make-move 0 (- count))))
+  (execute-tree-move (symex-make-move 0 (- count))))
 
-(defun my--execute-maneuver-phases (phases)
+(defun symex--execute-maneuver-phases (phases)
   "Execute the phases of a maneuver, stopping if a phase fails.
 
 Evalutes to a list of phases actually executed."
@@ -422,10 +422,10 @@ Evalutes to a list of phases actually executed."
         (let ((result (list executed-phase)))
           (if remaining-phases
               (append result
-                      (my--execute-maneuver-phases remaining-phases))
+                      (symex--execute-maneuver-phases remaining-phases))
             result))))))
 
-(defun my-execute-maneuver (maneuver)
+(defun symex-execute-maneuver (maneuver)
   "Attempt to execute a given MANEUVER.
 
 Attempts the maneuver in the order of its phases, accepting partial completion
@@ -436,12 +436,12 @@ The maneuver is only executed if PRE-CONDITION holds, and is reversed if
 POST-CONDITION does not hold after the provisional execution of the maneuver.
 
 Evaluates to the maneuver actually executed."
-  (let ((phases (my-maneuver-phases maneuver)))
-    (let ((executed-phases (my--execute-maneuver-phases phases)))
+  (let ((phases (symex--maneuver-phases maneuver)))
+    (let ((executed-phases (symex--execute-maneuver-phases phases)))
       (when executed-phases
-        (apply #'my-make-maneuver executed-phases)))))
+        (apply #'symex-make-maneuver executed-phases)))))
 
-(defun my-execute-precaution (precaution)
+(defun symex-execute-precaution (precaution)
   "Attempt to execute a given PRECAUTION.
 
 The traversal is only executed if PRE-CONDITION holds, and is reversed if
@@ -449,9 +449,9 @@ POST-CONDITION does not hold after the provisional execution of the traversal.
 
 Evaluates to the maneuver actually executed."
   (let ((original-location (point))
-        (traversal (my-precaution-traversal precaution))
-        (pre-condition (my-precaution-pre-condition precaution))
-        (post-condition (my-precaution-post-condition precaution)))
+        (traversal (symex--precaution-traversal precaution))
+        (pre-condition (symex--precaution-pre-condition precaution))
+        (post-condition (symex--precaution-post-condition precaution)))
     (when (funcall pre-condition)
       (let ((executed-traversal (symex-execute-traversal traversal)))
         (if (funcall post-condition)
@@ -471,12 +471,12 @@ Evaluates to the maneuver actually executed."
                   (symex--execute-circuit traversal
                                           times)))))))
 
-(defun my-execute-circuit (circuit)
+(defun symex-execute-circuit (circuit)
   "Execute a circuit.
 
 This repeats some traversal as specified."
-  (let ((traversal (my-circuit-traversal circuit))
-        (times (my-circuit-times circuit)))
+  (let ((traversal (symex--circuit-traversal circuit))
+        (times (symex--circuit-times circuit)))
     (symex--execute-circuit traversal times)))
 
 (defun symex--execute-traversal-with-reorientation (reorientation traversal)
@@ -499,7 +499,7 @@ as phases of a higher-level maneuver by the caller."
               (append (list executed-reorientation)
                       attempt))))))))
 
-(defun my-execute-detour (detour)
+(defun symex-execute-detour (detour)
   "Execute the DETOUR."
   (let ((original-location (point))
         (reorientation (symex--detour-reorientation detour))
@@ -508,7 +508,7 @@ as phases of a higher-level maneuver by the caller."
                                                                traversal)))
       (unless result
         (goto-char original-location))
-      (apply #'my-make-maneuver result))))
+      (apply #'symex-make-maneuver result))))
 
 (defun symex--try-options-in-sequence (options)
   "Try options one at a time until one succeeds."
@@ -531,15 +531,15 @@ Evaluates to the maneuver actually executed."
 (defun symex-execute-traversal (traversal)
   "Execute a tree traversal."
   (cond ((is-maneuver? traversal)
-         (my-execute-maneuver traversal))
+         (symex-execute-maneuver traversal))
         ((is-circuit? traversal)
-         (my-execute-circuit traversal))
+         (symex-execute-circuit traversal))
         ((is-protocol? traversal)
          (symex-execute-protocol traversal))
         ((is-precaution? traversal)
-         (my-execute-precaution traversal))
+         (symex-execute-precaution traversal))
         ((is-detour? traversal)
-         (my-execute-detour traversal))
+         (symex-execute-detour traversal))
         (t (execute-tree-move traversal))))
         ;;(t (error "Syntax error: unrecognized traversal type!"))))
 
@@ -547,115 +547,115 @@ Evaluates to the maneuver actually executed."
 ;;; TRAVERSALS ;;;
 ;;;;;;;;;;;;;;;;;;
 
-(defun my-goto-first-symex ()
+(defun symex-goto-first-symex ()
   "Select first symex at present level"
   (interactive)
   (let ((traversal
-         (my-make-circuit
+         (symex-make-circuit
           move-go-backward)))
     (symex-execute-traversal traversal))
-  (my-refocus-on-symex)
+  (symex-refocus)
   (point))
 
-(defun my-goto-last-symex ()
+(defun symex-goto-last-symex ()
   "Select last symex at present level"
   (interactive)
   (let ((traversal
-         (my-make-circuit
+         (symex-make-circuit
           move-go-forward)))
     (symex-execute-traversal traversal))
-  (my-refocus-on-symex)
+  (symex-refocus)
   (point))
 
-(defun my-goto-outermost-symex ()
+(defun symex-goto-outermost-symex ()
   "Select outermost symex."
   (interactive)
   (let ((traversal
-         (my-make-circuit
+         (symex-make-circuit
           move-go-out)))
     (symex-execute-traversal traversal))
-  (my-refocus-on-symex)
+  (symex-refocus)
   (point))
 
-(defun my-goto-innermost-symex ()
+(defun symex-goto-innermost-symex ()
   "Select innermost symex."
   (interactive)
   (let ((traversal
-         (my-make-circuit
-          (my-make-protocol
-           (my-make-circuit
+         (symex-make-circuit
+          (symex-make-protocol
+           (symex-make-circuit
             move-go-in)
            move-go-forward))))
     (symex-execute-traversal traversal))
-  (my-refocus-on-symex)
+  (symex-refocus)
   (point))
 
 ;; TODO: is there a way to "monadically" build the tree data structure
 ;; (or ideally, do an arbitrary structural computation) as part of this traversal?
 ;; key is, it has to be inferrable from inputs and outputs alone, i.e. specifically
 ;; from the result of invocation of e.g. forward-symex
-(defun my-traverse-symex-forward (&optional flow)
+(defun symex-traverse-forward (&optional flow)
   "Traverse symex as a tree, using pre-order traversal.
 
 If FLOW is true, continue from one tree to another. Otherwise, stop at end of
 current rooted tree."
   (interactive)
   (let ((exit-until-root
-         (my-make-precaution
+         (symex-make-precaution
           move-go-out
           :post-condition (lambda ()
                             (not (point-at-root-symex?)))))
         (exit-until-end-of-buffer
-         (my-make-precaution
+         (symex-make-precaution
           move-go-out
           :post-condition (lambda ()
                             (not (point-at-final-symex?))))))
     (let ((traversal
-           (my-make-protocol
-            (my-make-protocol
+           (symex-make-protocol
+            (symex-make-protocol
              move-go-in
              move-go-forward)
-            (my-make-detour
+            (symex-make-detour
              (if flow
                  exit-until-end-of-buffer
                exit-until-root)
              move-go-forward))))
       (symex-execute-traversal traversal))))
 
-(defun my-traverse-symex-backward (&optional flow)
+(defun symex-traverse-backward (&optional flow)
   "Traverse symex as a tree, using converse post-order traversal.
 
 If FLOW is true, continue from one tree to another. Otherwise, stop at root of
 current tree."
   (interactive)
   (let* ((postorder-in
-          (my-make-circuit
-           (my-make-maneuver
+          (symex-make-circuit
+           (symex-make-maneuver
             move-go-in
-            (my-make-circuit
+            (symex-make-circuit
              move-go-forward))))
          (postorder-backwards-in
-          (my-make-maneuver move-go-backward
-                            postorder-in))
+          (symex-make-maneuver move-go-backward
+                               postorder-in))
          (postorder-backwards-in-tree
-          (my-make-precaution
-           (my-make-maneuver
+          (symex-make-precaution
+           (symex-make-maneuver
             move-go-backward
             postorder-in)
            :pre-condition (lambda ()
                             (not (point-at-root-symex?))))))
     (let* ((traversal
-            (my-make-protocol
+            (symex-make-protocol
              (if flow
                  postorder-backwards-in
                postorder-backwards-in-tree)
              move-go-out)))
       (symex-execute-traversal traversal))))
 
-(defun my-switch-branch-backward ()
+(defun symex-switch-branch-backward ()
   "Switch branch backward"
   (interactive)
-  (let ((symex-index (my-symex-index))
+  (let ((symex-index (symex-index))
         (closest-index -1)
         (best-branch-position (point)))
     (defun switch-backward ()
@@ -667,7 +667,7 @@ current tree."
                   (if-stuck (switch-backward)
                             (symex-go-in)
                             (symex-go-forward symex-index)
-                            (let ((current-index (my-symex-index)))
+                            (let ((current-index (symex-index)))
                               (when (and (< current-index
                                             symex-index)
                                          (> current-index
@@ -676,10 +676,10 @@ current tree."
                                 (setq best-branch-position (point)))))))))
   (switch-backward))
 
-(defun my-switch-branch-forward ()
+(defun symex-switch-branch-forward ()
   "Switch branch forward"
   (interactive)
-  (let ((symex-index (my-symex-index)))
+  (let ((symex-index (symex-index)))
     (symex-go-out)
     (symex-go-forward)
     (symex-go-in)
@@ -689,7 +689,7 @@ current tree."
 ;;; TRANSFORMATIONS ;;;
 ;;;;;;;;;;;;;;;;;;;;;;;
 
-(defun my-delete-symex ()
+(defun symex-delete ()
   "Delete symex"
   (interactive)
   (sp-kill-sexp nil)
@@ -698,26 +698,26 @@ current tree."
                              (forward-char)
                              (lispy-right-p)))
          (progn (evil-previous-line)
-                (my-symex-join-lines)))
+                (symex-join-lines)))
         ((save-excursion (evil-last-non-blank)  ; (<>$
                          (lispy-left-p))
          (sp-next-sexp)
          (save-excursion
-           (my-symex-join-lines t)))
+           (symex-join-lines t)))
         ((looking-at-p "\n")  ; (abc <>
          (evil-join (line-beginning-position)
                     (line-end-position)))
         (t (fixup-whitespace)))
-  (my-select-nearest-symex)
-  (my-tidy-symex))
+  (symex-select-nearest)
+  (symex-tidy))
 
-(defun my-change-symex ()
+(defun symex-change ()
   "Change symex"
   (interactive)
   (kill-sexp 1)
   (evil-insert-state))
 
-(defun my-replace-symex ()
+(defun symex-replace ()
   "Replace contents of symex"
   (interactive)
   (let ((move (symex-go-in)))
@@ -726,7 +726,7 @@ current tree."
       (sp-kill-sexp nil)
       (evil-insert-state))))
 
-(defun my-spit-backward ()
+(defun symex-spit-backward ()
   "Spit backward"
   (interactive)
   (when (and (lispy-left-p)
@@ -740,7 +740,7 @@ current tree."
       (re-search-forward lispy-left)
       (symex-go-out))))
 
-(defun my-spit-forward ()
+(defun symex-spit-forward ()
   "Spit forward"
   (interactive)
   (when (and (lispy-left-p)
@@ -753,7 +753,7 @@ current tree."
       (fixup-whitespace)
       (re-search-backward lispy-left))))
 
-(defun my-slurp-backward ()
+(defun symex-slurp-backward ()
   "Slurp from behind"
   (interactive)
   (when (lispy-left-p)
@@ -764,7 +764,7 @@ current tree."
     (fixup-whitespace)
     (symex-go-out)))
 
-(defun my-slurp-forward ()
+(defun symex-slurp-forward ()
   "Slurp from the front"
   (interactive)
   (when (lispy-left-p)
@@ -774,14 +774,14 @@ current tree."
         (symex-go-in))  ; need to be inside the symex to spit and slurp
       (lispy-forward-slurp-sexp 1))))
 
-(defun my-join-symexes ()
+(defun symex-join ()
   "Merge symexes at the same level."
   (interactive)
   (save-excursion
     (symex-go-forward)
     (paredit-join-sexps)))
 
-(defun my-symex-join-lines (&optional backwards)
+(defun symex-join-lines (&optional backwards)
   "Join lines inside symex."
   (interactive)
   (let ((original-column (current-column)))
@@ -800,12 +800,12 @@ current tree."
                original-column)
       (forward-char))))
 
-(defun my-yank-symex ()
+(defun symex-yank ()
   "Yank (copy) symex."
   (interactive)
   (lispy-new-copy))
 
-(defun my-paste-before-symex ()
+(defun symex-paste-before ()
   "Paste before symex"
   (interactive)
   (cond ((or (and (point-at-indentation-p)
@@ -821,9 +821,9 @@ current tree."
         (forward-char)
         (insert extra-to-append))
       (symex-go-forward)
-      (my-tidy-symex))))
+      (symex-tidy))))
 
-(defun my-paste-after-symex ()
+(defun symex-paste-after ()
   "Paste after symex"
   (interactive)
   (cond ((or (and (point-at-indentation-p)
@@ -840,17 +840,17 @@ current tree."
         (evil-paste-before nil nil)
         (forward-char))
       (symex-go-forward)
-      (my-tidy-symex))
+      (symex-tidy))
     (symex-go-forward)))
 
-(defun my-open-line-after-symex ()
+(defun symex-open-line-after ()
   "Open new line after symex"
   (interactive)
   (forward-sexp)
   (newline-and-indent)
   (evil-insert-state))
 
-(defun my-open-line-before-symex ()
+(defun symex-open-line-before ()
   "Open new line before symex"
   (interactive)
   (newline-and-indent)
@@ -858,25 +858,25 @@ current tree."
   (indent-according-to-mode)
   (evil-append-line 1))
 
-(defun my-append-after-symex ()
+(defun symex-append-after ()
   "Append after symex (instead of vim's default of line)."
   (interactive)
   (forward-sexp)  ; selected symexes will have the cursor on the starting paren
   (evil-insert 1 nil nil))
 
-(defun my-insert-before-symex ()
+(defun symex-insert-before ()
   "Insert before symex (instead of vim's default at the start of line)."
   (interactive)
   (evil-insert 1 nil nil))
 
-(defun my-insert-at-beginning-of-symex ()
+(defun symex-insert-at-beginning ()
   "Insert at beginning of symex."
   (interactive)
   (if (lispy-left-p)
       (evil-append 1 nil)
     (evil-insert 1 nil nil)))
 
-(defun my-insert-at-end-of-symex ()
+(defun symex-insert-at-end ()
   "Insert at end of symex."
   (interactive)
   (if (lispy-left-p)
@@ -886,7 +886,7 @@ current tree."
     (progn (forward-sexp)
            (evil-insert 1 nil nil))))
 
-(defun my-create-symex (type)
+(defun symex-create (type)
   "Create new symex (list)."
   (interactive)
   (save-excursion
@@ -899,50 +899,50 @@ current tree."
           ((equal type 'angled)
            (insert "<>")))))
 
-(defun my-insert-symex-newline ()
+(defun symex-insert-newline ()
   "Insert newline and reindent symex."
   (interactive)
   (newline-and-indent)
-  (my-tidy-symex))
+  (symex-tidy))
 
-(defun my-swallow-symex ()
+(defun symex-swallow ()
   "Swallow symex, putting its contents in the parent symex."
   (interactive)
   (symex-go-in)
   (symex-go-forward)
   (paredit-splice-sexp-killing-backward))
 
-(defun my-symex-wrap-round ()
+(defun symex-wrap-round ()
   "Wrap with ()"
   (interactive)
   (paredit-wrap-round)
   (symex-go-out))
 
-(defun my-symex-wrap-square ()
+(defun symex-wrap-square ()
   "Wrap with []"
   (interactive)
   (paredit-wrap-square)
   (symex-go-out))
 
-(defun my-symex-wrap-curly ()
+(defun symex-wrap-curly ()
   "Wrap with {}"
   (interactive)
   (paredit-wrap-curly)
   (evil-find-char-backward nil 123))
 
-(defun my-symex-wrap-angled ()
+(defun symex-wrap-angled ()
   "Wrap with <>"
   (interactive)
   (paredit-wrap-angled)
   (evil-find-char-backward nil 60))
 
-(defun my-wrap-symex ()
+(defun symex-wrap ()
   "Wrap with containing symex."
   (interactive)
-  (my-symex-wrap-round)
-  (my-insert-at-beginning-of-symex))
+  (symex-wrap-round)
+  (symex-insert-at-beginning))
 
-(defun my-move-symex-forward ()
+(defun symex-shift-forward ()
   "Move symex forward in current tree level."
   (interactive)
   (forward-sexp)
@@ -951,15 +951,15 @@ current tree."
              (backward-sexp))
     (error (backward-sexp))))
 
-(defun my-move-symex-backward ()
+(defun symex-shift-backward ()
   "Move symex backward in current tree level."
   (interactive)
   (let ((move (symex-go-backward)))
     (when (move-exists? move)
-      (my-move-symex-forward)
+      (symex-shift-forward)
       (symex-go-backward))))
 
-(defun my-tidy-symex ()
+(defun symex-tidy ()
   "Auto-indent symex and fix any whitespace."
   (interactive)
   (fixup-whitespace)
@@ -972,13 +972,13 @@ current tree."
     (apply #'evil-indent
            (seq-take (evil-cp-a-form 1)
                      2)))
-  (my-select-nearest-symex))
+  (symex-select-nearest))
 
 ;;;;;;;;;;;;;;;;;;;;;
 ;;; MISCELLANEOUS ;;;
 ;;;;;;;;;;;;;;;;;;;;;
 
-(defun my-evaluate-symex ()
+(defun symex-evaluate ()
   "Evaluate Symex"
   (interactive)
   (save-excursion
@@ -991,7 +991,7 @@ current tree."
            (my-scheme-eval-symex))
           (t (error "Symex mode: Lisp flavor not recognized!")))))
 
-(defun my-evaluate-definition ()
+(defun symex-evaluate-definition ()
   "Evaluate top-level definition"
   (interactive)
   (cond ((equal major-mode 'racket-mode)
@@ -1002,14 +1002,14 @@ current tree."
          (geiser-eval-definition nil))
         (t (error "Symex mode: Lisp flavor not recognized!"))))
 
-(defun my-eval-print-symex ()
+(defun symex-eval-print ()
   "Eval symex and print result in buffer."
   (interactive)
   (save-excursion
     (forward-sexp)
     (eval-print-last-sexp)))
 
-(defun my-describe-symex ()
+(defun symex-describe ()
   "Lookup doc on symex."
   (interactive)
   (save-excursion
@@ -1022,7 +1022,7 @@ current tree."
            (my-scheme-describe-symbol))
           (t (error "Symex mode: Lisp flavor not recognized!")))))
 
-(defun my-symex-repl ()
+(defun symex-repl ()
   "Go to REPL."
   (interactive)
   (cond ((equal major-mode 'racket-mode)
@@ -1038,7 +1038,7 @@ current tree."
   (interactive)
   (switch-to-buffer-other-window "*scratch*"))  ; TODO: create in lisp interaction mode if missing
 
-(defun my-select-nearest-symex ()
+(defun symex-select-nearest ()
   "Select symex nearest to point"
   (interactive)
   (cond ((and (not (eobp))
@@ -1055,10 +1055,10 @@ current tree."
          (beginning-of-thing 'sexp))
         (t (if-stuck (symex-go-backward)
                      (symex-go-forward))))
-  (my-refocus-on-symex)
+  (symex-refocus)
   (point))
 
-(defun my-refocus-on-symex (&optional smooth-scroll)
+(defun symex-refocus (&optional smooth-scroll)
   "Move screen to put symex in convenient part of the view."
   (interactive)
   ;; Note: window-text-height is not robust to zooming
@@ -1093,89 +1093,89 @@ current tree."
 (defhydra hydra-symex (:idle 1.0
                        :columns 5
                        :color pink
-                       :body-pre (progn (my-select-nearest-symex)
+                       :body-pre (progn (symex-select-nearest)
                                         (evil-symex-state)))
   "Symex mode"
   ("(" (lambda ()
          (interactive)
-         (my-create-symex 'round)) "()")
+         (symex-create 'round)) "()")
   ("[" (lambda ()
          (interactive)
-         (my-create-symex 'square)) "[]")
+         (symex-create 'square)) "[]")
   ("{" (lambda ()
          (interactive)
-         (my-create-symex 'curly)) "{}")
+         (symex-create 'curly)) "{}")
   ("<" (lambda ()
          (interactive)
-         (my-create-symex 'angled)) "<>")
+         (symex-create 'angled)) "<>")
   ("h" symex-go-backward "previous")
   ("j" symex-go-in "enter")
   ("k" symex-go-out "exit")
   ("l" symex-go-forward "next")
   ("f" (lambda ()
          (interactive)
-         (my-traverse-symex-forward t)) "flow forward")
+         (symex-traverse-forward t)) "flow forward")
   ("b" (lambda ()
          (interactive)
-         (my-traverse-symex-backward t)) "flow backward")
-  ("C-k" my-switch-branch-backward "switch branch backward")
-  ("C-j" my-switch-branch-forward "switch branch forward")
-  ("y" my-yank-symex "yank (copy)")
-  ("p" my-paste-after-symex "paste after")
-  ("P" my-paste-before-symex "paste before")
-  ("x" my-delete-symex "delete")
-  ("c" my-change-symex "change" :exit t)
-  ("s" my-replace-symex "replace" :exit t)
-  ("H" my-move-symex-backward "move backward")
-  ("L" my-move-symex-forward "move forward")
+         (symex-traverse-backward t)) "flow backward")
+  ("C-k" symex-switch-branch-backward "switch branch backward")
+  ("C-j" symex-switch-branch-forward "switch branch forward")
+  ("y" symex-yank "yank (copy)")
+  ("p" symex-paste-after "paste after")
+  ("P" symex-paste-before "paste before")
+  ("x" symex-delete "delete")
+  ("c" symex-change "change" :exit t)
+  ("s" symex-replace "replace" :exit t)
+  ("H" symex-move-backward "move backward")
+  ("L" symex-move-forward "move forward")
   ("K" paredit-raise-sexp "raise")
-  ("s-J" my-slurp-backward "slurp backward")
-  ("s-H" my-spit-backward "spit backward")
-  ("s-L" my-spit-forward "spit forward")
-  ("s-K" my-slurp-forward "slurp forward")
-  ("z" my-swallow-symex "swallow")
-  ("e" my-evaluate-symex "evaluate")
-  ("d" my-evaluate-definition "evaluate definition")
+  ("s-J" symex-slurp-backward "slurp backward")
+  ("s-H" symex-spit-backward "spit backward")
+  ("s-L" symex-spit-forward "spit forward")
+  ("s-K" symex-slurp-forward "slurp forward")
+  ("z" symex-swallow "swallow")
+  ("e" symex-evaluate "evaluate")
+  ("d" symex-evaluate-definition "evaluate definition")
   ("E" eval-expression "eval expression")
   ("t" my-switch-to-scratch-buffer "scratch buffer" :exit t)
-  ("r" my-symex-repl "go to REPL" :exit t)
+  ("r" symex-repl "go to REPL" :exit t)
   ("|" lispy-split "split")
-  ("m" my-join-symexes "merge (join)")
+  ("m" symex-join "merge (join)")
   ("\\" lispy-splice "splice (join to higher level)")
-  (")" my-symex-wrap-round "wrap with ()")
-  ("]" my-symex-wrap-square "wrap with []")
-  ("}" my-symex-wrap-curly "wrap with {}")
-  (">" my-symex-wrap-angled "wrap with <>")
-  ("o" my-open-line-after-symex "open line after" :exit t)
-  ("O" my-open-line-before-symex "open line before" :exit t)
-  ("n" my-insert-symex-newline "newline")
-  ("J" my-symex-join-lines "join lines")
+  (")" symex-wrap-round "wrap with ()")
+  ("]" symex-wrap-square "wrap with []")
+  ("}" symex-wrap-curly "wrap with {}")
+  (">" symex-wrap-angled "wrap with <>")
+  ("o" symex-open-line-after "open line after" :exit t)
+  ("O" symex-open-line-before "open line before" :exit t)
+  ("n" symex-insert-newline "newline")
+  ("J" symex-join-lines "join lines")
   ("N" (lambda ()
          (interactive)
-         (my-symex-join-lines t)) "join lines backwards")
-  ("0" my-goto-first-symex "go to first")
-  ("M-h" my-goto-first-symex "go to first")
-  ("$" my-goto-last-symex "go to last")
-  ("M-l" my-goto-last-symex "go to last")
-  ("M-k" my-goto-outermost-symex "go to outermost")
-  ("M-j" my-goto-innermost-symex "go to innermost")
-  ("=" my-tidy-symex "tidy/indent")
-  ("A" my-append-after-symex "append after symex" :exit t)
-  ("a" my-insert-at-end-of-symex "append inside symex" :exit t)
-  ("i" my-insert-at-beginning-of-symex "insert inside symex" :exit t)
-  ("I" my-insert-before-symex "insert before symex" :exit t)
-  ("w" my-wrap-symex "wrap with symex" :exit t)
+         (symex-join-lines t)) "join lines backwards")
+  ("0" symex-goto-first "go to first")
+  ("M-h" symex-goto-first "go to first")
+  ("$" symex-goto-last "go to last")
+  ("M-l" symex-goto-last "go to last")
+  ("M-k" symex-goto-outermost "go to outermost")
+  ("M-j" symex-goto-innermost "go to innermost")
+  ("=" symex-tidy "tidy/indent")
+  ("A" symex-append-after "append after symex" :exit t)
+  ("a" symex-insert-at-end "append inside symex" :exit t)
+  ("i" symex-insert-at-beginning "insert inside symex" :exit t)
+  ("I" symex-insert-before "insert before symex" :exit t)
+  ("w" symex-wrap "wrap with symex" :exit t)
   ("g" evil-jump-to-tag "Go to definition")
-  (";" my-eval-print-symex "eval + print")
+  (";" symex-eval-print "eval + print")
   ;; canonical action
-  ("s-;" my-evaluate-symex "evaluate" :exit t)
+  ("s-;" symex-evaluate "evaluate" :exit t)
   ;; escape hatches
   ("R" evil-replace-state nil :exit t)
   ("v" evil-visual-char nil :exit t)
   ("V" evil-visual-line nil :exit t)
   ("C-v" evil-visual-block nil :exit t)
   ;; standard exits
-  ("?" my-describe-symex "info")
+  ("?" symex-describe "info")
   ("<return>" eem-enter-lower-level "enter lower level" :exit t)
   ("<escape>" eem-enter-higher-level "escape to higher level" :exit t))
 
