@@ -1,13 +1,10 @@
 ;;; -*- lexical-binding: t -*-
-;;; TODO: ideally, would be good to have a simple POC of the AST
-;;; to operate on, via semantic?
 ;;; TODO: consider using S for dragging and C for movement (and then across all modes)
 ;;; TODO: move back/forward through tree "at same level" without going up or down (i.e. switch branches, ideally preserving position index within branch)
 ;;; TODO: traverse tree with side effect (traversal-method, side-effect-fn), to use for "indent forward" on paste
 ;;; TODO: incorporate more clear tree-related terminology
 ;;; TODO: C-j to move in greedily, going forward
 ;;; TODO: handle "contracts" of each abstraction level, and where conditions should go, rename functions for clarity. legitimate detours vs conditional itineraries, vs conditional motions
-;;; TODO: detours should be maneuvers. define a strategy as a higher-level sequence of maneuvers, where each is tried in sequence until all fail, beginning again from the first on success
 ;;; TODO: take a symex and bring it out and before/after as a peer of the parent
 ;;; TODO: my-tidy-symex has edge cases in indenting from evil-cp-a-form, where symex begins with : (keyword arg) or #'
 (use-package lispy)
@@ -1121,8 +1118,8 @@ current tree."
   ("x" symex-delete "delete")
   ("c" symex-change "change" :exit t)
   ("s" symex-replace "replace" :exit t)
-  ("H" symex-move-backward "move backward")
-  ("L" symex-move-forward "move forward")
+  ("H" symex-shift-backward "move backward")
+  ("L" symex-shift-forward "move forward")
   ("K" paredit-raise-sexp "raise")
   ("s-J" symex-slurp-backward "slurp backward")
   ("s-H" symex-spit-backward "spit backward")
