@@ -464,7 +464,7 @@ Evaluates to the maneuver actually executed."
         (let ((times (if times
                          (1- times)
                        times)))
-          (append result
+          (append (list result)
                   (symex--execute-circuit traversal
                                           times)))))))
 
