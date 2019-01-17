@@ -434,9 +434,9 @@ POST-CONDITION does not hold after the provisional execution of the maneuver.
 
 Evaluates to the maneuver actually executed."
   (let ((phases (symex--maneuver-phases maneuver)))
-    (let ((executed-phases (symex--execute-maneuver-phases phases)))
-      (when executed-phases
-        (apply #'symex-make-maneuver executed-phases)))))
+    (let ((result (symex--execute-maneuver-phases phases)))
+      (when result
+        (apply #'symex-make-maneuver result)))))
 
 (defun symex-execute-precaution (precaution)
   "Attempt to execute a given PRECAUTION.
@@ -474,7 +474,9 @@ Evaluates to the maneuver actually executed."
 This repeats some traversal as specified."
   (let ((traversal (symex--circuit-traversal circuit))
         (times (symex--circuit-times circuit)))
-    (symex--execute-circuit traversal times)))
+    (let ((result (symex--execute-circuit traversal times)))
+      (when result
+        (apply #'symex-make-maneuver result)))))
 
 (defun symex--execute-traversal-with-reorientation (reorientation traversal)
   "Apply a reorientation and then attempt the maneuver.
@@ -503,9 +505,10 @@ as phases of a higher-level maneuver by the caller."
         (traversal (symex--detour-traversal detour)))
     (let ((result (symex--execute-traversal-with-reorientation reorientation
                                                                traversal)))
-      (unless result
-        (goto-char original-location))
-      (apply #'symex-make-maneuver result))))
+      (if result
+          (apply #'symex-make-maneuver result)
+        (goto-char original-location)
+        result))))
 
 (defun symex--try-options-in-sequence (options)
   "Try options one at a time until one succeeds."
