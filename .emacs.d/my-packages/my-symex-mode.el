@@ -1033,11 +1033,6 @@ current tree."
          (geiser-mode-switch-to-repl))
         (t (error "Symex mode: Lisp flavor not recognized!"))))
 
-(defun my-switch-to-scratch-buffer ()
-  "Switch to scratch buffer."
-  (interactive)
-  (switch-to-buffer-other-window "*scratch*"))  ; TODO: create in lisp interaction mode if missing
-
 (defun symex-select-nearest ()
   "Select symex nearest to point"
   (interactive)

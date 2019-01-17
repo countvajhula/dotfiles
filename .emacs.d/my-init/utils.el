@@ -14,6 +14,11 @@ open in current window."
            (evil-window-right 1)))
   (ielm))
 
+(defun my-switch-to-scratch-buffer ()
+  "Switch to scratch buffer."
+  (interactive)
+  (switch-to-buffer-other-window "*scratch*"))  ; TODO: create in lisp interaction mode if missing
+
 (defun my-current-dir ()
   "View current dir in dired."
   (interactive)
