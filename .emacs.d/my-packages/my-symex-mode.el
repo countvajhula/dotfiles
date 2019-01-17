@@ -1130,6 +1130,7 @@ current tree."
   ("d" symex-evaluate-definition "evaluate definition")
   ("E" eval-expression "eval expression")
   ("t" my-switch-to-scratch-buffer "scratch buffer" :exit t)
+  ("G" my-switch-to-messages-buffer "messages buffer" :exit t)
   ("r" symex-repl "go to REPL" :exit t)
   ("|" lispy-split "split")
   ("m" symex-join "merge (join)")
