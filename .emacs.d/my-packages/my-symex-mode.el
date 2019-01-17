@@ -55,11 +55,11 @@
   "Y (vertical) component of move."
   (nth 1 move))
 
-(defvar move-zero (my-make-move 0 0))
-(defvar move-go-forward (my-make-move 1 0))
-(defvar move-go-backward (my-make-move -1 0))
-(defvar move-go-in (my-make-move 0 1))
-(defvar move-go-out (my-make-move 0 -1))
+(defconst move-zero (my-make-move 0 0))
+(defconst move-go-forward (my-make-move 1 0))
+(defconst move-go-backward (my-make-move -1 0))
+(defconst move-go-in (my-make-move 0 1))
+(defconst move-go-out (my-make-move 0 -1))
 
 (defun are-moves-equal? (m1 m2)
   "Check if two moves are identical, including any conditions."
@@ -269,7 +269,7 @@ An option could be either a maneuver, or a protocol itself."
         (while (< current-location original-location)
           (symex-go-forward)
           (setq current-location (point))
-          (setq result (+ 1 result)))
+          (setq result (1+ result)))
         result))))
 
 (defun my--forward-one-symex ()
@@ -290,7 +290,7 @@ An option could be either a maneuver, or a protocol itself."
         (error (setq result 0))))
     (condition-case nil
         (progn (backward-sexp 1)
-               (setq result (- result 1)))
+               (setq result (1- result)))
       (error nil))
     (let ((current-location (point)))
       (when (= original-location current-location)
@@ -316,7 +316,7 @@ An option could be either a maneuver, or a protocol itself."
     (when (not (point-at-initial-symex?))
       (condition-case nil
           (progn (backward-sexp 1)
-                 (setq result (+ 1 result)))
+                 (setq result (1+ result)))
         (error nil)))
     result))
 
@@ -330,7 +330,7 @@ An option could be either a maneuver, or a protocol itself."
         (setq result (+ res result))))
     (my-refocus-on-symex)
     (when (> result 0)
-      (my-make-move (- 0 result) 0))))
+      (my-make-move (- result) 0))))
 
 (defun my--enter-one-symex ()
   "Enter one lower symex level."
@@ -370,7 +370,7 @@ An option could be either a maneuver, or a protocol itself."
       (let ((res (my--exit-one-symex)))
         (setq result (+ res result))))
     (when (> result 0)
-      (my-make-move 0 (- 0 result)))))
+      (my-make-move 0 (- result)))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; EVALUATION AND EXECUTION ;;;
@@ -399,7 +399,7 @@ Evaluates to the actual move executed or nil if no move was executed."
 (cl-defun symex-go-backward (&optional (count 1))
   "Move backward COUNT symexes."
   (interactive)
-  (execute-tree-move (my-make-move (- 0 count) 0)))
+  (execute-tree-move (my-make-move (- count) 0)))
 
 (cl-defun symex-go-in (&optional (count 1))
   "Move in COUNT symexes."
@@ -409,7 +409,7 @@ Evaluates to the actual move executed or nil if no move was executed."
 (cl-defun symex-go-out (&optional (count 1))
   "Move out COUNT symexes."
   (interactive)
-  (execute-tree-move (my-make-move 0 (- 0 count))))
+  (execute-tree-move (my-make-move 0 (- count))))
 
 (defun my--execute-maneuver-phases (phases)
   "Execute the phases of a maneuver, stopping if a phase fails.
@@ -465,7 +465,7 @@ Evaluates to the maneuver actually executed."
     (let ((result (symex-execute-traversal traversal)))
       (when result
         (let ((times (if times
-                         (- times 1)
+                         (1- times)
                        times)))
           (append result
                   (symex--execute-circuit traversal
@@ -603,13 +603,13 @@ current rooted tree."
   (let ((exit-until-root
          (my-make-precaution
           move-go-out
-          :post-condition #'(lambda ()
-                              (not (point-at-root-symex?)))))
+          :post-condition (lambda ()
+                            (not (point-at-root-symex?)))))
         (exit-until-end-of-buffer
          (my-make-precaution
           move-go-out
-          :post-condition #'(lambda ()
-                              (not (point-at-final-symex?))))))
+          :post-condition (lambda ()
+                            (not (point-at-final-symex?))))))
     (let ((traversal
            (my-make-protocol
             (my-make-protocol
@@ -642,8 +642,8 @@ current tree."
            (my-make-maneuver
             move-go-backward
             postorder-in)
-           :pre-condition #'(lambda ()
-                              (not (point-at-root-symex?))))))
+           :pre-condition (lambda ()
+                            (not (point-at-root-symex?))))))
     (let* ((traversal
             (my-make-protocol
              (if flow
@@ -693,18 +693,18 @@ current tree."
   "Delete symex"
   (interactive)
   (sp-kill-sexp nil)
-  (cond ((or (current-line-empty-p)  ;; ^<>$
-             (save-excursion (back-to-indentation)  ;; ^(<>
+  (cond ((or (current-line-empty-p)  ; ^<>$
+             (save-excursion (back-to-indentation)  ; ^(<>
                              (forward-char)
                              (lispy-right-p)))
          (progn (evil-previous-line)
                 (my-symex-join-lines)))
-        ((save-excursion (evil-last-non-blank)  ;; (<>$
+        ((save-excursion (evil-last-non-blank)  ; (<>$
                          (lispy-left-p))
          (sp-next-sexp)
          (save-excursion
            (my-symex-join-lines t)))
-        ((looking-at-p "\n")  ;; (abc <>
+        ((looking-at-p "\n")  ; (abc <>
          (evil-join (line-beginning-position)
                     (line-end-position)))
         (t (fixup-whitespace)))
@@ -722,7 +722,7 @@ current tree."
   (interactive)
   (let ((move (symex-go-in)))
     (if (move-exists? move)
-        (apply 'evil-change (evil-inner-paren))  ;; TODO: dispatch on paren type
+        (apply #'evil-change (evil-inner-paren))  ; TODO: dispatch on paren type
       (sp-kill-sexp nil)
       (evil-insert-state))))
 
@@ -732,7 +732,7 @@ current tree."
   (when (and (lispy-left-p)
              (not (symex-empty-list-p)))
     (save-excursion
-      (symex-go-in) ;; need to be inside the symex to spit and slurp
+      (symex-go-in)  ; need to be inside the symex to spit and slurp
       (paredit-backward-barf-sexp 1))
     (symex-go-forward)
     (when (symex-empty-list-p)
@@ -746,7 +746,7 @@ current tree."
   (when (and (lispy-left-p)
              (not (symex-empty-list-p)))
     (save-excursion
-      (symex-go-in) ;; need to be inside the symex to spit and slurp
+      (symex-go-in)  ; need to be inside the symex to spit and slurp
       (paredit-forward-barf-sexp 1))
     (when (symex-empty-list-p)
       (symex-go-forward)
@@ -759,7 +759,7 @@ current tree."
   (when (lispy-left-p)
     (if (symex-empty-list-p)
         (forward-char)
-      (symex-go-in)) ;; need to be inside the symex to spit and slurp
+      (symex-go-in))  ; need to be inside the symex to spit and slurp
     (paredit-backward-slurp-sexp 1)
     (fixup-whitespace)
     (symex-go-out)))
@@ -771,7 +771,7 @@ current tree."
     (save-excursion
       (if (symex-empty-list-p)
           (forward-char)
-        (symex-go-in))  ;; need to be inside the symex to spit and slurp
+        (symex-go-in))  ; need to be inside the symex to spit and slurp
       (lispy-forward-slurp-sexp 1))))
 
 (defun my-join-symexes ()
@@ -790,7 +790,7 @@ current tree."
           (progn (evil-previous-line)
                  (if (current-line-empty-p)
                      (evil-join (line-beginning-position)
-                                (+ 1 (line-beginning-position)))
+                                (1+ (line-beginning-position)))
                    (evil-join (line-beginning-position)
                               (line-end-position))))
         (forward-sexp)
@@ -861,7 +861,7 @@ current tree."
 (defun my-append-after-symex ()
   "Append after symex (instead of vim's default of line)."
   (interactive)
-  (forward-sexp)  ;; selected symexes will have the cursor on the starting paren
+  (forward-sexp)  ; selected symexes will have the cursor on the starting paren
   (evil-insert 1 nil nil))
 
 (defun my-insert-before-symex ()
@@ -969,7 +969,7 @@ current tree."
     (forward-sexp)
     (fixup-whitespace))
   (save-excursion
-    (apply 'evil-indent
+    (apply #'evil-indent
            (seq-take (evil-cp-a-form 1)
                      2)))
   (my-select-nearest-symex))
@@ -982,7 +982,7 @@ current tree."
   "Evaluate Symex"
   (interactive)
   (save-excursion
-    (forward-sexp)  ;; selected symexes will have the cursor on the starting paren
+    (forward-sexp)  ; selected symexes will have the cursor on the starting paren
     (cond ((equal major-mode 'racket-mode)
            (my-racket-eval-symex))
           ((member major-mode elisp-modes)
@@ -1013,7 +1013,7 @@ current tree."
   "Lookup doc on symex."
   (interactive)
   (save-excursion
-    (forward-sexp)  ;; selected symexes will have the cursor on the starting paren
+    (forward-sexp)  ; selected symexes will have the cursor on the starting paren
     (cond ((equal major-mode 'racket-mode)
            (my-racket-describe-symbol))
           ((member major-mode elisp-modes)
@@ -1036,22 +1036,22 @@ current tree."
 (defun my-switch-to-scratch-buffer ()
   "Switch to scratch buffer."
   (interactive)
-  (switch-to-buffer-other-window "*scratch*"))  ;; TODO: create in lisp interaction mode if missing)
+  (switch-to-buffer-other-window "*scratch*"))  ; TODO: create in lisp interaction mode if missing
 
 (defun my-select-nearest-symex ()
   "Select symex nearest to point"
   (interactive)
   (cond ((and (not (eobp))
-              (save-excursion (forward-char) (lispy-right-p))) ;; |)
+              (save-excursion (forward-char) (lispy-right-p)))  ; |)
          (forward-char)
          (lispy-different))
-        ((looking-at-p "[[:space:]\n]")  ;; <> |<> or <> |$
+        ((looking-at-p "[[:space:]\n]")  ; <> |<> or <> |$
          (condition-case nil
              (progn (re-search-forward "[^[:space:]\n]")
                     (backward-char))
            (error (if-stuck (symex-go-backward)
                             (symex-go-forward)))))
-        ((thing-at-point 'sexp)  ;; som|ething
+        ((thing-at-point 'sexp)  ; som|ething
          (beginning-of-thing 'sexp))
         (t (if-stuck (symex-go-backward)
                      (symex-go-forward))))
@@ -1075,10 +1075,9 @@ current tree."
                                      9))
          (window-lower-view-bound (* (window-text-height)
                                      (/ 4.0 6))))
-    (unless (and (> window-current-line-number
-                    window-upper-view-bound)
-                 (< window-current-line-number
-                    window-lower-view-bound))
+    (unless (< window-upper-view-bound
+               window-current-line-number
+               window-lower-view-bound)
       (if smooth-scroll
           (dotimes (i (/ (abs window-scroll-delta)
                          3))
@@ -1180,7 +1179,7 @@ current tree."
   ("<return>" eem-enter-lower-level "enter lower level" :exit t)
   ("<escape>" eem-enter-higher-level "escape to higher level" :exit t))
 
-(global-set-key (kbd "s-y") 'hydra-symex/body)  ;; since y looks like inverted lambda
-(global-set-key (kbd "s-;") 'hydra-symex/body)  ;; since y is hard to reach
+(global-set-key (kbd "s-y") 'hydra-symex/body)  ; since y looks like inverted lambda
+(global-set-key (kbd "s-;") 'hydra-symex/body)  ; since y is hard to reach
 
 (provide 'my-symex-mode)
