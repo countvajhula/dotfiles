@@ -42,15 +42,24 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defun symex-make-move (x y)
-  (list x y))
+  "Construct a tree 'move' representing the number of steps to be taken
+along the X or forward-backward axis, and the Y or in-out axis."
+  (list 'move x y))
 
 (defun symex--move-x (move)
   "X (horizontal) component of move."
-  (nth 0 move))
+  (nth 1 move))
 
 (defun symex--move-y (move)
   "Y (vertical) component of move."
-  (nth 1 move))
+  (nth 2 move))
+
+(defun is-move? (obj)
+  "Checks if the data specifies a move."
+  (condition-case nil
+      (equal 'move
+             (nth 0 obj))
+    (error nil)))
 
 (defconst move-zero (symex-make-move 0 0))
 (defconst move-go-forward (symex-make-move 1 0))
