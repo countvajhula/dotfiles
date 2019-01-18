@@ -438,9 +438,6 @@ Attempts the maneuver in the order of its phases, accepting partial completion
 of phases. If any phase fails entirely, then the maneuver it is part of is
 terminated at that step.
 
-The maneuver is only executed if PRE-CONDITION holds, and is reversed if
-POST-CONDITION does not hold after the provisional execution of the maneuver.
-
 Evaluates to the maneuver actually executed."
   (let ((phases (symex--maneuver-phases maneuver)))
     (let ((result (symex--execute-maneuver-phases phases)))
@@ -462,7 +459,8 @@ Evaluates to the maneuver actually executed."
       (let ((executed-traversal (symex-execute-traversal traversal)))
         (if (funcall post-condition)
             executed-traversal
-          (goto-char original-location))))))
+          (goto-char original-location)
+          executed-traversal)))))
 
 (defun symex--execute-circuit (traversal times)
   "Execute TRAVERSAL TIMES times."
