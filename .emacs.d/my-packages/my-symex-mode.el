@@ -71,14 +71,6 @@ along the X or forward-backward axis, and the Y or in-out axis."
   "Check if two moves are identical, including any conditions."
   (equal m1 m2))
 
-(defun is-null-move? (move)
-  "Checks if the move specifies no movement."
-  (are-moves-equal? move move-zero))
-
-(defun move-exists? (move)
-  "Checks if the move specifies tangible movement."
-  (not (is-null-move? move)))
-
 (cl-defun symex-make-precaution (traversal &key pre-condition post-condition)
   "A specification to check conditions before and/or after execution
 of a traversal."
@@ -728,7 +720,7 @@ current tree."
   "Replace contents of symex"
   (interactive)
   (let ((move (symex-go-in)))
-    (if (move-exists? move)
+    (if move
         (apply #'evil-change (evil-inner-paren))  ; TODO: dispatch on paren type
       (sp-kill-sexp nil)
       (evil-insert-state))))
@@ -962,7 +954,7 @@ current tree."
   "Move symex backward in current tree level."
   (interactive)
   (let ((move (symex-go-backward)))
-    (when (move-exists? move)
+    (when move
       (symex-shift-forward)
       (symex-go-backward))))
 
