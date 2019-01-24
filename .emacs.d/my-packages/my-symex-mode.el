@@ -190,6 +190,37 @@ An option could be either a maneuver, or a protocol itself."
              (nth 0 obj))
     (error nil)))
 
+(cl-defun symex-make-computation (&key map
+                                       filter
+                                       reduce)
+  "A computation to be performed as part of a traversal.
+TODO: should computations be composable?
+
+MAP - the function to be applied to the result of each traversal step.
+FILTER - the function to be applied to a result prior to aggregation.
+REDUCE - a binary function to be applied in combining results to perform
+the final computation."
+  (list 'computation
+        map
+        filter
+        reduce))
+
+(defun symex--computation-map (computation)
+  "The map component (procedure) of the computation."
+  (nth 1 computation))
+
+(defun symex--computation-filter (computation)
+  "The filter component (procedure) of the computation."
+  (nth 2 computation))
+
+(defun symex--computation-reduce (computation)
+  "The reduce component (procedure) of the computation."
+  (nth 3 computation))
+
+(defconst computation-default (symex-make-computation :map #'list
+                                                      :filter #'identity
+                                                      :reduce #'append))
+
 ;;;;;;;;;;;;;;;;;;
 ;;; PRIMITIVES ;;;
 ;;;;;;;;;;;;;;;;;;
@@ -409,7 +440,7 @@ Evaluates to the actual move executed or nil if no move was executed."
   (interactive)
   (execute-tree-move (symex-make-move 0 (- count))))
 
-(defun symex--execute-maneuver-phases (phases)
+(defun symex--execute-maneuver-phases (phases computation)
   "Execute the phases of a maneuver, stopping if a phase fails.
 
 Evalutes to a list of phases actually executed."
@@ -417,13 +448,14 @@ Evalutes to a list of phases actually executed."
         (remaining-phases (cdr phases)))
     (let ((executed-phase (symex-execute-traversal current-phase)))
       (when executed-phase
-        (let ((result (list executed-phase)))
-          (if remaining-phases
-              (append result
-                      (symex--execute-maneuver-phases remaining-phases))
-            result))))))
+        (if remaining-phases
+            (funcall (symex--computation-reduce computation)
+                     executed-phase
+                     (symex--execute-maneuver-phases remaining-phases
+                                                     computation))
+          executed-phase)))))
 
-(defun symex-execute-maneuver (maneuver)
+(defun symex-execute-maneuver (maneuver computation)
   "Attempt to execute a given MANEUVER.
 
 Attempts the maneuver in the order of its phases, accepting partial completion
@@ -432,11 +464,13 @@ terminated at that step.
 
 Evaluates to the maneuver actually executed."
   (let ((phases (symex--maneuver-phases maneuver)))
-    (let ((result (symex--execute-maneuver-phases phases)))
+    (let ((result (symex--execute-maneuver-phases phases
+                                                  computation)))
+      ;; TODO: flat move list instead? ideally via "reduction rules" on maneuvers
       (when result
         (apply #'symex-make-maneuver result)))))
 
-(defun symex-execute-precaution (precaution)
+(defun symex-execute-precaution (precaution computation)
   "Attempt to execute a given PRECAUTION.
 
 The traversal is only executed if PRE-CONDITION holds, and is reversed if
@@ -448,36 +482,43 @@ Evaluates to the maneuver actually executed."
         (pre-condition (symex--precaution-pre-condition precaution))
         (post-condition (symex--precaution-post-condition precaution)))
     (when (funcall pre-condition)
-      (let ((executed-traversal (symex-execute-traversal traversal)))
+      (let ((executed-traversal (symex-execute-traversal traversal
+                                                         computation)))
         (if (funcall post-condition)
             executed-traversal
           (goto-char original-location)
           nil)))))
 
-(defun symex--execute-circuit (traversal times)
+(defun symex--execute-circuit (traversal times computation)
   "Execute TRAVERSAL TIMES times."
   (when (or (not times)  ; loop indefinitely
             (> times 0))
-    (let ((result (symex-execute-traversal traversal)))
+    (let ((result (symex-execute-traversal traversal
+                                           computation)))
       (when result
         (let ((times (if times
                          (1- times)
                        times)))
-          (append (list result)
-                  (symex--execute-circuit traversal
-                                          times)))))))
+          (funcall (symex--computation-reduce computation)
+                   result
+                   (symex--execute-circuit traversal
+                                           times
+                                           computation)))))))
 
-(defun symex-execute-circuit (circuit)
+(defun symex-execute-circuit (circuit computation)
   "Execute a circuit.
 
 This repeats some traversal as specified."
   (let ((traversal (symex--circuit-traversal circuit))
         (times (symex--circuit-times circuit)))
-    (let ((result (symex--execute-circuit traversal times)))
+    (let ((result (symex--execute-circuit traversal
+                                          times
+                                          computation)))
+      ;; TODO: flat move list instead? ideally via "reduction rules" on maneuvers
       (when result
         (apply #'symex-make-maneuver result)))))
 
-(defun symex--execute-traversal-with-reorientation (reorientation traversal)
+(defun symex--execute-traversal-with-reorientation (reorientation traversal computation)
   "Apply a reorientation and then attempt the maneuver.
 
 If the maneuver fails, then the reorientation is attempted as many times as
@@ -489,57 +530,80 @@ as phases of a higher-level maneuver by the caller."
     (when executed-reorientation
       (let ((executed-traversal (symex-execute-traversal traversal)))
         (if executed-traversal
-            (append (list executed-reorientation)
-                    (list executed-traversal))
+            (funcall (symex--computation-reduce computation)
+                     executed-reorientation
+                     executed-traversal)
           (let ((attempt (symex--execute-traversal-with-reorientation reorientation
-                                                                      traversal)))
+                                                                      traversal
+                                                                      computation)))
             (when attempt
-              (append (list executed-reorientation)
-                      attempt))))))))
+              (funcall (symex--computation-reduce computation)
+                       executed-reorientation
+                       attempt))))))))
 
-(defun symex-execute-detour (detour)
+(defun symex-execute-detour (detour computation)
   "Execute the DETOUR."
   (let ((original-location (point))
         (reorientation (symex--detour-reorientation detour))
         (traversal (symex--detour-traversal detour)))
     (let ((result (symex--execute-traversal-with-reorientation reorientation
-                                                               traversal)))
+                                                               traversal
+                                                               computation)))
+      ;; TODO: flat move list instead? ideally via "reduction rules" on maneuvers
       (if result
           (apply #'symex-make-maneuver result)
         (goto-char original-location)
-        result))))
+        nil))))
 
-(defun symex--try-options-in-sequence (options)
+(defun symex--try-options-in-sequence (options computation)
   "Try options one at a time until one succeeds."
   (let ((option (car options))
         (remaining-options (cdr options)))
-    (let ((executed-option (symex-execute-traversal option)))
+    (let ((executed-option (symex-execute-traversal option
+                                                    computation)))
       (if executed-option
           executed-option
         (when remaining-options
-          (symex--try-options-in-sequence remaining-options))))))
+          (symex--try-options-in-sequence remaining-options
+                                          computation))))))
 
-(defun symex-execute-protocol (protocol)
+(defun symex-execute-protocol (protocol computation)
   "Given a protocol including a set of options, attempt to execute them
 in order until one succeeds.
 
 Evaluates to the maneuver actually executed."
   (let ((options (symex--protocol-options protocol)))
-    (symex--try-options-in-sequence options)))
+    (symex--try-options-in-sequence options
+                                    computation)))
 
-(defun symex-execute-traversal (traversal)
+(defun symex-execute-traversal (traversal &optional computation)
   "Execute a tree traversal."
-  (cond ((is-maneuver? traversal)
-         (symex-execute-maneuver traversal))
-        ((is-circuit? traversal)
-         (symex-execute-circuit traversal))
-        ((is-protocol? traversal)
-         (symex-execute-protocol traversal))
-        ((is-precaution? traversal)
-         (symex-execute-precaution traversal))
-        ((is-detour? traversal)
-         (symex-execute-detour traversal))
-        (t (execute-tree-move traversal))))
+  (let ((computation (if computation
+                         computation
+                       computation-default)))
+    (let ((executed-traversal (cond ((is-maneuver? traversal)
+                                     (symex-execute-maneuver traversal
+                                                             computation))
+                                    ((is-circuit? traversal)
+                                     (symex-execute-circuit traversal
+                                                            computation))
+                                    ((is-protocol? traversal)
+                                     (symex-execute-protocol traversal
+                                                             computation))
+                                    ((is-precaution? traversal)
+                                     (symex-execute-precaution traversal
+                                                               computation))
+                                    ((is-detour? traversal)
+                                     (symex-execute-detour traversal
+                                                           computation))
+                                    (t (execute-tree-move traversal)))))
+      (when executed-traversal
+        (if (and (not (is-protocol? traversal))
+                 (not (is-precaution? traversal)))
+            ;; TODO: better way to distinguish these types of traversals?
+            (funcall (symex--computation-map computation)
+                     executed-traversal)
+          executed-traversal)))))
         ;;(t (error "Syntax error: unrecognized traversal type!"))))
 
 ;;;;;;;;;;;;;;;;;;
