@@ -452,7 +452,7 @@ Evaluates to the maneuver actually executed."
         (if (funcall post-condition)
             executed-traversal
           (goto-char original-location)
-          executed-traversal)))))
+          nil)))))
 
 (defun symex--execute-circuit (traversal times)
   "Execute TRAVERSAL TIMES times."
