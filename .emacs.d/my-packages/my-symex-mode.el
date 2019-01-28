@@ -483,11 +483,8 @@ terminated at that step.
 
 Evaluates to the maneuver actually executed."
   (let ((phases (symex--maneuver-phases maneuver)))
-    (let ((result (symex--execute-maneuver-phases phases
-                                                  computation)))
-      ;; TODO: flat move list instead? ideally via "reduction rules" on maneuvers
-      (when result
-        (apply #'symex-make-maneuver result)))))
+    (symex--execute-maneuver-phases phases
+                                    computation)))
 
 (defun symex-execute-precaution (precaution computation)
   "Attempt to execute a given PRECAUTION.
@@ -530,12 +527,9 @@ Evaluates to the maneuver actually executed."
 This repeats some traversal as specified."
   (let ((traversal (symex--circuit-traversal circuit))
         (times (symex--circuit-times circuit)))
-    (let ((result (symex--execute-circuit traversal
-                                          times
-                                          computation)))
-      ;; TODO: flat move list instead? ideally via "reduction rules" on maneuvers
-      (when result
-        (apply #'symex-make-maneuver result)))))
+    (symex--execute-circuit traversal
+                            times
+                            computation)))
 
 (defun symex--execute-traversal-with-reorientation (reorientation traversal computation)
   "Apply a reorientation and then attempt the maneuver.
@@ -568,11 +562,9 @@ as phases of a higher-level maneuver by the caller."
     (let ((result (symex--execute-traversal-with-reorientation reorientation
                                                                traversal
                                                                computation)))
-      ;; TODO: flat move list instead? ideally via "reduction rules" on maneuvers
-      (if result
-          (apply #'symex-make-maneuver result)
-        (goto-char original-location)
-        nil))))
+      (unless result
+        (goto-char original-location))
+      result)))
 
 (defun symex--try-options-in-sequence (options computation)
   "Try options one at a time until one succeeds."
