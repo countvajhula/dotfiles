@@ -424,7 +424,7 @@ The RESULT is the computated value associated with the traversal
 ;;; EVALUATION AND EXECUTION ;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defun execute-tree-move (move)
+(defun execute-tree-move (move &optional computation)
   "Execute the specified MOVE at the current point location in the tree.
 
 Evaluates to the actual move executed or nil if no move was executed."
@@ -615,7 +615,10 @@ Evaluates to the maneuver actually executed."
                                     ((is-detour? traversal)
                                      (symex-execute-detour traversal
                                                            computation))
-                                    (t (execute-tree-move traversal)))))
+                                    ((is-move? traversal)
+                                     (execute-tree-move traversal
+                                                        computation))
+                                    (t (error "Syntax error: unrecognized traversal type!")))))
       (when executed-traversal
         (if (and (not (is-protocol? traversal))
                  (not (is-precaution? traversal)))
@@ -623,7 +626,6 @@ Evaluates to the maneuver actually executed."
             (funcall (symex--computation-map computation)
                      executed-traversal)
           executed-traversal)))))
-        ;;(t (error "Syntax error: unrecognized traversal type!"))))
 
 ;;;;;;;;;;;;;;;;;;
 ;;; TRAVERSALS ;;;
