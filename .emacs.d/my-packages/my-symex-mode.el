@@ -221,6 +221,25 @@ the final computation."
                                                       :filter #'identity
                                                       :reduce #'append))
 
+(defun symex-make-escapade (account result)
+  "An escapade is a traversal and associated computation done
+by Symex the Squirrel.
+
+The ACCOUNT is an unpredicated program describing the traversal.
+The RESULT is the computated value associated with the traversal
+(as specified in the original computation indicated)."
+  (list 'escapade
+        account
+        result))
+
+(defun symex--escapade-account (escapade)
+  "An account (i.e. a program describing a traversal) of the escapade."
+  (nth 1 escapade))
+
+(defun symex--escapade-result (escapade)
+  "The result (i.e. the computed value) of the escapade."
+  (nth 2 escapade))
+
 ;;;;;;;;;;;;;;;;;;
 ;;; PRIMITIVES ;;;
 ;;;;;;;;;;;;;;;;;;
