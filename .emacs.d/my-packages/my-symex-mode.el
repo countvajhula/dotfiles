@@ -11,6 +11,7 @@
 (use-package paredit)
 (use-package evil-cleverparens)  ;; really only need cp-textobjects here
 (require 'cl-lib)
+(require 'dash-functional)
 
 ;;;;;;;;;;;;;;;;;;;;;
 ;;; CONFIGURATION ;;;
@@ -217,9 +218,24 @@ the final computation."
   "The reduce component (procedure) of the computation."
   (nth 3 computation))
 
-(defconst computation-default (symex-make-computation :map #'list
-                                                      :filter #'identity
-                                                      :reduce #'append))
+(defconst computation-default
+  ;; each result is wrapped in a list
+  ;; the results are concatenated using list concatenation
+  (symex-make-computation :map #'list
+                          :filter #'identity
+                          :reduce #'append))
+
+(defun symex--map-make-maneuver (phases)
+  "Make a maneuver given a list of phases."
+  (apply #'symex-make-maneuver phases))
+
+(defconst computation-account
+  ;; each result is cast as a maneuver and wrapped in a list for composition
+  ;; the results are concatenated using list concatenation
+  (symex-make-computation :map (-compose #'list
+                                         #'symex--map-make-maneuver)
+                          :filter #'identity
+                          :reduce #'append))
 
 ;;;;;;;;;;;;;;;;;;
 ;;; PRIMITIVES ;;;
@@ -572,7 +588,7 @@ Evaluates to the maneuver actually executed."
   "Execute a tree traversal."
   (let ((computation (if computation
                          computation
-                       computation-default)))
+                       computation-account)))
     (let ((executed-traversal (cond ((is-maneuver? traversal)
                                      (symex-execute-maneuver traversal
                                                              computation))
@@ -593,12 +609,14 @@ Evaluates to the maneuver actually executed."
                                                         computation))
                                     (t (error "Syntax error: unrecognized traversal type!")))))
       (when executed-traversal
-        (if (and (not (is-protocol? traversal))
-                 (not (is-precaution? traversal)))
-            ;; TODO: better way to distinguish these types of traversals?
-            (funcall (symex--computation-map computation)
-                     executed-traversal)
-          executed-traversal)))))
+        (if (is-move? traversal)
+            (list traversal)
+          (if (and (not (is-protocol? traversal))
+                   (not (is-precaution? traversal)))
+              ;; TODO: better way to distinguish these types of traversals?
+              (funcall (symex--computation-map computation)
+                       executed-traversal)
+            executed-traversal))))))
 
 ;;;;;;;;;;;;;;;;;;
 ;;; TRAVERSALS ;;;
