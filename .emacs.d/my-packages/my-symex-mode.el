@@ -225,15 +225,43 @@ the final computation."
                           :filter #'identity
                           :reduce #'append))
 
-(defun symex--map-make-maneuver (phases)
-  "Make a maneuver given a list of phases."
-  (apply #'symex-make-maneuver phases))
+(defun symex--simplify-maneuver-phases (phases)
+  "Helper to flatten maneuver to moves."
+  (let ((phase (car phases))
+        (remaining-phases (cdr phases)))
+    (let ((moves (if (is-move? phase)
+                     (list phase)
+                   (let ((simplified-phase (symex--simplify-maneuver phase)))
+                     (symex--maneuver-phases simplified-phase)))))
+      (if remaining-phases
+          (append moves
+               (symex--simplify-maneuver-phases remaining-phases))
+        moves))))
+
+(defun symex--simplify-maneuver (maneuver)
+  "Reduce a complex maneuver to a flat maneuver whose phases are moves."
+  (let ((phases (symex--maneuver-phases maneuver)))
+    (let* ((simplified-phases (symex--simplify-maneuver-phases phases))
+           (maneuver-length (length simplified-phases)))
+      (cond ((= maneuver-length 1)
+             ;; just return the move
+             (nth 0 simplified-phases))
+            ((> maneuver-length 1)
+             (apply #'symex-make-maneuver simplified-phases))))))
+
+(defun symex--interpret-traversal (traversal)
+  "Interpret a traversal as a single, flat maneuver or move."
+  (cond ((is-maneuver? traversal)
+         (symex--simplify-maneuver traversal))
+        ((is-move? traversal)
+         traversal)
+        (t (error "Syntax error: unrecognized traversal type!"))))
 
 (defconst computation-account
   ;; each result is cast as a maneuver and wrapped in a list for composition
   ;; the results are concatenated using list concatenation
   (symex-make-computation :map (-compose #'list
-                                         #'symex--map-make-maneuver)
+                                         #'symex--interpret-traversal)
                           :filter #'identity
                           :reduce #'append))
 
@@ -593,7 +621,7 @@ Evaluates to the maneuver actually executed."
   "Execute a tree traversal."
   (let ((computation (if computation
                          computation
-                       computation-default)))
+                       computation-account)))
     (let ((executed-traversal (cond ((is-maneuver? traversal)
                                      (symex-execute-maneuver traversal
                                                              computation))
