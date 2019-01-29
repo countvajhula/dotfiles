@@ -610,7 +610,7 @@ Evaluates to the maneuver actually executed."
                                     (t (error "Syntax error: unrecognized traversal type!")))))
       (when executed-traversal
         (if (is-move? traversal)
-            (list traversal)
+            (list executed-traversal)
           (if (and (not (is-protocol? traversal))
                    (not (is-precaution? traversal)))
               ;; TODO: better way to distinguish these types of traversals?
