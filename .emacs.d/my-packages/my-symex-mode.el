@@ -480,8 +480,10 @@ terminated at that step.
 
 Evaluates to the maneuver actually executed."
   (let ((phases (symex--maneuver-phases maneuver)))
-    (symex--execute-maneuver-phases phases
-                                    computation)))
+    (let ((executed-phases (symex--execute-maneuver-phases phases
+                                                           computation)))
+      (when executed-phases
+        (apply 'symex-make-maneuver executed-phases)))))
 
 (defun symex-execute-precaution (precaution computation)
   "Attempt to execute a given PRECAUTION.
@@ -524,9 +526,11 @@ Evaluates to the maneuver actually executed."
 This repeats some traversal as specified."
   (let ((traversal (symex--circuit-traversal circuit))
         (times (symex--circuit-times circuit)))
-    (symex--execute-circuit traversal
-                            times
-                            computation)))
+    (let ((executed-phases (symex--execute-circuit traversal
+                                                   times
+                                                   computation)))
+      (when executed-phases
+        (apply 'symex-make-maneuver executed-phases)))))
 
 (defun symex--execute-traversal-with-reorientation (reorientation traversal computation)
   "Apply a reorientation and then attempt the maneuver.
@@ -556,12 +560,13 @@ as phases of a higher-level maneuver by the caller."
   (let ((original-location (point))
         (reorientation (symex--detour-reorientation detour))
         (traversal (symex--detour-traversal detour)))
-    (let ((result (symex--execute-traversal-with-reorientation reorientation
-                                                               traversal
-                                                               computation)))
-      (unless result
-        (goto-char original-location))
-      result)))
+    (let ((executed-phases (symex--execute-traversal-with-reorientation reorientation
+                                                                        traversal
+                                                                        computation)))
+      (if executed-phases
+          (apply 'symex-make-maneuver executed-phases)
+        (goto-char original-location)
+        nil))))
 
 (defun symex--try-options-in-sequence (options computation)
   "Try options one at a time until one succeeds."
@@ -588,7 +593,7 @@ Evaluates to the maneuver actually executed."
   "Execute a tree traversal."
   (let ((computation (if computation
                          computation
-                       computation-account)))
+                       computation-default)))
     (let ((executed-traversal (cond ((is-maneuver? traversal)
                                      (symex-execute-maneuver traversal
                                                              computation))
@@ -609,14 +614,12 @@ Evaluates to the maneuver actually executed."
                                                         computation))
                                     (t (error "Syntax error: unrecognized traversal type!")))))
       (when executed-traversal
-        (if (is-move? traversal)
-            (list executed-traversal)
-          (if (and (not (is-protocol? traversal))
-                   (not (is-precaution? traversal)))
-              ;; TODO: better way to distinguish these types of traversals?
-              (funcall (symex--computation-map computation)
-                       executed-traversal)
-            executed-traversal))))))
+        (if (and (not (is-protocol? traversal))
+                 (not (is-precaution? traversal)))
+            ;; TODO: better way to distinguish these types of traversals?
+            (funcall (symex--computation-map computation)
+                     executed-traversal)
+          executed-traversal)))))
 
 ;;;;;;;;;;;;;;;;;;
 ;;; TRAVERSALS ;;;
