@@ -483,7 +483,7 @@ Evaluates to the maneuver actually executed."
     (let ((executed-phases (symex--execute-maneuver-phases phases
                                                            computation)))
       (when executed-phases
-        (apply 'symex-make-maneuver executed-phases)))))
+        (apply #'symex-make-maneuver executed-phases)))))
 
 (defun symex-execute-precaution (precaution computation)
   "Attempt to execute a given PRECAUTION.
@@ -530,7 +530,7 @@ This repeats some traversal as specified."
                                                    times
                                                    computation)))
       (when executed-phases
-        (apply 'symex-make-maneuver executed-phases)))))
+        (apply #'symex-make-maneuver executed-phases)))))
 
 (defun symex--execute-traversal-with-reorientation (reorientation traversal computation)
   "Apply a reorientation and then attempt the maneuver.
@@ -564,7 +564,7 @@ as phases of a higher-level maneuver by the caller."
                                                                         traversal
                                                                         computation)))
       (if executed-phases
-          (apply 'symex-make-maneuver executed-phases)
+          (apply #'symex-make-maneuver executed-phases)
         (goto-char original-location)
         nil))))
 
