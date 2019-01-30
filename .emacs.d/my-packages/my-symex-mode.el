@@ -512,10 +512,12 @@ Evalutes to a list of phases actually executed."
       (when executed-phase
         (if remaining-phases
             (funcall (symex--computation-reduce computation)
-                     executed-phase
+                     (funcall (symex--computation-f-to-aggregation computation)
+                              executed-phase)
                      (symex--execute-maneuver-phases remaining-phases
                                                      computation))
-          executed-phase)))))
+          (funcall (symex--computation-f-to-aggregation computation)
+                   executed-phase))))))
 
 (defun symex-execute-maneuver (maneuver computation)
   "Attempt to execute a given MANEUVER.
@@ -561,7 +563,8 @@ Evaluates to the maneuver actually executed."
                          (1- times)
                        times)))
           (funcall (symex--computation-reduce computation)
-                   result
+                   (funcall (symex--computation-f-to-aggregation computation)
+                            result)
                    (symex--execute-circuit traversal
                                            times
                                            computation)))))))
@@ -591,15 +594,19 @@ as phases of a higher-level maneuver by the caller."
       (let ((executed-traversal (symex-execute-traversal traversal)))
         (if executed-traversal
             (funcall (symex--computation-reduce computation)
-                     executed-reorientation
-                     executed-traversal)
+                     (funcall (symex--computation-f-to-aggregation computation)
+                              executed-reorientation)
+                     (funcall (symex--computation-f-to-aggregation computation)
+                              executed-traversal))
           (let ((attempt (symex--execute-traversal-with-reorientation reorientation
                                                                       traversal
                                                                       computation)))
             (when attempt
               (funcall (symex--computation-reduce computation)
-                       executed-reorientation
-                       attempt))))))))
+                       (funcall (symex--computation-f-to-aggregation computation)
+                                executed-reorientation)
+                       (funcall (symex--computation-f-to-aggregation computation)
+                                attempt)))))))))
 
 (defun symex-execute-detour (detour computation)
   "Execute the DETOUR."
@@ -663,8 +670,7 @@ Evaluates to the maneuver actually executed."
         (if (and (not (is-protocol? traversal))
                  (not (is-precaution? traversal)))
             ;; TODO: better way to distinguish these types of traversals?
-            (funcall (-compose (symex--computation-f-to-aggregation computation)
-                               (symex--computation-map computation))
+            (funcall (symex--computation-map computation)
                      executed-traversal)
           executed-traversal)))))
 
