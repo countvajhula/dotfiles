@@ -191,20 +191,30 @@ An option could be either a maneuver, or a protocol itself."
              (nth 0 obj))
     (error nil)))
 
-(cl-defun symex-make-computation (&key map
-                                       filter
-                                       reduce)
+(cl-defun symex-make-computation (&key (map #'identity)
+                                       (filter #'identity)
+                                       (reduce #'identity)
+                                       (f-to-aggregation #'identity)
+                                       (f-from-aggregation #'identity))
   "A computation to be performed as part of a traversal.
 TODO: should computations be composable?
 
 MAP - the function to be applied to the result of each traversal step.
 FILTER - the function to be applied to a result prior to aggregation.
 REDUCE - a binary function to be applied in combining results to perform
-the final computation."
+the final computation.
+F-TO-AGGREGATION - a 'functor' to transform data of the application type (the
+type used by the application) to the computation type (the type that can be
+composed and otherwise manipulated to fulfill the computational task).
+F-FROM-AGGREGATION - a 'functor' to transform data of the computation type (the type
+that can be composed and otherwise manipulated to fulfill the computational
+task) to the application type (the type used by the application)."
   (list 'computation
         map
         filter
-        reduce))
+        reduce
+        f-to-aggregation
+        f-from-aggregation))
 
 (defun symex--computation-map (computation)
   "The map component (procedure) of the computation."
@@ -218,12 +228,20 @@ the final computation."
   "The reduce component (procedure) of the computation."
   (nth 3 computation))
 
+(defun symex--computation-f-to-aggregation (computation)
+  "The f-to-aggregation component (procedure) of the computation."
+  (nth 4 computation))
+
+(defun symex--computation-f-from-aggregation (computation)
+  "The f-from-aggregation component (procedure) of the computation."
+  (nth 5 computation))
+
 (defconst computation-default
   ;; each result is wrapped in a list
   ;; the results are concatenated using list concatenation
-  (symex-make-computation :map #'list
-                          :filter #'identity
-                          :reduce #'append))
+  (symex-make-computation :f-to-aggregation #'list
+                          :reduce #'append
+                          :f-from-aggregation #'car))
 
 (defun symex--simplify-maneuver-phases (phases)
   "Helper to flatten maneuver to moves."
@@ -260,10 +278,10 @@ the final computation."
 (defconst computation-account
   ;; each result is cast as a maneuver and wrapped in a list for composition
   ;; the results are concatenated using list concatenation
-  (symex-make-computation :map (-compose #'list
-                                         #'symex--interpret-traversal)
-                          :filter #'identity
-                          :reduce #'append))
+  (symex-make-computation :f-to-aggregation #'list
+                          :map #'symex--interpret-traversal
+                          :reduce #'append
+                          :f-from-aggregation #'car))
 
 ;;;;;;;;;;;;;;;;;;
 ;;; PRIMITIVES ;;;
@@ -645,7 +663,8 @@ Evaluates to the maneuver actually executed."
         (if (and (not (is-protocol? traversal))
                  (not (is-precaution? traversal)))
             ;; TODO: better way to distinguish these types of traversals?
-            (funcall (symex--computation-map computation)
+            (funcall (-compose (symex--computation-f-to-aggregation computation)
+                               (symex--computation-map computation))
                      executed-traversal)
           executed-traversal)))))
 
