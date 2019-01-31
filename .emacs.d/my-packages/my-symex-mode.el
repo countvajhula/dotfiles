@@ -245,16 +245,15 @@ task) to the application type (the type used by the application)."
 
 (defun symex--simplify-maneuver-phases (phases)
   "Helper to flatten maneuver to moves."
-  (let ((phase (car phases))
-        (remaining-phases (cdr phases)))
-    (let ((moves (if (is-move? phase)
-                     (list phase)
-                   (let ((simplified-phase (symex--simplify-maneuver phase)))
-                     (symex--maneuver-phases simplified-phase)))))
-      (if remaining-phases
-          (append moves
-               (symex--simplify-maneuver-phases remaining-phases))
-        moves))))
+  (when phases
+    (let ((phase (car phases))
+          (remaining-phases (cdr phases)))
+      (let ((moves (if (is-move? phase)
+                       (list phase)
+                     (let ((simplified-phase (symex--simplify-maneuver phase)))
+                       (symex--maneuver-phases simplified-phase)))))
+        (append moves
+                (symex--simplify-maneuver-phases remaining-phases))))))
 
 (defun symex--simplify-maneuver (maneuver)
   "Reduce a complex maneuver to a flat maneuver whose phases are moves."
@@ -506,18 +505,16 @@ Evaluates to the actual move executed or nil if no move was executed."
   "Execute the phases of a maneuver, stopping if a phase fails.
 
 Evalutes to a list of phases actually executed."
-  (let ((current-phase (car phases))
-        (remaining-phases (cdr phases)))
-    (let ((executed-phase (symex-execute-traversal current-phase)))
-      (when executed-phase
-        (if remaining-phases
-            (funcall (symex--computation-reduce computation)
-                     (funcall (symex--computation-f-to-aggregation computation)
-                              executed-phase)
-                     (symex--execute-maneuver-phases remaining-phases
-                                                     computation))
-          (funcall (symex--computation-f-to-aggregation computation)
-                   executed-phase))))))
+  (when phases
+    (let ((current-phase (car phases))
+          (remaining-phases (cdr phases)))
+      (let ((executed-phase (symex-execute-traversal current-phase)))
+        (when executed-phase
+          (funcall (symex--computation-reduce computation)
+                   (funcall (symex--computation-f-to-aggregation computation)
+                            executed-phase)
+                   (symex--execute-maneuver-phases remaining-phases
+                                                   computation)))))))
 
 (defun symex-execute-maneuver (maneuver computation)
   "Attempt to execute a given MANEUVER.
@@ -622,13 +619,13 @@ as phases of a higher-level maneuver by the caller."
 
 (defun symex--try-options-in-sequence (options computation)
   "Try options one at a time until one succeeds."
-  (let ((option (car options))
-        (remaining-options (cdr options)))
-    (let ((executed-option (symex-execute-traversal option
-                                                    computation)))
-      (if executed-option
-          executed-option
-        (when remaining-options
+  (when options
+    (let ((option (car options))
+          (remaining-options (cdr options)))
+      (let ((executed-option (symex-execute-traversal option
+                                                      computation)))
+        (if executed-option
+            executed-option
           (symex--try-options-in-sequence remaining-options
                                           computation))))))
 
