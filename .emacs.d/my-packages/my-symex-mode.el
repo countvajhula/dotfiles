@@ -582,12 +582,12 @@ This repeats some traversal as specified."
         (apply #'symex-make-maneuver executed-phases)))))
 
 (defun symex--execute-traversal-with-reorientation (reorientation traversal computation)
-  "Apply a reorientation and then attempt the maneuver.
+  "Apply a REORIENTATION and then attempt the TRAVERSAL.
 
-If the maneuver fails, then the reorientation is attempted as many times as
+If the traversal fails, then the reorientation is attempted as many times as
 necessary until either it succeeds, or the reorientation fails.
 
-Evaluates to a list of maneuvers executed, if any, which could be treated
+Evaluates to a list of traversals executed, if any, which could be treated
 as phases of a higher-level maneuver by the caller."
   (let ((executed-reorientation (symex-execute-traversal reorientation)))
     (when executed-reorientation
@@ -605,8 +605,7 @@ as phases of a higher-level maneuver by the caller."
               (funcall (symex--computation-reduce computation)
                        (funcall (symex--computation-f-to-aggregation computation)
                                 executed-reorientation)
-                       (funcall (symex--computation-f-to-aggregation computation)
-                                attempt)))))))))
+                       attempt))))))))
 
 (defun symex-execute-detour (detour computation)
   "Execute the DETOUR."
