@@ -589,20 +589,17 @@ as phases of a higher-level maneuver by the caller."
   (let ((executed-reorientation (symex-execute-traversal reorientation)))
     (when executed-reorientation
       (let ((executed-traversal (symex-execute-traversal traversal)))
-        (if executed-traversal
+        (let ((path (if executed-traversal
+                        (funcall (symex--computation-f-to-aggregation computation)
+                                 executed-traversal)
+                      (symex--execute-traversal-with-reorientation reorientation
+                                                                   traversal
+                                                                   computation))))
+          (when path
             (funcall (symex--computation-reduce computation)
                      (funcall (symex--computation-f-to-aggregation computation)
                               executed-reorientation)
-                     (funcall (symex--computation-f-to-aggregation computation)
-                              executed-traversal))
-          (let ((attempt (symex--execute-traversal-with-reorientation reorientation
-                                                                      traversal
-                                                                      computation)))
-            (when attempt
-              (funcall (symex--computation-reduce computation)
-                       (funcall (symex--computation-f-to-aggregation computation)
-                                executed-reorientation)
-                       attempt))))))))
+                     path)))))))
 
 (defun symex-execute-detour (detour computation)
   "Execute the DETOUR."
