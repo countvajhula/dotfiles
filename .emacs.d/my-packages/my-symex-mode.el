@@ -85,6 +85,17 @@ along the branches of the tree."
                               (symex--move-y result)))))
     move-zero))
 
+(defun symex--move-length (move)
+  "Compute the length of the move. This is most naturally meaningful when
+the move is entirely along one axis, but a result will be returned even
+if the move is across multiple axes, as standard linear vector magnitude
+computation is used."
+  (let ((x (symex--move-x move))
+        (y (symex--move-y move)))
+    (if (not (= x 0))
+        x
+      y)))
+
 (cl-defun symex-make-precaution (traversal &key pre-condition post-condition)
   "A specification to check conditions before and/or after execution
 of a traversal."
