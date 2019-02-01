@@ -322,6 +322,29 @@ task) to the application type (the type used by the application)."
                           :reduce #'append
                           :f-from-aggregation #'car))
 
+(defun symex--streamline-to-maneuver (maneuver-or-move)
+  "Streamline traversal to a representation as a maneuver.
+
+If the argument is a maneuver, leave as is.
+If it is a move, convert to the equivalent maneuver (via simple casting)."
+  (if (is-move? maneuver-or-move)
+      (symex-make-maneuver maneuver-or-move)
+    maneuver-or-move))
+
+(defconst computation-length
+  ;; each result is interpreted down to a simple maneuver
+  ;; the phases of this maneuver are extracted and summed using
+  ;; move addition.
+  ;; the results are accumulated using addition of numbers
+  (symex-make-computation :f-to-aggregation #'symex--type-integer
+                          :map (-compose #'symex--move-length
+                                         #'symex--add-moves
+                                         #'symex--maneuver-phases
+                                         #'symex--streamline-to-maneuver
+                                         #'symex--interpret-traversal)
+                          :reduce #'my-add-numbers
+                          :f-from-aggregation #'car))
+
 ;;;;;;;;;;;;;;;;;;
 ;;; PRIMITIVES ;;;
 ;;;;;;;;;;;;;;;;;;
