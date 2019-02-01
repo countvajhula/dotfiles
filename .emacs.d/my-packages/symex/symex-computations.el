@@ -78,7 +78,7 @@ task) to the application type (the type used by the application)."
   "Represents the result of a traversal as a traversal."
   (cond ((is-traversal? obj)
          obj)
-        (t (symex-make-maneuver obj))))
+        (t (apply #'symex-make-maneuver obj))))
 
 (defun symex--simplify-maneuver-phases (phases)
   "Helper to flatten maneuver to moves."
