@@ -553,8 +553,9 @@ Evalutes to a list of phases actually executed."
           (funcall (symex--computation-reduce computation)
                    (funcall (symex--computation-f-to-aggregation computation)
                             executed-phase)
-                   (symex--execute-maneuver-phases remaining-phases
-                                                   computation)))))))
+                   (funcall (symex--computation-f-to-aggregation computation)
+                            (symex--execute-maneuver-phases remaining-phases
+                                                            computation))))))))
 
 (defun symex-execute-maneuver (maneuver computation)
   "Attempt to execute a given MANEUVER.
@@ -602,9 +603,10 @@ Evaluates to the maneuver actually executed."
           (funcall (symex--computation-reduce computation)
                    (funcall (symex--computation-f-to-aggregation computation)
                             result)
-                   (symex--execute-circuit traversal
-                                           times
-                                           computation)))))))
+                   (funcall (symex--computation-f-to-aggregation computation)
+                            (symex--execute-circuit traversal
+                                                    times
+                                                    computation))))))))
 
 (defun symex-execute-circuit (circuit computation)
   "Execute a circuit.
@@ -630,8 +632,7 @@ as phases of a higher-level maneuver by the caller."
     (when executed-reorientation
       (let ((executed-traversal (symex-execute-traversal traversal)))
         (let ((path (if executed-traversal
-                        (funcall (symex--computation-f-to-aggregation computation)
-                                 executed-traversal)
+                        executed-traversal
                       (symex--execute-traversal-with-reorientation reorientation
                                                                    traversal
                                                                    computation))))
@@ -639,7 +640,8 @@ as phases of a higher-level maneuver by the caller."
             (funcall (symex--computation-reduce computation)
                      (funcall (symex--computation-f-to-aggregation computation)
                               executed-reorientation)
-                     path)))))))
+                     (funcall (symex--computation-f-to-aggregation computation)
+                              path))))))))
 
 (defun symex-execute-detour (detour computation)
   "Execute the DETOUR."
