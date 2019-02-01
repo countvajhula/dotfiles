@@ -215,6 +215,22 @@ An option could be either a maneuver, or a protocol itself."
              (nth 0 obj))
     (error nil)))
 
+(defun symex--type-integer (obj)
+  "Convert an object to the integer type."
+  (cond ((integerp obj)
+         obj)
+        ((stringp obj)
+         (string-to-number obj))
+        ((listp obj)
+         (length obj))
+        (t (error "Unexpected type %s in integer type conversion!" obj))))
+
+(defun symex--type-list (obj)
+  "Convert an object to the list type."
+  (cond ((listp obj)
+         obj)
+        (list obj)))
+
 (cl-defun symex-make-computation (&key (map #'identity)
                                        (filter #'identity)
                                        (reduce #'identity)
