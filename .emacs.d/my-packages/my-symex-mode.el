@@ -72,6 +72,19 @@ along the X or forward-backward axis, and the Y or in-out axis."
   "Check if two moves are identical, including any conditions."
   (equal m1 m2))
 
+(defun symex--add-moves (moves)
+  "Add moves together as vectors, indicating height and distance
+along the branches of the tree."
+  (if moves
+      (let ((current (car moves))
+            (remaining (cdr moves)))
+        (let ((result (symex--add-moves remaining)))
+          (symex-make-move (+ (symex--move-x current)
+                              (symex--move-x result))
+                           (+ (symex--move-y current)
+                              (symex--move-y result)))))
+    move-zero))
+
 (cl-defun symex-make-precaution (traversal &key pre-condition post-condition)
   "A specification to check conditions before and/or after execution
 of a traversal."
