@@ -74,6 +74,12 @@ task) to the application type (the type used by the application)."
                           :reduce #'append
                           :f-from-aggregation #'car))
 
+(defun symex--traversal-account (obj)
+  "Represents the result of a traversal as a traversal."
+  (cond ((is-traversal? obj)
+         obj)
+        (t (symex-make-maneuver obj))))
+
 (defun symex--simplify-maneuver-phases (phases)
   "Helper to flatten maneuver to moves."
   (when phases
@@ -97,7 +103,7 @@ task) to the application type (the type used by the application)."
             ((> maneuver-length 1)
              (apply #'symex-make-maneuver simplified-phases))))))
 
-(defun symex--interpret-traversal (traversal)
+(defun symex--interpret-simple-traversal (traversal)
   "Interpret a traversal as a single, flat maneuver or move."
   (cond ((is-maneuver? traversal)
          (symex--simplify-maneuver traversal))
@@ -105,11 +111,20 @@ task) to the application type (the type used by the application)."
          traversal)
         (t (error "Syntax error: unrecognized traversal type!"))))
 
+(defconst computation-simple-account
+  ;; each result is cast as a maneuver and wrapped in a list for composition
+  ;; the results are concatenated using list concatenation
+  (symex-make-computation :f-to-aggregation #'symex--type-list
+                          :map (-compose #'symex--interpret-simple-traversal
+                                         #'symex--traversal-account)
+                          :reduce #'append
+                          :f-from-aggregation #'car))
+
 (defconst computation-account
   ;; each result is cast as a maneuver and wrapped in a list for composition
   ;; the results are concatenated using list concatenation
   (symex-make-computation :f-to-aggregation #'symex--type-list
-                          :map #'symex--interpret-traversal
+                          :map #'symex--traversal-account
                           :reduce #'append
                           :f-from-aggregation #'car))
 
@@ -136,7 +151,8 @@ If it is a move, convert to the equivalent maneuver (via simple casting)."
                                          #'symex--add-moves
                                          #'symex--maneuver-phases
                                          #'symex--streamline-to-maneuver
-                                         #'symex--interpret-traversal)
+                                         #'symex--interpret-simple-traversal
+                                         #'symex--traversal-account)
                           :reduce #'my-add-numbers
                           :f-from-aggregation #'car))
 
