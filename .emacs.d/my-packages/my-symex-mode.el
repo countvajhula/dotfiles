@@ -7,9 +7,9 @@
 ;;; TODO: handle "contracts" of each abstraction level, and where conditions should go, rename functions for clarity. legitimate detours vs conditional itineraries, vs conditional motions
 ;;; TODO: take a symex and bring it out and before/after as a peer of the parent
 ;;; TODO: my-tidy-symex has edge cases in indenting from evil-cp-a-form, where symex begins with : (keyword arg) or #'
-(use-package lispy)
-(use-package paredit)
-(use-package evil-cleverparens)  ;; really only need cp-textobjects here
+(require 'lispy)
+(require 'paredit)
+(require 'evil-cleverparens)  ;; really only need cp-textobjects here
 (require 'cl-lib)
 (require 'dash-functional)
 
