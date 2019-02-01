@@ -279,7 +279,7 @@ task) to the application type (the type used by the application)."
 (defconst computation-default
   ;; each result is wrapped in a list
   ;; the results are concatenated using list concatenation
-  (symex-make-computation :f-to-aggregation #'list
+  (symex-make-computation :f-to-aggregation #'symex--type-list
                           :reduce #'append
                           :f-from-aggregation #'car))
 
@@ -317,7 +317,7 @@ task) to the application type (the type used by the application)."
 (defconst computation-account
   ;; each result is cast as a maneuver and wrapped in a list for composition
   ;; the results are concatenated using list concatenation
-  (symex-make-computation :f-to-aggregation #'list
+  (symex-make-computation :f-to-aggregation #'symex--type-list
                           :map #'symex--interpret-traversal
                           :reduce #'append
                           :f-from-aggregation #'car))
