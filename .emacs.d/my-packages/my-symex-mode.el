@@ -215,6 +215,15 @@ An option could be either a maneuver, or a protocol itself."
              (nth 0 obj))
     (error nil)))
 
+(defun is-traversal? (obj)
+  "Checks if the data specifies a traversal."
+  (or (is-move? obj)
+      (is-maneuver? obj)
+      (is-circuit? obj)
+      (is-detour? obj)
+      (is-precaution? obj)
+      (is-protocol? obj)))
+
 (defun symex--type-integer (obj)
   "Convert an object to the integer type."
   (cond ((integerp obj)
@@ -227,9 +236,11 @@ An option could be either a maneuver, or a protocol itself."
 
 (defun symex--type-list (obj)
   "Convert an object to the list type."
-  (cond ((listp obj)
+  (cond ((is-traversal? obj)
+         (list obj))
+        ((listp obj)
          obj)
-        (list obj)))
+        (t (list obj))))
 
 (cl-defun symex-make-computation (&key (map #'identity)
                                        (filter #'identity)
