@@ -46,6 +46,11 @@
   (kbd "\]")
   'paredit-close-square)
 
+(define-key
+  evil-insert-state-map
+  (kbd "<backspace>")
+  'paredit-backward-delete)
+
 
 (defhydra hydra-symex (:idle 1.0
                        :columns 5
