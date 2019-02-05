@@ -151,9 +151,13 @@
 (setq eem-buffer-prefix "EPISTEMIC")
 
 (setq eem--current-tower-index 0)
+(setq eem--last-tower-index 0)
+(setq eem--tower-index-on-entry 0)
 (setq eem--current-level 1)  ;; TODO: set via hook in all modes incl evil modes
 (setq eem--reference-buffer (current-buffer))
 (make-variable-buffer-local 'eem--current-tower-index)
+(make-variable-buffer-local 'eem--last-tower-index)
+(make-variable-buffer-local 'eem--tower-index-on-entry)
 (make-variable-buffer-local 'eem--current-level)
 
 ;; ideally, epistemic mode should be aware when any evil state is entered,
@@ -271,12 +275,15 @@ initial epistemic tower."
   (dolist (tower eem-towers)
     (eem-render-tower tower))
   (with-current-buffer (eem--get-reference-buffer)
+    (setq eem--tower-index-on-entry eem--current-tower-index)
     (eem--switch-to-tower eem--current-tower-index))
   (evil-mode-state))
 
 (defun my-exit-mode-mode ()
   "Exit mode mode."
   (interactive)
+  (with-current-buffer eem--reference-buffer
+    (setq eem--last-tower-index eem--tower-index-on-entry))
   (eem--revert-buffer-appearance)
   (evil-normal-state)
   (kill-matching-buffers (concat "^" eem-buffer-prefix) nil t))
@@ -344,6 +351,21 @@ initial epistemic tower."
   (evil-next-line)
   (eem--extract-selected-level))
 
+(defun eem-flashback-to-last-tower ()
+  "Switch to the last tower used.
+
+Eventually this should be done via strange loop application
+of buffer mode when in epistemic mode, or alternatively,
+and perhaps equivalently, by treating 'switch tower' as the
+monadic verb in the 'switch buffer' navigation."
+  (interactive)
+  (with-current-buffer (eem--get-reference-buffer)
+    ;; setting hydra to exit here would be ideal, but it seems
+    ;; the hydra exits prior to this function being run, and there's
+    ;; no epistemic buffer to switch to. so for now, need to manually
+    ;; hit enter to use the selected tower
+    (eem--switch-to-tower eem--last-tower-index)))
+
 (defhydra hydra-mode (:idle 1.0
                       :columns 4
                       :body-pre (my-enter-mode-mode)
@@ -370,6 +392,7 @@ initial epistemic tower."
   ;; the mode mode, tower mode, and so on recursively makes more sense
   ;; if we assume that keyboard shortcuts are scarce. this gives us ways to use
   ;; a small number of keys in any arbitrary configuration
+  ("s-m" eem-flashback-to-last-tower)  ; canonical action
   ("<return>" eem-enter-selected-level :exit t)
   ("i" my-noop "exit" :exit t)
   ("<escape>" nil "exit" :exit t))
