@@ -95,15 +95,13 @@ necessary until either it succeeds, or the reorientation fails."
         (traversal (symex--detour-traversal detour)))
     (let ((executed-reorientation (symex-execute-traversal reorientation)))
       (when executed-reorientation
-        (let ((executed-traversal (symex-execute-traversal traversal)))
-          (let ((path (if executed-traversal
-                          executed-traversal
-                        (symex-execute-traversal (symex-make-detour reorientation
-                                                                    traversal)
-                                                 computation))))
-            (when path
+        (let ((path (symex-make-protocol traversal
+                                         detour)))
+          (let ((executed-path (symex-execute-traversal path
+                                                        computation)))
+            (when executed-path
               (append executed-reorientation
-                      path))))))))
+                      executed-path))))))))
 
 (defun symex-execute-precaution (precaution computation)
   "Attempt to execute a given PRECAUTION.
