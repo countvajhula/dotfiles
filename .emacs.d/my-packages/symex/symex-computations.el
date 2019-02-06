@@ -22,63 +22,112 @@
          obj)
         (t (list obj))))
 
-(cl-defun symex-make-computation (&key (map #'identity)
-                                       (filter #'identity)
-                                       (reduce #'identity)
-                                       (f-to-aggregation #'identity)
-                                       (f-from-aggregation #'identity))
+(cl-defun symex-make-computation (&key
+                                  components
+                                  (perceive #'identity)
+                                  (select #'identity)
+                                  (filter #'identity)
+                                  (decide #'identity)
+                                  (express #'identity)
+                                  (act #'identity))
   "A computation to be performed as part of a traversal.
-TODO: should computations be composable?
 
-MAP - the function to be applied to the result of each traversal step.
-FILTER - the function to be applied to a result prior to aggregation.
-REDUCE - a binary function to be applied in combining results to perform
-the final computation.
-F-TO-AGGREGATION - a 'functor' to transform data of the application type (the
-type used by the application) to the computation type (the type that can be
-composed and otherwise manipulated to fulfill the computational task).
-F-FROM-AGGREGATION - a 'functor' to transform data of the computation type (the type
-that can be composed and otherwise manipulated to fulfill the computational
-task) to the application type (the type used by the application)."
+COMPONENTS - a list of nested computations that will each process the
+input independently and produce a result. These results will then be
+filtered and finally considered collectively to produce a decision.
+PERCEIVE - the function to be applied to the result of each traversal step,
+which transforms it to the perceived type.
+SELECT - a predicate function that is applied to perceived values in order
+to select the subset of perceptions that will be operated on by nested
+computations.
+FILTER - a predicate function to be applied to results from nested computations
+to select those that will factor into the decision.
+DECIDE - a binary function to be applied in combining results from nested
+computations (each of the 'perceived' type) to yield the provisional result
+(also of the perceived type).
+EXPRESS - a function to transform data of the perceived type (e.g. the
+type produced by the decision) to the application type (the type that can be
+used by the application).
+ACT - a binary function to be applied in combining results from the overall
+computation (each of the 'expressed' type) to yield the final result
+(also of the expressed type)."
   (list 'computation
-        map
+        components
+        perceive
+        select
         filter
-        reduce
-        f-to-aggregation
-        f-from-aggregation))
+        decide
+        express
+        act))
 
-(defun symex--computation-map (computation)
-  "The map component (procedure) of the computation."
+(defun symex--computation-components (computation)
+  "The components of the computation."
   (nth 1 computation))
 
-(defun symex--computation-filter (computation)
-  "The filter component (procedure) of the computation."
+(defun symex--computation-perceive (computation)
+  "The perception procedure of the computation."
   (nth 2 computation))
 
-(defun symex--computation-reduce (computation)
-  "The reduce component (procedure) of the computation."
+(defun symex--computation-select (computation)
+  "The selection procedure of the computation."
   (nth 3 computation))
 
-(defun symex--computation-f-to-aggregation (computation)
-  "The f-to-aggregation component (procedure) of the computation."
+(defun symex--computation-filter (computation)
+  "The filtration/redaction procedure of the computation."
   (nth 4 computation))
 
-(defun symex--computation-f-from-aggregation (computation)
-  "The f-from-aggregation component (procedure) of the computation."
+(defun symex--computation-decide (computation)
+  "The decision procedure of the computation."
   (nth 5 computation))
+
+(defun symex--computation-express (computation)
+  "The expression procedure of the computation."
+  (nth 6 computation))
+
+(defun symex--computation-act (computation)
+  "The act procedure of the computation."
+  (nth 7 computation))
+
+(defun symex--ruminate (computation components input)
+  "Helper to process input in nested computations."
+  (let ((current (car components))
+        (remaining (cdr components)))
+    (if current
+        (funcall (symex--computation-decide computation)
+                 (symex-ruminate current
+                                 input)
+                 (symex--ruminate computation
+                                  remaining
+                                  input))
+      input)))
+
+(defun symex-ruminate (computation input)
+  "Have the COMPUTATION process the INPUT and produce a result."
+  (let ((perceived-input (funcall (symex--computation-perceive computation)
+                                  input)))
+    (let ((components (symex--computation-components computation)))
+      (funcall (symex--computation-express computation)
+               (symex--ruminate components perceived-input)))))
 
 (defconst computation-default
   ;; each result is wrapped in a list
   ;; the results are concatenated using list concatenation
-  (symex-make-computation :f-to-aggregation #'symex--type-list
-                          :reduce #'append
-                          :f-from-aggregation #'car))
+  (symex-make-computation :perceive #'symex--type-list
+                          :act #'append))
 
 (defun symex--traversal-account (obj)
   "Represents the result of a traversal as a traversal."
   (cond ((is-traversal? obj)
          obj)
         (t (apply #'symex-make-maneuver obj))))
+
+(defconst computation-account
+  ;; each result is cast as a maneuver and wrapped in a list for composition
+  ;; the results are concatenated using list concatenation
+  (symex-make-computation :f-to-aggregation #'symex--type-list
+                          :map #'symex--traversal-account
+                          :reduce #'append
+                          :f-from-aggregation #'car))
 
 (defun symex--simplify-maneuver-phases (phases)
   "Helper to flatten maneuver to moves."
@@ -117,14 +166,6 @@ task) to the application type (the type used by the application)."
   (symex-make-computation :f-to-aggregation #'symex--type-list
                           :map (-compose #'symex--interpret-simple-traversal
                                          #'symex--traversal-account)
-                          :reduce #'append
-                          :f-from-aggregation #'car))
-
-(defconst computation-account
-  ;; each result is cast as a maneuver and wrapped in a list for composition
-  ;; the results are concatenated using list concatenation
-  (symex-make-computation :f-to-aggregation #'symex--type-list
-                          :map #'symex--traversal-account
                           :reduce #'append
                           :f-from-aggregation #'car))
 
