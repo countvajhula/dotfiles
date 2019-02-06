@@ -65,25 +65,6 @@ Evaluates to the maneuver actually executed."
                                                     remaining-phases)
                                              computation))))))))
 
-(defun symex-execute-precaution (precaution computation)
-  "Attempt to execute a given PRECAUTION.
-
-The traversal is only executed if PRE-CONDITION holds, and is reversed if
-POST-CONDITION does not hold after the provisional execution of the traversal.
-
-Evaluates to the maneuver actually executed."
-  (let ((original-location (point))
-        (traversal (symex--precaution-traversal precaution))
-        (pre-condition (symex--precaution-pre-condition precaution))
-        (post-condition (symex--precaution-post-condition precaution)))
-    (when (funcall pre-condition)
-      (let ((executed-traversal (symex-execute-traversal traversal
-                                                         computation)))
-        (if (funcall post-condition)
-            executed-traversal
-          (goto-char original-location)
-          nil)))))
-
 (defun symex-execute-circuit (circuit computation)
   "Execute a circuit.
 
@@ -123,6 +104,22 @@ necessary until either it succeeds, or the reorientation fails."
             (when path
               (append executed-reorientation
                       path))))))))
+
+(defun symex-execute-precaution (precaution computation)
+  "Attempt to execute a given PRECAUTION.
+
+The traversal is only executed if PRE-CONDITION holds, and is reversed if
+POST-CONDITION does not hold after the provisional execution of the traversal.
+
+Evaluates to the maneuver actually executed."
+  (let ((traversal (symex--precaution-traversal precaution))
+        (pre-condition (symex--precaution-pre-condition precaution))
+        (post-condition (symex--precaution-post-condition precaution)))
+    (when (funcall pre-condition)
+      (let ((executed-traversal (symex-execute-traversal traversal
+                                                         computation)))
+        (when (funcall post-condition)
+          executed-traversal)))))
 
 (defun symex-execute-protocol (protocol computation)
   "Given a protocol including a set of options, attempt to execute them
