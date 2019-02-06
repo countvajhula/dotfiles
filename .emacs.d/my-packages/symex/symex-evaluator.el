@@ -46,6 +46,17 @@ of moves (singleton, in this case) rather than the executed move itself."
   (interactive)
   (execute-tree-move (symex-make-move 0 (- count))))
 
+(defun symex--compute-results (a b computation)
+  "Combine component computed results A and B into an aggregate result,
+according to the specified COMPUTATION."
+  ;; TODO: ruminate here
+  ;; a and b should each have as many elements as the number of components
+  ;; in the computation
+  ;; later, a and b could be generators instead of lists of results
+  (funcall (symex--computation-act computation)
+           a
+           b))
+
 (defun symex-execute-maneuver (maneuver computation)
   "Attempt to execute a given MANEUVER.
 
@@ -60,10 +71,13 @@ Evaluates to the maneuver actually executed."
             (remaining-phases (cdr phases)))
         (let ((executed-phase (symex-execute-traversal current-phase)))
           (when executed-phase
-            (append executed-phase
-                    (symex-execute-traversal (apply #'symex-make-maneuver
-                                                    remaining-phases)
-                                             computation))))))))
+            (let ((executed-remaining-phases
+                   (symex-execute-traversal (apply #'symex-make-maneuver
+                                                   remaining-phases)
+                                            computation)))
+              (symex--compute-results executed-phase
+                                      executed-remaining-phases
+                                      computation))))))))
 
 (defun symex-execute-circuit (circuit computation)
   "Execute a circuit.
@@ -79,10 +93,13 @@ This repeats some traversal as specified."
           (let ((times (if times
                            (1- times)
                          times)))
-            (append result
-                    (symex-execute-traversal (symex-make-circuit traversal
-                                                                 times)
-                                             computation))))))))
+            (let ((remaining-circuit
+                   (symex-execute-traversal (symex-make-circuit traversal
+                                                                times)
+                                            computation)))
+              (symex--compute-results result
+                                      remaining-circuit
+                                      computation))))))))
 
 (defun symex-execute-detour (detour computation)
   "Execute the DETOUR.
@@ -100,8 +117,9 @@ necessary until either it succeeds, or the reorientation fails."
           (let ((executed-path (symex-execute-traversal path
                                                         computation)))
             (when executed-path
-              (append executed-reorientation
-                      executed-path))))))))
+              (symex--compute-results executed-reorientation
+                                      executed-path
+                                      computation))))))))
 
 (defun symex-execute-precaution (precaution computation)
   "Attempt to execute a given PRECAUTION.
@@ -161,8 +179,10 @@ Evaluates to the maneuver actually executed."
                                      (symex-execute-move traversal
                                                          computation))
                                     (t (error "Syntax error: unrecognized traversal type!")))))
-      (unless executed-traversal
-        (goto-char original-location))
-      executed-traversal)))
+      (let ((result (funcall (symex--computation-perceive computation)
+                             executed-traversal)))
+        (unless result
+          (goto-char original-location))
+        result))))
 
 (provide 'symex-evaluator)
