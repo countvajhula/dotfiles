@@ -46,19 +46,6 @@ of moves (singleton, in this case) rather than the executed move itself."
   (interactive)
   (execute-tree-move (symex-make-move 0 (- count))))
 
-(defun symex--execute-maneuver-phases (phases computation)
-  "Execute the phases of a maneuver, stopping if a phase fails.
-
-Evalutes to a list of phases actually executed."
-  (when phases
-    (let ((current-phase (car phases))
-          (remaining-phases (cdr phases)))
-      (let ((executed-phase (symex-execute-traversal current-phase)))
-        (when executed-phase
-          (append executed-phase
-                  (symex--execute-maneuver-phases remaining-phases
-                                                  computation)))))))
-
 (defun symex-execute-maneuver (maneuver computation)
   "Attempt to execute a given MANEUVER.
 
@@ -68,9 +55,15 @@ terminated at that step.
 
 Evaluates to the maneuver actually executed."
   (let ((phases (symex--maneuver-phases maneuver)))
-    (let ((executed-phases (symex--execute-maneuver-phases phases
-                                                           computation)))
-      executed-phases)))
+    (when phases
+      (let ((current-phase (car phases))
+            (remaining-phases (cdr phases)))
+        (let ((executed-phase (symex-execute-traversal current-phase)))
+          (when executed-phase
+            (append executed-phase
+                    (symex-execute-traversal (apply #'symex-make-maneuver
+                                                    remaining-phases)
+                                             computation))))))))
 
 (defun symex-execute-precaution (precaution computation)
   "Attempt to execute a given PRECAUTION.
@@ -91,75 +84,45 @@ Evaluates to the maneuver actually executed."
           (goto-char original-location)
           nil)))))
 
-(defun symex--execute-circuit (traversal times computation)
-  "Execute TRAVERSAL TIMES times."
-  (when (or (not times)  ; loop indefinitely
-            (> times 0))
-    (let ((result (symex-execute-traversal traversal
-                                           computation)))
-      (when result
-        (let ((times (if times
-                         (1- times)
-                       times)))
-          (append result
-                  (symex--execute-circuit traversal
-                                          times
-                                          computation)))))))
-
 (defun symex-execute-circuit (circuit computation)
   "Execute a circuit.
 
 This repeats some traversal as specified."
   (let ((traversal (symex--circuit-traversal circuit))
         (times (symex--circuit-times circuit)))
-    (let ((executed-phases (symex--execute-circuit traversal
-                                                   times
-                                                   computation)))
-      executed-phases)))
-
-(defun symex--execute-traversal-with-reorientation (reorientation traversal computation)
-  "Apply a REORIENTATION and then attempt the TRAVERSAL.
-
-If the traversal fails, then the reorientation is attempted as many times as
-necessary until either it succeeds, or the reorientation fails.
-
-Evaluates to a list of traversals executed, if any, which could be treated
-as phases of a higher-level maneuver by the caller."
-  (let ((executed-reorientation (symex-execute-traversal reorientation)))
-    (when executed-reorientation
-      (let ((executed-traversal (symex-execute-traversal traversal)))
-        (let ((path (if executed-traversal
-                        executed-traversal
-                      (symex--execute-traversal-with-reorientation reorientation
-                                                                   traversal
-                                                                   computation))))
-          (when path
-            (append executed-reorientation
-                    path)))))))
+    (when (or (not times)  ; loop indefinitely
+              (> times 0))
+      (let ((result (symex-execute-traversal traversal
+                                             computation)))
+        (when result
+          (let ((times (if times
+                           (1- times)
+                         times)))
+            (append result
+                    (symex-execute-traversal (symex-make-circuit traversal
+                                                                 times)
+                                             computation))))))))
 
 (defun symex-execute-detour (detour computation)
-  "Execute the DETOUR."
-  (let ((original-location (point))
-        (reorientation (symex--detour-reorientation detour))
-        (traversal (symex--detour-traversal detour)))
-    (let ((executed-phases (symex--execute-traversal-with-reorientation reorientation
-                                                                        traversal
-                                                                        computation)))
-      (unless executed-phases
-        (goto-char original-location))
-      executed-phases)))
+  "Execute the DETOUR.
 
-(defun symex--try-options-in-sequence (options computation)
-  "Try options one at a time until one succeeds."
-  (when options
-    (let ((option (car options))
-          (remaining-options (cdr options)))
-      (let ((executed-option (symex-execute-traversal option
-                                                      computation)))
-        (if executed-option
-            executed-option
-          (symex--try-options-in-sequence remaining-options
-                                          computation))))))
+Apply a reorientation and then attempt the traversal.
+
+If the traversal fails, then the reorientation is attempted as many times as
+necessary until either it succeeds, or the reorientation fails."
+  (let ((reorientation (symex--detour-reorientation detour))
+        (traversal (symex--detour-traversal detour)))
+    (let ((executed-reorientation (symex-execute-traversal reorientation)))
+      (when executed-reorientation
+        (let ((executed-traversal (symex-execute-traversal traversal)))
+          (let ((path (if executed-traversal
+                          executed-traversal
+                        (symex-execute-traversal (symex-make-detour reorientation
+                                                                    traversal)
+                                                 computation))))
+            (when path
+              (append executed-reorientation
+                      path))))))))
 
 (defun symex-execute-protocol (protocol computation)
   "Given a protocol including a set of options, attempt to execute them
@@ -167,15 +130,24 @@ in order until one succeeds.
 
 Evaluates to the maneuver actually executed."
   (let ((options (symex--protocol-options protocol)))
-    (symex--try-options-in-sequence options
-                                    computation)))
+    (when options
+      (let ((option (car options))
+            (remaining-options (cdr options)))
+        (let ((executed-option (symex-execute-traversal option
+                                                        computation)))
+          (if executed-option
+              executed-option
+            (symex-execute-traversal (apply #'symex-make-protocol
+                                            remaining-options)
+                                     computation)))))))
 
 (defun symex-execute-traversal (traversal &optional computation)
   "Execute a tree traversal."
   (let ((computation (if computation
                          computation
                        computation-default)))
-    (let ((executed-traversal (cond ((is-maneuver? traversal)
+    (let ((original-location (point))
+          (executed-traversal (cond ((is-maneuver? traversal)
                                      (symex-execute-maneuver traversal
                                                              computation))
                                     ((is-circuit? traversal)
@@ -194,6 +166,8 @@ Evaluates to the maneuver actually executed."
                                      (symex-execute-move traversal
                                                          computation))
                                     (t (error "Syntax error: unrecognized traversal type!")))))
+      (unless executed-traversal
+        (goto-char original-location))
       executed-traversal)))
 
 (provide 'symex-evaluator)
