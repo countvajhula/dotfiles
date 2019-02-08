@@ -153,11 +153,13 @@
 (setq eem--current-tower-index 0)
 (setq eem--last-tower-index 0)
 (setq eem--tower-index-on-entry 0)
+(setq eem--flashback-tower-index 0)
 (setq eem--current-level 1)  ;; TODO: set via hook in all modes incl evil modes
 (setq eem--reference-buffer (current-buffer))
 (make-variable-buffer-local 'eem--current-tower-index)
 (make-variable-buffer-local 'eem--last-tower-index)
 (make-variable-buffer-local 'eem--tower-index-on-entry)
+(make-variable-buffer-local 'eem--flashback-tower-index)
 (make-variable-buffer-local 'eem--current-level)
 
 ;; ideally, epistemic mode should be aware when any evil state is entered,
@@ -275,6 +277,13 @@ initial epistemic tower."
   (dolist (tower eem-towers)
     (eem-render-tower tower))
   (with-current-buffer (eem--get-reference-buffer)
+    ;; Store "previous" previous tower to support flashback
+    ;; feature seamlessly. This is to get around hydra executing
+    ;; functions after exiting rather than before, which loses
+    ;; information about the previous tower if flashback is
+    ;; being invoked. This is a hacky fix, but it works for now.
+    ;; Improve this eventually.
+    (setq eem--flashback-tower-index eem--tower-index-on-entry)
     (setq eem--tower-index-on-entry eem--current-tower-index)
     (eem--switch-to-tower eem--current-tower-index))
   (evil-mode-state))
@@ -362,9 +371,14 @@ monadic verb in the 'switch buffer' navigation."
   (with-current-buffer (eem--get-reference-buffer)
     ;; setting hydra to exit here would be ideal, but it seems
     ;; the hydra exits prior to this function being run, and there's
-    ;; no epistemic buffer to switch to. so for now, need to manually
-    ;; hit enter to use the selected tower
-    (eem--switch-to-tower eem--last-tower-index)))
+    ;; no epistemic buffer to switch to. so for now, options are
+    ;; either to manually hit enter to use the selected tower
+    ;; or store the "previous" previous tower upon mode mode entry
+    ;; to get around the need for that
+    ;; (eem--switch-to-tower eem--last-tower-index)
+    (let ((original-tower-index eem--current-tower-index))
+      (setq eem--current-tower-index eem--flashback-tower-index)
+      (setq eem--flashback-tower-index original-tower-index))))
 
 (defhydra hydra-mode (:idle 1.0
                       :columns 4
@@ -392,7 +406,7 @@ monadic verb in the 'switch buffer' navigation."
   ;; the mode mode, tower mode, and so on recursively makes more sense
   ;; if we assume that keyboard shortcuts are scarce. this gives us ways to use
   ;; a small number of keys in any arbitrary configuration
-  ("s-m" eem-flashback-to-last-tower)  ; canonical action
+  ("s-m" eem-flashback-to-last-tower :exit t)  ; canonical action
   ("<return>" eem-enter-selected-level :exit t)
   ("i" my-noop "exit" :exit t)
   ("<escape>" nil "exit" :exit t))
