@@ -378,7 +378,10 @@ monadic verb in the 'switch buffer' navigation."
     ;; (eem--switch-to-tower eem--last-tower-index)
     (let ((original-tower-index eem--current-tower-index))
       (setq eem--current-tower-index eem--flashback-tower-index)
-      (setq eem--flashback-tower-index original-tower-index))))
+      (setq eem--flashback-tower-index original-tower-index)
+      ;; set the current level to the highest level in the new tower
+      (setq eem--current-level (1- (length (ht-get (eem--current-tower)
+                                                   'levels)))))))
 
 (defhydra hydra-mode (:idle 1.0
                       :columns 4
