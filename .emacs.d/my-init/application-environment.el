@@ -333,13 +333,17 @@
 		 (buffer-file-name))
     (message "%s" (string-join bufinfo " "))))
 
-(defun my-new-empty-buffer (&optional buffer-name)
+(cl-defun my-new-empty-buffer (&optional
+                               buffer-name
+                               &key
+                               switch-p)
   "Create a new empty buffer.
 
 If BUFFER-NAME is not provided, the new buffer will be named
-“untitled” or “untitled<2>”, “untitled<3>”, etc.  The buffer will be
-opened in the currently active (at the time of command execution)
+“untitled” or “untitled<2>”, “untitled<3>”, etc. The buffer will be
+created in the currently active (at the time of command execution)
 major mode.
+If SWITCH-P is true, switch to the newly created buffer.
 
 Modified from:
 URL `http://ergoemacs.org/emacs/emacs_new_empty_buffer.html'
@@ -348,9 +352,11 @@ Version 2017-11-01"
   (let* ((buffer-name (or buffer-name "untitled"))
          (original-major-mode major-mode)
          ($buf (generate-new-buffer buffer-name)))
-    (switch-to-buffer $buf)
-    (funcall original-major-mode)
-    (setq buffer-offer-save t)
+    (with-current-buffer $buf
+      (funcall original-major-mode)
+      (setq buffer-offer-save t))
+    (when switch-p
+      (switch-to-buffer $buf))
     $buf))
 
 (use-package general
