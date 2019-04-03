@@ -97,7 +97,10 @@ current ('original') buffer."
   ("s-b" evil-switch-to-windows-last-buffer "switch to last" :exit t)
   ("h" previous-buffer "previous")
   ("l" next-buffer "next")
-  ("n" my-new-empty-buffer "new" :exit t)
+  ("n" (lambda ()
+         (interactive)
+         (my-new-empty-buffer nil
+                              :switch-p t)) "new" :exit t)
   ("m" my-buffer-set-mark "set mark")
   ("'" my-buffer-return-to-mark "return to mark")
   ("`" my-buffer-return-to-mark "return to mark")
