@@ -67,13 +67,35 @@ Accounts for different point location in evil vs emacs mode."
                                    "-hook"))))
     (add-hook mode-hook 'register-racket-leader)))
 
-;; ensure that paredit close paren isn't overridden in REPL
-;; by racket mode close paren. Not sure why this happens.
-;; Ideally, this fix should be removed when a proper
-;; solution is found.
+;; ensure that paredit delimiter behavior isn't overridden in REPL
+;; by racket mode. Not sure why this happens, but it may be evil-mode related:
+;; https://github.com/greghendershott/racket-mode/issues/289
+;; For now, just manually override them back to paredit behavior.
+;; Ideally, this fix should be removed when the cause is identified and
+;; a proper solution is found.
+(add-hook 'racket-repl-mode-hook
+          (lambda ()
+            (local-set-key (kbd "\(")
+                           'paredit-open-round)))
 (add-hook 'racket-repl-mode-hook
           (lambda ()
             (local-set-key (kbd "\)")
                            'paredit-close-round)))
+(add-hook 'racket-repl-mode-hook
+          (lambda ()
+            (local-set-key (kbd "\[")
+                           'paredit-open-square)))
+(add-hook 'racket-repl-mode-hook
+          (lambda ()
+            (local-set-key (kbd "\]")
+                           'paredit-close-square)))
+(add-hook 'racket-repl-mode-hook
+          (lambda ()
+            (local-set-key (kbd "\{")
+                           'paredit-open-curly)))
+(add-hook 'racket-repl-mode-hook
+          (lambda ()
+            (local-set-key (kbd "\}")
+                           'paredit-close-curly)))
 
 (provide 'my-racket)
