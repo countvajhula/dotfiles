@@ -3,6 +3,9 @@
   ;; explicitly indicate .rkt files are to be opened in racket-mode
   (add-to-list 'auto-mode-alist '("\\.rkt\\'" . racket-mode)))
 
+(defvar racket-modes (list 'racket-mode
+                           'racket-repl-mode))
+
 (defun my-racket-describe-symbol ()
   "Describe symbol at point"
   (interactive)
@@ -58,7 +61,10 @@ Accounts for different point location in evil vs emacs mode."
                       :keymaps 'local
                       my-local-leader 'hydra-racket/body))
 
-;; register racket leader in racket mode
-(add-hook 'racket-mode-hook 'register-racket-leader)
+;; register racket leader in all racket modes
+(dolist (mode-name racket-modes)
+  (let ((mode-hook (intern (concat (symbol-name mode-name)
+                                   "-hook"))))
+    (add-hook mode-hook 'register-racket-leader)))
 
 (provide 'my-racket)

@@ -56,9 +56,9 @@
 
 ;; register elisp leader in all elisp modes
 (dolist (mode-name elisp-modes)
-  (setq mode-hook (intern (concat (symbol-name mode-name)
-                                  "-hook")))
-  (add-hook mode-hook 'register-elisp-leader))
+  (let ((mode-hook (intern (concat (symbol-name mode-name)
+                                   "-hook"))))
+    (add-hook mode-hook 'register-elisp-leader)))
 
 (use-package my-elisp-debugger)
 
