@@ -71,7 +71,8 @@
               \ {'path': '~/log/ferdywiki', 'path_html': ''},
               \ {'path': '~/work/research/mathwiki', 'path_html': ''},
               \ {'path': '~/work/research/buddhwiki', 'path_html': ''},
-              \ {'path': '~/log/themanwiki', 'path_html': ''}]
+              \ {'path': '~/log/themanwiki', 'path_html': ''},
+              \ {'path': '~/work/languages/wiki', 'path_html': ''}]
   " 'auto_export':1 automatically exports to HTML on save
 
   " TeXBox
