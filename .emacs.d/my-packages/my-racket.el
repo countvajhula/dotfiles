@@ -97,5 +97,14 @@ Accounts for different point location in evil vs emacs mode."
           (lambda ()
             (local-set-key (kbd "\}")
                            'paredit-close-curly)))
+;; double-quote behavior appears to be broken in racket-mode too
+(add-hook 'racket-repl-mode-hook
+          (lambda ()
+            (local-set-key (kbd "\"")
+                           'paredit-doublequote)))
+(add-hook 'racket-mode-hook
+          (lambda ()
+            (local-set-key (kbd "\"")
+                           'paredit-doublequote)))
 
 (provide 'my-racket)
