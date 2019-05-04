@@ -52,7 +52,8 @@ Accounts for different point location in evil vs emacs mode."
   ("g" evil-jump-to-tag "Go to definition")
   ("i" my-racket-describe-symbol "See documentation on this")
   ("?" my-racket-describe-symbol "See documentation on this")
-  ("r" racket-repl "Go to racket REPL"))
+  ("r" racket-repl "Go to racket REPL")
+  ("x" racket-run "Save and evaluate buffer in REPL"))
 
 (defun register-racket-leader ()
   "Pull up racket hydra with local leader"
