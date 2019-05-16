@@ -11,15 +11,50 @@
   (interactive)
   (racket-describe nil))
 
+(defun racket--send-to-repl (code)
+  "(Keeping this here for now pending possible incorporation into racket-mode)
+Internal function to send CODE to the Racket REPL for evaluation.
+
+Before sending the code (in string form), calls `racket-repl' and
+`racket--repl-forget-errors'. Also inserts a ?\n at the process
+mark so that output goes on a fresh line, not on the same line as
+the prompt.
+
+Afterwards call `racket--repl-show-and-move-to-end'."
+  (racket-repl t)
+  (racket--repl-forget-errors)
+  (let ((proc (get-buffer-process racket--repl-buffer-name)))
+    (with-racket-repl-buffer
+      (save-excursion
+        (goto-char (process-mark proc))
+        (insert ?\n)
+        (set-marker (process-mark proc) (point))))
+    (comint-send-string proc code)
+    (comint-send-string proc "\n"))
+  (racket--repl-show-and-move-to-end))
+
+(defun my-racket-eval-symex-pretty ()
+  "Evaluate symex and render the result in a useful string form."
+  (interactive)
+  (let ((pretty-code (string-join
+                      `("(let ([result "
+                        ,(buffer-substring (racket--repl-last-sexp-start)
+                                           (point))
+                        "])"
+                        " (cond [(stream? result) (stream->list result)]
+                                  [(sequence? result) (sequence->list result)]
+                                  [else result]))"))))
+    (racket--send-to-repl pretty-code)))
+
 (defun my-racket-eval-symex ()
   "Eval last sexp.
 
 Accounts for different point location in evil vs emacs mode."
   (interactive)
   (save-excursion
-      (when (equal evil-state 'normal)
-        (forward-char))
-      (racket-send-last-sexp)))
+    (when (equal evil-state 'normal)
+      (forward-char))
+    (racket-send-last-sexp)))
 
 (defun my-racket-eval-region ()
   "Eval region"

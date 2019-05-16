@@ -28,6 +28,19 @@
          (geiser-eval-definition nil))
         (t (error "Symex mode: Lisp flavor not recognized!"))))
 
+(defun symex-evaluate-pretty ()
+  "Evaluate Symex and transform output into a useful string representation."
+  (interactive)
+  (save-excursion
+    (forward-sexp)  ; selected symexes will have the cursor on the starting paren
+    (cond ((equal major-mode 'racket-mode)
+           (my-racket-eval-symex-pretty))
+          ((member major-mode elisp-modes)
+           (my-elisp-eval-symex))
+          ((equal major-mode 'scheme-mode)
+           (my-scheme-eval-symex))
+          (t (error "Symex mode: Lisp flavor not recognized!")))))
+
 (defun symex-eval-print ()
   "Eval symex and print result in buffer."
   (interactive)
