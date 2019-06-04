@@ -107,7 +107,6 @@ current ('original') buffer."
   ("s" my-search-buffers "search" :exit t)
   ("/" my-search-buffers "search" :exit t)
   ("i" ibuffer "list (ibuffer)" :exit t)
-  ("s-i" ibuffer "list (ibuffer)" :exit t)
   ("x" kill-buffer "delete")
   ("?" my-buffer-info "info" :exit t)
   ("q" return-to-original-buffer "return to original" :exit t)
