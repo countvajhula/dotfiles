@@ -38,11 +38,13 @@
   "Select innermost symex."
   (interactive)
   (let ((traversal
-         (symex-make-circuit
-          (symex-make-protocol
-           (symex-make-circuit
-            move-go-in)
-           move-go-forward))))
+         (symex-make-maneuver
+          move-go-in
+          (symex-make-circuit
+           (symex-make-protocol
+            (symex-make-circuit
+             move-go-forward)
+            move-go-in)))))
     (symex-execute-traversal traversal))
   (symex-refocus)
   (point))
