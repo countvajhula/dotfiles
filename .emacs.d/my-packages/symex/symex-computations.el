@@ -121,13 +121,13 @@ computation (each of the 'expressed' type) to yield the final result
          obj)
         (t (apply #'symex-make-maneuver obj))))
 
-(defconst computation-account
-  ;; each result is cast as a maneuver and wrapped in a list for composition
-  ;; the results are concatenated using list concatenation
-  (symex-make-computation :f-to-aggregation #'symex--type-list
-                          :map #'symex--traversal-account
-                          :reduce #'append
-                          :f-from-aggregation #'car))
+;; (defconst computation-account
+;;   ;; each result is cast as a maneuver and wrapped in a list for composition
+;;   ;; the results are concatenated using list concatenation
+;;   (symex-make-computation :f-to-aggregation #'symex--type-list
+;;                           :map #'symex--traversal-account
+;;                           :reduce #'append
+;;                           :f-from-aggregation #'car))
 
 (defun symex--simplify-maneuver-phases (phases)
   "Helper to flatten maneuver to moves."
@@ -160,14 +160,14 @@ computation (each of the 'expressed' type) to yield the final result
          traversal)
         (t (error "Syntax error: unrecognized traversal type!"))))
 
-(defconst computation-simple-account
-  ;; each result is cast as a maneuver and wrapped in a list for composition
-  ;; the results are concatenated using list concatenation
-  (symex-make-computation :f-to-aggregation #'symex--type-list
-                          :map (-compose #'symex--interpret-simple-traversal
-                                         #'symex--traversal-account)
-                          :reduce #'append
-                          :f-from-aggregation #'car))
+;; (defconst computation-simple-account
+;;   ;; each result is cast as a maneuver and wrapped in a list for composition
+;;   ;; the results are concatenated using list concatenation
+;;   (symex-make-computation :f-to-aggregation #'symex--type-list
+;;                           :map (-compose #'symex--interpret-simple-traversal
+;;                                          #'symex--traversal-account)
+;;                           :reduce #'append
+;;                           :f-from-aggregation #'car))
 
 (defun symex--streamline-to-maneuver (maneuver-or-move)
   "Streamline traversal to a representation as a maneuver.
@@ -182,19 +182,19 @@ If it is a move, convert to the equivalent maneuver (via simple casting)."
   "Sum numbers."
   (apply #'+ numbers))
 
-(defconst computation-length
-  ;; each result is interpreted down to a simple maneuver
-  ;; the phases of this maneuver are extracted and summed using
-  ;; move addition.
-  ;; the results are accumulated using addition of numbers
-  (symex-make-computation :f-to-aggregation #'symex--type-integer
-                          :map (-compose #'symex--move-length
-                                         #'symex--add-moves
-                                         #'symex--maneuver-phases
-                                         #'symex--streamline-to-maneuver
-                                         #'symex--interpret-simple-traversal
-                                         #'symex--traversal-account)
-                          :reduce #'my-add-numbers
-                          :f-from-aggregation #'car))
+;; (defconst computation-length
+;;   ;; each result is interpreted down to a simple maneuver
+;;   ;; the phases of this maneuver are extracted and summed using
+;;   ;; move addition.
+;;   ;; the results are accumulated using addition of numbers
+;;   (symex-make-computation :f-to-aggregation #'symex--type-integer
+;;                           :map (-compose #'symex--move-length
+;;                                          #'symex--add-moves
+;;                                          #'symex--maneuver-phases
+;;                                          #'symex--streamline-to-maneuver
+;;                                          #'symex--interpret-simple-traversal
+;;                                          #'symex--traversal-account)
+;;                           :reduce #'my-add-numbers
+;;                           :f-from-aggregation #'car))
 
 (provide 'symex-computations)
