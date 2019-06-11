@@ -143,4 +143,10 @@ Accounts for different point location in evil vs emacs mode."
             (local-set-key (kbd "\"")
                            'paredit-doublequote)))
 
+;; override evil jump to tag so it uses racket mode's "visit definition"
+;; (add-hook 'racket-mode-hook
+;;           (lambda ()
+;;             (local-set-key (kbd "C-]")
+;;                            'racket-visit-definition)))
+
 (provide 'my-racket)
