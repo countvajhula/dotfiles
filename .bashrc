@@ -23,6 +23,8 @@ export DYLD_LIBRARY_PATH=/usr/local/mysql/lib/
 export PATH="$HOME/.rbenv/bin:$PATH"
 # for haskell
 export PATH="$HOME/Library/Haskell/bin:$PATH"
+# also for Haskell?
+export PATH="$HOME/.cabal/bin:${GHCUP_INSTALL_BASE_PREFIX:=$HOME}/.ghcup/bin:$PATH"
 
 eval "$(rbenv init -)"
 
@@ -54,6 +56,7 @@ alias pytb="fc -s 2>&1 | pygmentize -l pytb"
 alias list='clear; ls -lGp'
 alias lst='clear; tree -LC 2'
 alias lstt='clear; tree -LC 4'
+alias rk="racket"
 
 # VI mode!!!
 set -o vi
@@ -72,6 +75,13 @@ CYAN='\e[1;36m'
 NC='\e[0m'              # No Color
 # --> Nice. Has the same effect as using "ansi.sys" in DOS.
 
+rgl() {
+    if [ -t 1 ]; then
+        command rg -p "$@" | less -RFX
+    else
+        command rg "$@"
+    fi
+}
 
 #---------------
 # Shell Prompt

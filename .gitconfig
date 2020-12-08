@@ -34,10 +34,18 @@
 
 [alias]
 	co = checkout
+	ci = commit
 	d = difftool
+	dd = diff
+	ll = log
+	br = branch
+	st = status
+	last = log -1 HEAD
 
 [diff]
-	tool = vimdiff
+	#tool = vimdiff
+	tool = opendiff
 
 [difftool]
 	prompt = false
+
