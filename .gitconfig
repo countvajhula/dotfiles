@@ -40,6 +40,7 @@
 	ll = log
 	br = branch
 	st = status
+	rv = remote -v
 	last = log -1 HEAD
 
 [diff]
