@@ -33,6 +33,8 @@
 
   color koehler   "color scheme in gvim
 
+  set thesaurus+=$HOME/.vim/thesaurus/mthesaur.txt
+
   """ Misc. plugins config """
   nmap <leader>t :TagbarToggle<CR>
   nmap <leader>n :NERDTreeToggle<CR>
@@ -75,6 +77,11 @@
               \ {'path': '~/work/languages/wiki', 'path_html': ''}]
   " 'auto_export':1 automatically exports to HTML on save
 
+  " planner shortcuts
+  let @x="mm^lrx`m"
+  let @t="$i"
+  nnoremap <C-x> @x@t
+
   " TeXBox
   let g:LatexBox_viewer = "open -a Skim"
 
@@ -115,6 +122,26 @@
   "CR remap below conflicts with TeXbox
   "nnoremap <CR> G
 
+  " . does nothing in visual mode so have it do line-based repeat
+  " does NOT work in visual block mode though - could be a good
+  " improvement to make at some point
+  " (from https://danielmiessler.com/study/vim/)
+  xnoremap . :norm.<CR>
+
+  " Run macros in visual mode.
+  " From reddit user u/jdalbert
+  xnoremap @ :<C-u>call ExecuteMacroOnSelection()<cr>
+
+  function! ExecuteMacroOnSelection()
+    exe ":'<,'>normal @" . nr2char(getchar())
+  endfunction
+
+  " repeat substitution over selected lines
+  xnoremap & :norm &<CR>
+
+  " have yanks appear in system clipboard as well
+  set clipboard^=unnamed,unnamedplus
+
   " In text files, always limit the width of text to 78 characters
   "autocmd BufRead *.txt set tw=78
 
@@ -122,7 +149,10 @@
   " let & guioptions = substitute(& guioptions, "t", "", "g")
 
   " Don't use Ex mode, use Q for formatting
-  map Q gq
+  "map Q gq
+
+  " Y should mean y$ for symmetry with D and C, see :help Y
+  map Y y$
 
   " Switch syntax highlighting on, when the terminal has colors
   " Also switch on highlighting the last used search pattern.
