@@ -37,6 +37,7 @@
 	ci = commit
 	d = difftool
 	dd = diff
+	ds = diff --staged
 	ll = log
 	br = branch
 	st = status
