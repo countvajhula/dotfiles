@@ -12,11 +12,13 @@ export JAVA_HOME=/Library/Java/Home
 export GRAILS_HOME=$HOME/sw/grails-1.2.5
 # GROOVY
 export GROOVY_HOME=$HOME/sw/groovy-1.7.10
+# Racket
+export RACKET_BIN=$HOME/Library/Racket/latest/bin
 # Add grails biin and mysql bin to path, and groovy bin
 export EC2_HOME=/Users/siddhartha/work/aws/ec2/ec2-api-tools-1.3-62308
 export EC2_PRIVATE_KEY=/Users/siddhartha/work/aws/ec2/auth/pk-awscert.pem
 export EC2_CERT=/Users/siddhartha/work/aws/ec2/auth/cert-awscert.pem
-export PATH=$HOME/bin:/usr/local/opt/python/libexec/bin:/usr/local/bin:/usr/local/share/python:/usr/local/mysql/bin:/opt/local/bin:/opt/local/sbin:$GRAILS_HOME/bin:$GROOVY_HOME/bin:$EC2_HOME/bin:~/bin:~/work/tahoe/allmydata-tahoe-1.8.0/bin:~/work/android/android-ndk-r4b:~/work/android/android-sdk-mac_x86:/Users/siddhartha/work/android/android-sdk-mac_x86/tools:/usr/local/sbin:$PATH
+export PATH=$HOME/bin:/usr/local/opt/python/libexec/bin:/usr/local/bin:/usr/local/share/python:/usr/local/mysql/bin:/opt/local/bin:/opt/local/sbin:$GRAILS_HOME/bin:$GROOVY_HOME/bin:$EC2_HOME/bin:~/bin:~/work/tahoe/allmydata-tahoe-1.8.0/bin:~/work/android/android-ndk-r4b:~/work/android/android-sdk-mac_x86:/Users/siddhartha/work/android/android-sdk-mac_x86/tools:/usr/local/sbin:$RACKET_BIN:$PATH
 # for python mysql
 export DYLD_LIBRARY_PATH=/usr/local/mysql/lib/
 # for ruby
