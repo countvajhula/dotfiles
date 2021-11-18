@@ -152,7 +152,13 @@
   "map Q gq
 
   " Y should mean y$ for symmetry with D and C, see :help Y
-  map Y y$
+  " map Y y$ is overridden by yank-ring, it seems. The
+  " recipe below addresses that.
+  " from: https://stackoverflow.com/a/30650556
+  function! YRRunAfterMaps()
+    nnoremap Y   :<C-U>YRYankCount 'y$'<CR>
+  endfunction
+  nnoremap Y y$
 
   " Switch syntax highlighting on, when the terminal has colors
   " Also switch on highlighting the last used search pattern.
