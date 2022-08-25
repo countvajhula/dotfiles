@@ -50,6 +50,7 @@
           \ 'v:variables',
       \ ]
   \ }
+  let g:yankring_history_dir = '$HOME/.vim/tmp'
 
   let g:tagbar_type_tex = {
       \ 'ctagstype' : 'latex',
