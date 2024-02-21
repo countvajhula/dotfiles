@@ -15,7 +15,7 @@ export GROOVY_HOME=$HOME/sw/groovy-1.7.10
 # Racket
 export RACKET_BIN=$HOME/Library/Racket/latest/bin
 # For building Racket from source:
-if [ -f $HOME/work/lisp/racket/racket-dev-goodies/plt-alias.bash ]; 
+if [ -f $HOME/work/lisp/racket/racket-dev-goodies/plt-alias.bash ];
 then
     source $HOME/work/lisp/racket/racket-dev-goodies/plt-alias.bash
 else
