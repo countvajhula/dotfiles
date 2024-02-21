@@ -3,7 +3,7 @@ export LSCOLORS="gxfxcxdxbxegedabagacad"
 #PROMPT_COMMAND='CurDir=`pwd|sed -e "s!$HOME!~!"|sed -re "s!([^/])[^/]+/!\1/!g"`'
 #PS1="[\$CurDir] \$ "
 #PS1="[\h \t \#] \u > "
-export PYTHONPATH=/usr/local/lib/python:/opt/gtk/lib/python2.7/site-packages:$HOME/work/mypypi:$HOME/work/gaia:$HOME/work/python/networkx-0.33:$HOME/work/worldspeak/conceptnet/ConceptNet-sqlite:$PYTHONPATH
+export PYTHONPATH=/usr/local/lib/python3.10/site-packages:/usr/local/lib/python:/opt/gtk/lib/python2.7/site-packages:$HOME/work/mypypi:$HOME/work/gaia:$HOME/work/worldspeak/conceptnet/ConceptNet-sqlite:$HOME/work/python/networkx-0.33:$PYTHONPATH
 # remove this (below) to run python in the default 64-bit mode. This is for in for matplotlib compatibility
 export VERSIONER_PYTHON_PREFER_32_BIT='yes'
 #export JAVA_HOME=/System/Library/Frameworks/JavaVM.framework/Versions/CurrentJDK/Home
@@ -14,6 +14,15 @@ export GRAILS_HOME=$HOME/sw/grails-1.2.5
 export GROOVY_HOME=$HOME/sw/groovy-1.7.10
 # Racket
 export RACKET_BIN=$HOME/Library/Racket/latest/bin
+# For building Racket from source:
+if [ -f $HOME/work/lisp/racket/racket-dev-goodies/plt-alias.bash ]; 
+then
+    source $HOME/work/lisp/racket/racket-dev-goodies/plt-alias.bash
+else
+    echo "File Not Found: $HOME/work/lisp/racket/racket-dev-goodies/plt-alias.bash"
+    # ... other error handlings
+fi
+export PATH=$HOME/work/racket/racket-dev-goodies:$PATH
 # Add grails biin and mysql bin to path, and groovy bin
 export EC2_HOME=/Users/siddhartha/work/aws/ec2/ec2-api-tools-1.3-62308
 export EC2_PRIVATE_KEY=/Users/siddhartha/work/aws/ec2/auth/pk-awscert.pem
@@ -59,6 +68,7 @@ alias list='clear; ls -lGp'
 alias lst='clear; tree -LC 2'
 alias lstt='clear; tree -LC 4'
 alias rk="racket"
+alias hask="runhaskell"
 
 # VI mode!!!
 set -o vi
