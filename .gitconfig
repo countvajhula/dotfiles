@@ -39,6 +39,7 @@
 	dd = diff
 	ds = diff --staged
 	ll = log
+	l2 = log -2
 	br = branch
 	st = status
 	rv = remote -v
