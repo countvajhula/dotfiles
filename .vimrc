@@ -36,6 +36,11 @@
   set thesaurus+=$HOME/.vim/thesaurus/mthesaur.txt
 
   """ Misc. plugins config """
+
+  if has('python3')
+      let g:gundo_prefer_python3 = 1
+  endif
+
   nmap <leader>t :TagbarToggle<CR>
   nmap <leader>n :NERDTreeToggle<CR>
   nmap <leader>u :GundoToggle<CR>
