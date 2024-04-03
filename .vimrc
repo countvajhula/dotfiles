@@ -37,13 +37,9 @@
 
   """ Misc. plugins config """
 
-  if has('python3')
-      let g:gundo_prefer_python3 = 1
-  endif
-
   nmap <leader>t :TagbarToggle<CR>
   nmap <leader>n :NERDTreeToggle<CR>
-  nmap <leader>u :GundoToggle<CR>
+  nmap <leader>u :MundoToggle<CR>
   " tagbar support for groovy
   let g:tagbar_type_groovy = {
       \ 'ctagstype' : 'groovy',
