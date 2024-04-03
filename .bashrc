@@ -18,9 +18,6 @@ export RACKET_BIN=$HOME/Library/Racket/latest/bin
 if [ -f $HOME/work/lisp/racket/racket-dev-goodies/plt-alias.bash ];
 then
     source $HOME/work/lisp/racket/racket-dev-goodies/plt-alias.bash
-else
-    echo "File Not Found: $HOME/work/lisp/racket/racket-dev-goodies/plt-alias.bash"
-    # ... other error handlings
 fi
 export PATH=$HOME/work/racket/racket-dev-goodies:$PATH
 # Add grails biin and mysql bin to path, and groovy bin
@@ -37,7 +34,10 @@ export PATH="$HOME/Library/Haskell/bin:$PATH"
 # also for Haskell?
 export PATH="$HOME/.cabal/bin:${GHCUP_INSTALL_BASE_PREFIX:=$HOME}/.ghcup/bin:$PATH"
 
-eval "$(rbenv init -)"
+if command -v rbenv &> /dev/null
+then
+	eval "$(rbenv init -)"
+fi
 
 # for mono (.NET), "to use assemblies from other formulae" - homebrew
 export MONO_GAC_PREFIX="/usr/local"
